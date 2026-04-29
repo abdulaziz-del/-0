@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>منصة ePing القانونية – WTO</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f1e;--bg2:#0d1628;--bg3:#111d35;
+  --b1:#1a2a45;--b2:#2a3d5a;
+  --t1:#e8eaf0;--t2:#8899bb;--t3:#4a5568;
+  --ac:#2563eb;--gr:#22c55e;--rd:#ef4444;--am:#f59e0b;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--t1);direction:rtl}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+
+#hdr{background:#060c18;border-bottom:1px solid var(--b1);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.hlogo{display:flex;align-items:center;gap:11px}
+.hico{width:36px;height:36px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ht1{font-size:15px;font-weight:700}
+.ht2{font-size:11px;color:var(--t2);margin-top:1px}
+.hright{display:flex;align-items:center;gap:10px}
+.hdot{width:7px;height:7px;border-radius:50%;background:var(--am);animation:pulse 2s infinite}
+.hdot.live{background:var(--gr);box-shadow:0 0 6px var(--gr)}
+.hlbl{font-size:11px;color:var(--t2)}
+.hbtn{padding:6px 14px;border-radius:8px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s}
+.hbtn:hover{border-color:var(--ac);color:var(--t1)}
+.hbtn:disabled{opacity:.5;cursor:not-allowed}
+
+#app{display:flex;height:calc(100vh - 58px)}
+
+#sb{width:360px;min-width:360px;border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+#stats{display:flex;gap:7px;padding:12px 12px 10px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.sc{flex:1;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:9px 7px;text-align:center}
+.sc .n{font-size:19px;font-weight:700}
+.sc .l{font-size:10px;color:var(--t2);margin-top:2px}
+
+#flt{padding:10px 12px 11px;border-bottom:1px solid var(--b1);flex-shrink:0}
+#srch{width:100%;padding:8px 13px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;transition:border-color .2s}
+#srch:focus{border-color:var(--ac)}
+#srch::placeholder{color:var(--t3)}
+.frow{display:flex;gap:5px;margin-top:8px}
+.fb{padding:5px 13px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s}
+.fb:hover{border-color:var(--ac);color:var(--t1)}
+.fb.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+
+/* pagination */
+#pgbar{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--bg2)}
+.pgbtn{padding:4px 11px;border-radius:6px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s}
+.pgbtn:hover:not(:disabled){border-color:var(--ac);color:var(--t1)}
+.pgbtn:disabled{opacity:.4;cursor:not-allowed}
+.pglbl{font-size:11px;color:var(--t2)}
+
+#lst{flex:1;overflow-y:auto;padding:9px 10px}
+.nc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px 13px;cursor:pointer;margin-bottom:7px;transition:all .2s}
+.nc:hover{border-color:var(--b2);background:var(--bg3);transform:translateX(-2px)}
+.nc.sel{border-color:var(--ac);background:var(--bg3);box-shadow:0 0 0 1px #2563eb30}
+.nt{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.sps{background:#0d3320;color:#4ade80;border:1px solid #22c55e35}
+.tbt{background:#1a1a0d;color:#facc15;border:1px solid #eab30835}
+.ndate{font-size:10px;color:var(--t3)}
+.ntit{font-size:12px;font-weight:600;line-height:1.5;color:#c8d0e8;margin-bottom:6px}
+.nbot{display:flex;justify-content:space-between;align-items:center}
+.nmem{font-size:11px;color:var(--t2)}
+.nr{display:flex;align-items:center;gap:5px}
+.ndot{width:6px;height:6px;border-radius:50%}
+
+#main{flex:1;overflow-y:auto;padding:20px;background:var(--bg)}
+#empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);text-align:center;gap:8px}
+#empty .ei{font-size:56px}
+#empty .et{font-size:17px;font-weight:600;color:var(--t2)}
+#empty .es{font-size:13px;max-width:260px;line-height:1.7}
+#det{display:none}
+
+.dc{background:var(--bg2);border:1px solid var(--b1);border-radius:13px;padding:20px;margin-bottom:14px}
+.dbd{display:flex;gap:6px;margin-bottom:10px}
+.sbdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.dtit{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:5px}
+.dtiten{font-size:11px;color:var(--t2)}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:15px;padding-top:15px;border-top:1px solid var(--b1)}
+.ml{font-size:10px;color:var(--t3);margin-bottom:3px}
+.mv{font-size:11px;font-weight:600;color:#c8d0e8}
+.ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px;align-items:center}
+.ptag{padding:3px 11px;background:#1a2a45;border-radius:20px;font-size:11px;color:var(--t2)}
+
+.doc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border:1px solid var(--b1);border-radius:9px;margin-bottom:5px}
+.doc-n{font-size:12px;color:#c8d0e8}
+.doc-a{font-size:11px;color:var(--ac);text-decoration:none}
+.doc-a:hover{text-decoration:underline}
+.doc-note{font-size:10px;color:var(--t3);margin-top:6px}
+
+.aw{text-align:center;margin:4px 0 6px}
+.abtn{padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px #2563eb35;transition:all .2s}
+.abtn:hover{background:linear-gradient(135deg,#1e40af,#1d4ed8);transform:translateY(-1px)}
+.abtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ahint{font-size:11px;color:var(--t3);margin-top:6px}
+
+.tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:4px;width:fit-content;margin-bottom:12px}
+.tb{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s}
+.tb.on{background:#1a2a45;color:var(--t1)}
+.abox{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;line-height:1.9;font-size:13px;color:#c8d0e8;white-space:pre-wrap;min-height:160px}
+.acts{display:flex;gap:8px;margin-top:11px}
+.actb{padding:8px 15px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;border:1px solid var(--b2);background:var(--bg2);color:var(--t2);transition:all .2s}
+.actb:hover{color:var(--t1)}
+.actb.bl{border-color:var(--ac);color:var(--ac);background:transparent}
+.actb.bl:hover{background:#1d4ed815}
+
+.shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
+
+/* error banner */
+.err-banner{background:#1a0d0d;border:1px solid #ef444440;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:12px;color:#f87171;line-height:1.7}
+.err-banner a{color:var(--ac)}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="hlogo">
+    <div class="hico">⚖️</div>
+    <div>
+      <div class="ht1">منصة ePing القانونية</div>
+      <div class="ht2">إشعارات SPS/TBT — منظمة التجارة العالمية</div>
+    </div>
+  </div>
+  <div class="hright">
+    <div class="hdot" id="hdot"></div>
+    <span class="hlbl" id="hlbl">جارٍ الاتصال...</span>
+    <button class="hbtn" id="rfbtn" onclick="load(true)">↻ تحديث</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="sb">
+    <div id="stats">
+      <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
+      <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
+      <div class="sc"><div class="n" id="sc-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
+      <div class="sc"><div class="n" id="sc-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
+    </div>
+    <div id="flt">
+      <input id="srch" type="text" placeholder="🔍  بحث في الإشعارات..." oninput="renderList()"/>
+      <div class="frow">
+        <button class="fb on" onclick="setF('all',this)">الكل</button>
+        <button class="fb" onclick="setF('SPS',this)">SPS</button>
+        <button class="fb" onclick="setF('TBT',this)">TBT</button>
+        <button class="fb" onclick="setF('open',this)">مفتوح</button>
+      </div>
+    </div>
+    <div id="lst"><div style="text-align:center;padding:40px 10px;font-size:12px;color:var(--t3)">⏳ جارٍ الاتصال...</div></div>
+    <div id="pgbar" style="display:none">
+      <button class="pgbtn" id="pg-prev" onclick="changePg(-1)">→ السابق</button>
+      <span class="pglbl" id="pg-lbl">1 / 1</span>
+      <button class="pgbtn" id="pg-next" onclick="changePg(1)">التالي ←</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="empty">
+      <div class="ei">⚖️</div>
+      <div class="et">اختر إشعاراً للتحليل</div>
+      <div class="es">اضغط على أي إشعار لعرض تفاصيله وتحليله قانونياً بالذكاء الاصطناعي</div>
+    </div>
+    <div id="det"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// ضع هنا رابط الـ backend بعد نشره على Railway
+// مثال: const API = "https://eping-backend.up.railway.app"
+// إذا لم يكن لديك backend بعد، اتركه فارغاً وستعمل بنمط محلي
+const API = "";
+// ══════════════════════════════════════════
+
+const FL={USA:'🇺🇸',EU:'🇪🇺',JPN:'🇯🇵',AUS:'🇦🇺',CHN:'🇨🇳',BRA:'🇧🇷',CAN:'🇨🇦',IND:'🇮🇳',KOR:'🇰🇷',SAU:'🇸🇦',ARE:'🇦🇪',GBR:'🇬🇧',MEX:'🇲🇽',IDN:'🇮🇩',ZAF:'🇿🇦',NZL:'🇳🇿',ARG:'🇦🇷',EGY:'🇪🇬',TUR:'🇹🇷',NGA:'🇳🇬'};
+let D=[],selId=null,flt='all',tab='full',page=1,totalPages=1,busy=false;
+
+// ─── جلب من Backend أو Claude ───
+async function load(force=false){
+  if(busy)return;
+  busy=true;
+  setStatus('loading','جارٍ الجلب...');
+  btn(true);
+
+  if(API){
+    // جلب من Backend حقيقي
+    await loadFromAPI(force);
+  } else {
+    // جلب عبر Claude (نمط demo)
+    await loadViaClaude();
+  }
+
+  busy=false;
+  btn(false);
+}
+
+async function loadFromAPI(force){
+  try{
+    const q = buildQuery();
+    const url = `${API}/api/notifications?${q}${force?'&refresh=1':''}`;
+    const r = await fetch(url);
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    D = d.notifications||[];
+    totalPages = d.pages||1;
+    setStatus('live',`${d.total} إشعار — محدَّث ${new Date(d.cached_at||Date.now()).toLocaleTimeString('ar-SA')}`);
+    updateStats(d);
+    renderList();
+  }catch(e){
+    setStatus('err','خطأ في الاتصال بالـ backend');
+    showAPIError();
+  }
+}
+
+async function loadViaClaude(){
+  document.getElementById('lst').innerHTML='<div style="text-align:center;padding:40px 10px;font-size:12px;color:var(--t3)">⏳ جارٍ جلب الإشعارات...</div>';
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+      messages:[{role:'user',content:`أنشئ 20 إشعاراً حقيقياً من ePing WTO (2025-2026). أعد JSON فقط:
+[{"id":"G/SPS/N/USA/3920","symbol":"G/SPS/N/USA/3920","member":"الولايات المتحدة الأمريكية","memberCode":"USA","date":"2026-04-10","type":"SPS","title":"عنوان بالعربية","titleEn":"English Title","status":"مفتوح للتعليق","products":["منتج1","منتج2"],"commentDeadline":"2026-06-10","docs":[{"name":"النص الرسمي","url":"https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/G/SPS/NUSA3920.pdf&Open=True"},{"name":"البحث في وثائق WTO","url":"https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=G%2FSPS%2FN%2FUSA%2F3920"},{"name":"صفحة ePing","url":"https://eping.wto.org/en/Notification/Details/G-SPS-N-USA-3920"}]}]
+شروط: 20 إشعار، دول متنوعة (USA EU JPN AUS CHN BRA CAN IND KOR SAU ARE GBR MEX IDN ZAF NZL ARG EGY TUR NGA)، 10 SPS 10 TBT، 13 مفتوحة 7 منتهية، أرقام واقعية. JSON فقط.`}]})
+  });
+  const d=await r.json();
+  const t=d.content?.[0]?.text||'';
+  try{
+    const arr=JSON.parse(t.replace(/```json[\s\S]*?```|```/g,'').trim());
+    D=arr.map(n=>({...n,analysis:null,loading:false}));
+    totalPages=1;
+    setStatus('live',`${D.length} إشعار — نمط تجريبي`);
+    document.getElementById('sc-t').textContent=D.length;
+    document.getElementById('sc-o').textContent=D.filter(n=>n.status==='مفتوح للتعليق').length;
+    document.getElementById('sc-s').textContent=D.filter(n=>n.type==='SPS').length;
+    document.getElementById('sc-b').textContent=D.filter(n=>n.type==='TBT').length;
+    renderList();
+  }catch(e){ setStatus('err','خطأ في جلب البيانات'); }
+}
+
+function buildQuery(){
+  const q=document.getElementById('srch').value;
+  const p=[`page=${page}`,`rows=50`];
+  if(flt==='SPS') p.push('type=SPS');
+  else if(flt==='TBT') p.push('type=TBT');
+  else if(flt==='open') p.push('status=open');
+  if(q) p.push(`keyword=${encodeURIComponent(q)}`);
+  return p.join('&');
+}
+
+function updateStats(d){
+  document.getElementById('sc-t').textContent=d.total||D.length;
+  document.getElementById('sc-o').textContent=D.filter(n=>n.status==='مفتوح للتعليق').length;
+  document.getElementById('sc-s').textContent=D.filter(n=>n.type==='SPS').length;
+  document.getElementById('sc-b').textContent=D.filter(n=>n.type==='TBT').length;
+}
+
+function setF(f,b){
+  flt=f;page=1;
+  document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  if(API) load(); else renderList();
+}
+
+function changePg(dir){
+  page=Math.max(1,Math.min(totalPages,page+dir));
+  load();
+}
+
+function renderList(){
+  const q=document.getElementById('srch').value;
+  const el=document.getElementById('lst');
+  let fil=D;
+  if(!API){
+    if(flt==='SPS') fil=D.filter(n=>n.type==='SPS');
+    else if(flt==='TBT') fil=D.filter(n=>n.type==='TBT');
+    else if(flt==='open') fil=D.filter(n=>n.status==='مفتوح للتعليق');
+    if(q) fil=fil.filter(n=>n.title?.includes(q)||n.symbol?.toLowerCase().includes(q.toLowerCase())||n.member?.includes(q));
+  }
+  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
+
+  el.innerHTML=fil.map(n=>`
+    <div class="nc ${n.id===selId?'sel':''}" onclick="sel('${n.id}')">
+      <div class="nt">
+        <span class="bdg ${(n.type||'').toLowerCase()}">${n.type||'—'}</span>
+        <span class="ndate">${n.date||''}</span>
+      </div>
+      <div class="ntit">${n.title||n.symbol||'—'}</div>
+      <div class="nbot">
+        <span class="nmem">${FL[n.memberCode]||'🌍'} ${n.member||''}</span>
+        <div class="nr">
+          ${n.loading?`<span style="font-size:10px;color:var(--am);animation:pulse 1.5s infinite">يُحلَّل...</span>`:''}
+          ${n.analysis&&!n.loading?`<span style="font-size:10px;color:var(--gr)">✓</span>`:''}
+          <div class="ndot" style="background:${n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)'}"></div>
+          <span style="font-size:10px;color:${n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)'}">${n.status==='مفتوح للتعليق'?'مفتوح':'منتهي'}</span>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // pagination bar
+  const pb=document.getElementById('pgbar');
+  if(totalPages>1){
+    pb.style.display='flex';
+    document.getElementById('pg-lbl').textContent=`${page} / ${totalPages}`;
+    document.getElementById('pg-prev').disabled=page<=1;
+    document.getElementById('pg-next').disabled=page>=totalPages;
+  } else pb.style.display='none';
+}
+
+function sel(id){selId=id;tab='full';renderList();renderDet();}
+
+function renderDet(){
+  const n=D.find(x=>x.id===selId);
+  if(!n)return;
+  document.getElementById('empty').style.display='none';
+  const det=document.getElementById('det');
+  det.style.display='block';
+  const open=n.status==='مفتوح للتعليق';
+  det.innerHTML=`
+    <div class="dc">
+      <div class="dbd">
+        <span class="bdg ${(n.type||'').toLowerCase()}">${n.type||'—'}</span>
+        <span class="sbdg" style="${open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440'}">${n.status}</span>
+      </div>
+      <div class="dtit">${n.title||n.symbol}</div>
+      <div class="dtiten">${n.titleEn||''}</div>
+      <div class="mg">
+        <div><div class="ml">رقم الوثيقة</div><div class="mv">${n.symbol}</div></div>
+        <div><div class="ml">الدولة</div><div class="mv">${FL[n.memberCode]||'🌍'} ${n.member||''}</div></div>
+        <div><div class="ml">تاريخ الإشعار</div><div class="mv">${n.date||'—'}</div></div>
+        <div><div class="ml">موعد التعليق</div><div class="mv">${n.commentDeadline||'—'}</div></div>
+      </div>
+      ${(n.products||[]).length?`<div class="ptags">
+        <span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>
+        ${n.products.map(p=>`<span class="ptag">${p}</span>`).join('')}
+      </div>`:''}
+    </div>
+
+    <div class="dc">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>
+      ${(n.docs&&n.docs.length)?
+        n.docs.map(d=>`<div class="doc-row"><span class="doc-n">📎 ${d.name}</span><a class="doc-a" href="${d.url}" target="_blank" rel="noopener">فتح ↗</a></div>`).join('')
+        :`<div class="doc-row">
+          <span class="doc-n">📎 النص الرسمي – ${n.symbol}</span>
+          <a class="doc-a" href="https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/${n.symbol}.pdf&Open=True" target="_blank">فتح ↗</a>
+         </div>
+         <div class="doc-row">
+          <span class="doc-n">🔍 البحث في وثائق WTO</span>
+          <a class="doc-a" href="https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=${encodeURIComponent(n.symbol)}" target="_blank">فتح ↗</a>
+         </div>
+         <div class="doc-row">
+          <span class="doc-n">🌐 صفحة ePing</span>
+          <a class="doc-a" href="https://eping.wto.org/en/Notification/Details/${(n.symbol||'').replace(/\//g,'-')}" target="_blank">فتح ↗</a>
+         </div>`}
+      <div class="doc-note">* الروابط تؤدي مباشرة لقاعدة وثائق WTO الرسمية</div>
+    </div>
+
+    ${!n.analysis?`<div class="aw">
+      <button class="abtn" onclick="analyze('${n.id}')" ${n.loading?'disabled':''}>
+        ${n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل قانوني بالذكاء الاصطناعي'}
+      </button>
+      <div class="ahint">تحليل شامل وفق اتفاقيات WTO باستخدام Claude AI</div>
+    </div>`:''}
+
+    ${n.loading?`<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div><div class="shim" style="width:90%"></div><div class="shim" style="width:55%"></div></div>`:''}
+
+    ${n.analysis?`<div>
+      <div class="tabs">
+        <button class="tb ${tab==='summary'?'on':''}" onclick="swT('summary',this)">📋 الملخص</button>
+        <button class="tb ${tab==='legal'?'on':''}" onclick="swT('legal',this)">⚖️ التحليل</button>
+        <button class="tb ${tab==='rec'?'on':''}" onclick="swT('rec',this)">💡 التوصيات</button>
+        <button class="tb ${tab==='full'?'on':''}" onclick="swT('full',this)">📄 الكامل</button>
+      </div>
+      <div class="abox" id="abox">${getTab(n)}</div>
+      <div class="acts">
+        <button class="actb" onclick="cp()">📋 نسخ التحليل</button>
+        <button class="actb bl" onclick="analyze('${n.id}')">🔄 إعادة التحليل</button>
+      </div>
+    </div>`:''}`;
+}
+
+function showAPIError(){
+  const det=document.getElementById('det');
+  document.getElementById('empty').style.display='none';
+  det.style.display='block';
+  det.innerHTML=`<div class="err-banner">
+    <strong>⚠ لم يتم الاتصال بالـ Backend</strong><br><br>
+    لجلب الإشعارات الحقيقية من ePing تحتاج تشغيل الـ backend على Railway:<br><br>
+    1. سجّل في <a href="https://railway.app" target="_blank">railway.app</a><br>
+    2. ارفع ملفات <code>eping_railway.zip</code><br>
+    3. ضع رابط Railway في متغير <code>API</code> في الكود<br><br>
+    في الوقت الحالي المنصة تعمل بنمط تجريبي عبر Claude.
+  </div>`;
+  load(); // fallback to Claude mode
+}
+
+function getTab(n){
+  if(!n.analysis)return'';
+  const t=tab==='summary'?(n.sum||n.analysis.slice(0,600)):
+            tab==='legal'?(n.leg||n.analysis.slice(600,1300)):
+            tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
+  return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function swT(t,b){
+  tab=t;
+  document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const box=document.getElementById('abox');
+  const n=D.find(x=>x.id===selId);
+  if(box&&n)box.innerHTML=getTab(n);
+}
+
+function cp(){
+  const n=D.find(x=>x.id===selId);
+  if(n?.analysis){
+    navigator.clipboard?.writeText(n.analysis).then(()=>{
+      const b=event.target;b.textContent='✅ تم النسخ';
+      setTimeout(()=>b.textContent='📋 نسخ التحليل',2000);
+    });
+  }
+}
+
+async function analyze(id){
+  const n=D.find(x=>x.id===id);
+  if(!n||n.loading)return;
+  n.loading=true;n.analysis=null;
+  renderList();renderDet();
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية. حلّل إشعار ePing التالي:
+الرمز: ${n.symbol} | الدولة: ${n.member} | النوع: ${n.type==='SPS'?'SPS - تدابير صحية ونباتية':'TBT - عوائق تقنية'}
+التاريخ: ${n.date} | موعد التعليق: ${n.commentDeadline}
+العنوان: ${n.title}
+المنتجات: ${(n.products||[]).join('، ')}
+
+=== الملخص التنفيذي ===
+(4-5 جمل عن جوهر الإشعار وأهميته)
+
+=== التحليل القانوني ===
+• الأساس القانوني في اتفاقية ${n.type==='SPS'?'SPS المادة 5':'TBT المادة 2'}
+• التوافق مع معايير ${n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC'}
+• الأثر على التجارة الدولية وحقوق الدول الأعضاء
+
+=== التوصيات ===
+3-4 توصيات عملية للدول المُصدِّرة.
+
+اكتب بالعربية الفصحى بأسلوب قانوني احترافي.`}]})
+  });
+  const d=await r.json();
+  const txt=d.content?.[0]?.text||'لم يُتح تحليل.';
+  const s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  const l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  const rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
+  n.analysis=txt;n.sum=s?s[1].trim():txt.slice(0,600);
+  n.leg=l?l[1].trim():txt.slice(600,1300);n.rec=rc?rc[1].trim():txt.slice(1300);
+  n.loading=false;tab='full';
+  renderList();renderDet();
+}
+
+function setStatus(st,msg){
+  const dot=document.getElementById('hdot');
+  const lbl=document.getElementById('hlbl');
+  lbl.textContent=msg;
+  dot.className='hdot'+(st==='live'?' live':'');
+}
+function btn(dis){
+  const b=document.getElementById('rfbtn');
+  b.disabled=dis;b.textContent=dis?'جارٍ الجلب...':'↻ تحديث';
+}
+
+load();
+</script>
+</body>
+</html>
