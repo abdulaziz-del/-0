@@ -1,152 +1,86 @@
 """
-ePing Legal Platform — Backend كامل للنشر على Railway
+ePing Legal Platform — Backend مع WTO API الرسمي
 """
 import os, json, time, logging, threading, re
 from datetime import datetime
-
 import requests
-from bs4 import BeautifulSoup
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("eping")
-
-app = Flask(__name__)
+log = logging.getLogger("wto")
+app  = Flask(__name__)
 CORS(app)
 
-BASE      = "https://eping.wto.org"
-EMAIL     = os.getenv("EPING_EMAIL", "")
-PASSWORD  = os.getenv("EPING_PASSWORD", "")
+WTO_KEY  = os.getenv("WTO_API_KEY", "")
+WTO_BASE = "https://api.wto.org"
 CACHE_TTL = int(os.getenv("CACHE_TTL", "3600"))
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "Accept": "application/json, text/html, */*",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": f"{BASE}/en/Search/AllInformation",
-}
-
 _cache = {"data": [], "at": 0}
 _lock  = threading.Lock()
 
 def cache_fresh():
     return (time.time() - _cache["at"]) < CACHE_TTL and _cache["data"]
 
-class EPing:
-    def __init__(self):
-        self.s = requests.Session()
-        self.s.headers.update(HEADERS)
+def wto_headers():
+    return {"subscription-key": WTO_KEY, "Accept": "application/json"}
 
-    def login(self):
-        if not EMAIL or not PASSWORD:
-            return False
-        try:
-            r = self.s.get(f"{BASE}/en/Account/Login", timeout=15)
-            soup = BeautifulSoup(r.text, "html.parser")
-            tok  = soup.find("input", {"name": "__RequestVerificationToken"})
-            r2   = self.s.post(f"{BASE}/en/Account/Login", timeout=15, data={
-                "Email": EMAIL, "Password": PASSWORD,
-                "__RequestVerificationToken": tok["value"] if tok else ""
-            }, allow_redirects=True)
-            return "Account/Login" not in r2.url
-        except Exception as e:
-            log.error(f"Login error: {e}")
-            return False
+def build_docs(symbol):
+    enc  = requests.utils.quote(symbol, safe="")
+    slug = symbol.replace("/", "-")
+    return [
+        {"name": f"النص الرسمي – {symbol}", "url": f"https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/{symbol}.pdf&Open=True"},
+        {"name": "البحث في وثائق WTO", "url": f"https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList={enc}"},
+        {"name": "صفحة الإشعار على ePing", "url": f"https://eping.wto.org/en/Notification/Details/{slug}"},
+    ]
 
-    def search(self, page=1, rows=50, ntype="", keyword="", open_only=False):
-        payload = {
-            "page": page, "rows": rows,
-            "sidx": "distributionDate", "sord": "desc",
-            "freeText": keyword,
-            "agreementIds": {"SPS":[1],"TBT":[2]}.get(ntype.upper(),[]),
-            "isOpenForComments": open_only,
-            "memberIds": [], "fromDate": "", "toDate": "",
-        }
-        for ep in ["/api/Notification/Search", "/api/notifications/search", "/Search/GetNotifications"]:
-            try:
-                r = self.s.post(f"{BASE}{ep}", json=payload, timeout=20)
-                if r.status_code == 200 and r.headers.get("Content-Type","").startswith("application/json"):
-                    d = r.json()
-                    rows_data = d.get("rows", d.get("notifications", d if isinstance(d,list) else []))
-                    if rows_data:
-                        return self._parse(rows_data), d.get("total", len(rows_data))
-            except: pass
-        return self._scrape_html(page, rows, ntype, keyword), 0
+def parse_item(it, ntype):
+    sym   = it.get("documentSymbol", it.get("symbol", ""))
+    prods = it.get("productsFreeText", "")
+    if isinstance(prods, str):
+        prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
+    return {
+        "id": sym, "symbol": sym,
+        "member": it.get("notifyingMember", ""),
+        "memberCode": it.get("countryCode", ""),
+        "date": (it.get("distributionDate",""))[:10],
+        "type": ntype,
+        "title": it.get("title", sym),
+        "titleEn": it.get("titleEnglish", ""),
+        "status": "مفتوح للتعليق" if it.get("isOpenForComments", False) else "منتهي",
+        "products": prods,
+        "commentDeadline": (it.get("commentDeadlineDate",""))[:10],
+        "docs": build_docs(sym) if sym else [],
+    }
 
-    def _scrape_html(self, page, rows, ntype, keyword):
-        try:
-            params = {"page": page, "freeText": keyword}
-            if ntype == "SPS": params["agreementIds"] = 1
-            elif ntype == "TBT": params["agreementIds"] = 2
-            r = self.s.get(f"{BASE}/en/Search/AllInformation", params=params, timeout=20)
-            soup = BeautifulSoup(r.text, "html.parser")
-            for sc in soup.find_all("script"):
-                txt = sc.string or ""
-                m = re.search(r'"notifications"\s*:\s*(\[.*?\])', txt, re.S)
-                if m:
-                    try: return self._parse(json.loads(m.group(1)))
-                    except: pass
-            return []
-        except Exception as e:
-            log.error(f"Scrape error: {e}")
-            return []
-
-    def doc_links(self, symbol):
-        return [
-            {"name": f"النص الرسمي – {symbol}", "url": f"https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/{symbol}.pdf&Open=True"},
-            {"name": "البحث في وثائق WTO", "url": f"https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList={requests.utils.quote(symbol)}"},
-            {"name": "صفحة الإشعار على ePing", "url": f"{BASE}/en/Notification/Details/{symbol.replace('//','-')}"}
-        ]
-
-    def _parse(self, rows):
-        out = []
-        for it in rows:
-            sym = it.get("documentSymbol", it.get("symbol",""))
-            ntype = "SPS" if ("/SPS/" in sym or it.get("agreementId")==1) else "TBT"
-            open_ = it.get("isOpenForComments", False)
-            prods = it.get("productsFreeText", it.get("products",""))
-            if isinstance(prods, str):
-                prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
-            raw_date = it.get("distributionDate", it.get("date",""))
-            raw_dead = it.get("commentDeadlineDate", it.get("commentDeadline",""))
-            out.append({
-                "id": sym, "symbol": sym,
-                "member": it.get("notifyingMember", it.get("member","")),
-                "memberCode": it.get("countryCode", it.get("memberCode","")),
-                "date": raw_date[:10] if len(raw_date)>=10 else raw_date,
-                "type": ntype,
-                "title": BeautifulSoup(it.get("title",""), "html.parser").get_text().strip(),
-                "titleEn": it.get("titleEn",""),
-                "status": "مفتوح للتعليق" if open_ else "منتهي",
-                "products": prods,
-                "hs_codes": it.get("hsCodes",[]),
-                "commentDeadline": raw_dead[:10] if len(raw_dead)>=10 else raw_dead,
-                "docs": self.doc_links(sym) if sym else [],
-            })
-        return out
-
-    def fetch_all(self, max_pages=6, rows=50, **kw):
-        all_ = []
-        for p in range(1, max_pages+1):
-            batch, total = self.search(page=p, rows=rows, **kw)
-            all_.extend(batch)
-            if not batch or len(all_) >= total: break
-            time.sleep(0.7)
-        return all_
+def fetch_wto(endpoint, params):
+    try:
+        r = requests.get(f"{WTO_BASE}{endpoint}", headers=wto_headers(), params=params, timeout=25)
+        if r.status_code == 200:
+            return r.json()
+    except Exception as e:
+        log.error(f"WTO error: {e}")
+    return None
 
 def refresh(force=False):
     if not force and cache_fresh(): return
     with _lock:
         if not force and cache_fresh(): return
-        ep = EPing()
-        if EMAIL and PASSWORD: ep.login()
-        data = ep.fetch_all(max_pages=6, rows=50)
-        if data:
-            _cache["data"] = data
-            _cache["at"] = time.time()
+        all_data = []
+        for ntype, ep in [("SPS","/v1/sps/notifications"),("TBT","/v1/tbt/notifications")]:
+            for page in range(1, 7):
+                data = fetch_wto(ep, {"ps": 50, "p": page})
+                if not data: break
+                rows = data if isinstance(data, list) else data.get("notifications", data.get("rows", []))
+                if not rows: break
+                all_data.extend([parse_item(it, ntype) for it in rows])
+                time.sleep(0.5)
+        if all_data:
+            all_data.sort(key=lambda x: x.get("date",""), reverse=True)
+            _cache["data"] = all_data
+            _cache["at"]   = time.time()
+            log.info(f"Cached {len(all_data)} notifications")
 
-def bg_refresh():
+def bg():
     while True:
         try: refresh()
         except: pass
@@ -154,35 +88,38 @@ def bg_refresh():
 
 @app.route("/")
 def root():
-    return jsonify({"name": "ePing API", "notifications": len(_cache["data"])})
+    return jsonify({"notifications": len(_cache["data"]), "api_key": bool(WTO_KEY)})
 
 @app.route("/api/notifications")
 def notifs():
-    if request.args.get("refresh") == "1":
-        refresh(force=True)
+    if request.args.get("refresh")=="1": refresh(force=True)
     data = list(_cache["data"])
-    t  = request.args.get("type","").upper()
-    st = request.args.get("status","")
-    kw = request.args.get("keyword","").lower()
-    pg = int(request.args.get("page",1))
-    rw = int(request.args.get("rows",100))
-    if t in ("SPS","TBT"): data = [n for n in data if n["type"]==t]
-    if st == "open": data = [n for n in data if n["status"]=="مفتوح للتعليق"]
-    if kw: data = [n for n in data if kw in n.get("title","").lower() or kw in n.get("symbol","").lower()]
-    total = len(data)
-    data = data[(pg-1)*rw : pg*rw]
-    return jsonify({"notifications": data, "total": total, "page": pg, "rows": rw, "pages": (total+rw-1)//rw, "cached_at": datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None})
+    t=request.args.get("type","").upper()
+    st=request.args.get("status","")
+    kw=request.args.get("keyword","").lower()
+    pg=max(1,int(request.args.get("page",1)))
+    rw=min(200,int(request.args.get("rows",100)))
+    if t in ("SPS","TBT"): data=[n for n in data if n["type"]==t]
+    if st=="open": data=[n for n in data if n["status"]=="مفتوح للتعليق"]
+    if kw: data=[n for n in data if kw in n.get("title","").lower() or kw in n.get("symbol","").lower()]
+    total=len(data); page_data=data[(pg-1)*rw:pg*rw]
+    return jsonify({"notifications":page_data,"total":total,"page":pg,"rows":rw,"pages":(total+rw-1)//rw,"cached_at":datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None})
 
 @app.route("/api/stats")
 def stats():
-    d = _cache["data"]
-    return jsonify({"total": len(d), "sps": sum(1 for n in d if n["type"]=="SPS"), "tbt": sum(1 for n in d if n["type"]=="TBT"), "open": sum(1 for n in d if n["status"]=="مفتوح للتعليق")})
+    d=_cache["data"]
+    return jsonify({"total":len(d),"sps":sum(1 for n in d if n["type"]=="SPS"),"tbt":sum(1 for n in d if n["type"]=="TBT"),"open":sum(1 for n in d if n["status"]=="مفتوح للتعليق")})
 
-@app.route("/api/refresh", methods=["POST"])
+@app.route("/api/refresh", methods=["POST","GET"])
 def force_refresh():
     refresh(force=True)
-    return jsonify({"ok": True, "total": len(_cache["data"])})
+    return jsonify({"ok":True,"total":len(_cache["data"])})
 
-if __name__ == "__main__":
-    threading.Thread(target=bg_refresh, daemon=True).start()
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+@app.route("/api/test")
+def test():
+    data=fetch_wto("/v1/sps/notifications",{"ps":3,"p":1})
+    return jsonify({"ok":bool(data),"data":data})
+
+if __name__=="__main__":
+    threading.Thread(target=bg,daemon=True).start()
+    app.run(host="0.0.0.0",port=int(os.getenv("PORT",5000)))
