@@ -269,6 +269,33 @@ def force_refresh():
     return jsonify({"ok": True, "total": len(_cache["data"])})
 
 
+@app.route("/api/analyze", methods=["POST"])
+def analyze():
+    """تحليل قانوني للإشعار"""
+    if not CLAUDE_KEY:
+        return jsonify({"error": "No Claude key", "analysis": ""})
+    try:
+        n = request.get_json()
+        ntype = n.get("type", "")
+        prompt = "أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية.\nحلّل إشعار ePing:\n"
+            + "الرمز: " + n.get("symbol","") + " | الدولة: " + n.get("member","") + " | النوع: " + ("SPS - تدابير صحية" if ntype=="SPS" else "TBT - عوائق تقنية") + "\n"
+            + "التاريخ: " + n.get("date","") + " | موعد التعليق: " + n.get("commentDeadline","") + "\n"
+            + "العنوان: " + n.get("title","") + "\n"
+            + "المنتجات: " + ", ".join(n.get("products",[])) + "\n\n"
+            + "=== الملخص التنفيذي ===\n(4-5 جمل عن جوهر الإشعار)\n\n"
+            + "=== التحليل القانوني ===\n• الأساس القانوني\n• التوافق مع المعايير الدولية\n• الأثر على التجارة\n• حقوق الدول الأعضاء\n\n"
+            + "=== التوصيات ===\n3-4 توصيات عملية. اكتب بالعربية الفصحى."
+        r = requests.post("https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-haiku-4-5-20251001", "max_tokens": 1000,
+                "messages": [{"role": "user", "content": prompt}]}, timeout=30)
+        if r.status_code == 200:
+            text = r.json()["content"][0]["text"].strip()
+            return jsonify({"analysis": text})
+        return jsonify({"analysis": "", "error": r.text[:200]})
+    except Exception as e:
+        return jsonify({"error": str(e), "analysis": ""})
+
 @app.route("/api/translate", methods=["POST"])
 def translate():
     """ترجمة عنوان واحد عبر Claude API"""
