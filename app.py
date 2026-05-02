@@ -249,6 +249,24 @@ def translate():
         return jsonify({"error": str(e), "ar": ""})
 
 
+@app.route("/api/test-claude")
+def test_claude():
+    import os
+    key = CLAUDE_KEY
+    if not key:
+        return jsonify({"error": "No key", "key_len": 0})
+    try:
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-3-haiku-20240307", "max_tokens": 10, "messages": [{"role": "user", "content": "test"}]},
+            timeout=15
+        )
+        return jsonify({"status": r.status_code, "key_prefix": key[:12], "key_len": len(key), "resp": r.text[:300]})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
 @app.route("/api/test")
 def test():
     headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
