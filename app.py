@@ -78,7 +78,15 @@ def fetch_data():
                 log.error("Error response: " + r.text[:300])
                 break
             d = r.json()
-            rows = d if isinstance(d, list) else d.get("notifications", d.get("rows", d.get("items", [])))
+            if isinstance(d, list):
+    rows = d
+elif isinstance(d, dict):
+    rows = d.get("notifications") or d.get("rows") or d.get("items") or d.get("data") or []
+    if isinstance(rows, dict):
+        rows = rows.get("items") or rows.get("notifications") or []
+else:
+    rows = []
+log.info("Response keys: " + str(list(d.keys()) if isinstance(d, dict) else type(d)))
             if not rows:
                 break
             all_data.extend([parse_item(it) for it in rows])
