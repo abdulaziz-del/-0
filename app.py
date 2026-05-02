@@ -23,14 +23,22 @@ def cache_fresh():
     return (time.time() - _cache["at"]) < CACHE_TTL and bool(_cache["data"])
 
 
-def build_docs(sym):
+def build_docs(sym, doc_link="", dol_link=""):
     enc = requests.utils.quote(sym, safe="")
     slug = sym.replace("/", "-")
-    return [
-        {"name": "النص الرسمي - " + sym, "url": "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/" + sym + ".pdf&Open=True"},
-        {"name": "البحث في وثائق WTO", "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc},
-        {"name": "صفحة ePing", "url": "https://eping.wto.org/en/Notification/Details/" + slug},
-    ]
+    docs = []
+    if doc_link:
+        for url in doc_link.split(","):
+            url = url.strip()
+            if url:
+                docs.append({"name": "وثيقة الإشعار الرسمية (PDF)", "url": url})
+    if dol_link:
+        clean = dol_link.replace("\\", "/").replace("//", "/")
+        dol_url = "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=" + clean
+        docs.append({"name": "النص الرسمي - " + sym, "url": dol_url})
+    docs.append({"name": "البحث في وثائق WTO", "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc})
+    docs.append({"name": "صفحة ePing", "url": "https://eping.wto.org/en/Notification/Details/" + slug})
+    return docs
 
 
 def parse_item(it):
@@ -48,6 +56,8 @@ def parse_item(it):
     date_raw = it.get("distributionDate", it.get("date", ""))
     dead_raw = it.get("commentDeadlineDate", "")
     open_val = it.get("isOpenForComments", False)
+    doc_link = it.get("notifiedDocumentLink", "")
+    dol_link = it.get("dolLink", "")
     return {
         "id": sym,
         "symbol": sym,
@@ -60,7 +70,7 @@ def parse_item(it):
         "status": "مفتوح للتعليق" if open_val else "منتهي",
         "products": prods,
         "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
-        "docs": build_docs(sym) if sym else [],
+        "docs": build_docs(sym, doc_link, dol_link) if sym else [],
     }
 
 
@@ -69,7 +79,6 @@ def extract_rows(d):
         return d
     if not isinstance(d, dict):
         return []
-    log.info("Response keys: " + str(list(d.keys())))
     for key in ["items", "notifications", "rows", "data", "results", "content"]:
         val = d.get(key)
         if val is not None:
@@ -104,12 +113,11 @@ def fetch_data():
             d = r.json()
             rows = extract_rows(d)
             if not rows:
-                log.info("No rows found in response")
                 break
             all_data.extend([parse_item(it) for it in rows])
             total = 0
             if isinstance(d, dict):
-                total = d.get("total", d.get("totalCount", d.get("count", 0)))
+                total = d.get("totalCount", d.get("total", d.get("count", 0)))
             if total and len(all_data) >= total:
                 break
             time.sleep(0.5)
@@ -218,7 +226,6 @@ def test():
             return jsonify({
                 "status": r.status_code,
                 "ok": True,
-                "keys": list(d.keys()) if isinstance(d, dict) else str(type(d)),
                 "rows_count": len(rows),
                 "sample": rows[0] if rows else None
             })
