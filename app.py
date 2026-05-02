@@ -27,7 +27,7 @@ def build_docs(sym):
     enc = requests.utils.quote(sym, safe="")
     slug = sym.replace("/", "-")
     return [
-        {"name": "النص الرسمي – " + sym, "url": "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/" + sym + ".pdf&Open=True"},
+        {"name": "النص الرسمي - " + sym, "url": "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/" + sym + ".pdf&Open=True"},
         {"name": "البحث في وثائق WTO", "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc},
         {"name": "صفحة ePing", "url": "https://eping.wto.org/en/Notification/Details/" + slug},
     ]
@@ -35,28 +35,52 @@ def build_docs(sym):
 
 def parse_item(it):
     sym = it.get("documentSymbol", it.get("symbol", ""))
-    ntype = "SPS" if "/SPS/" in sym else "TBT"
-    prods = it.get("productsFreeText", "")
+    area = it.get("area", "")
+    if area == "SPS" or "/SPS/" in sym:
+        ntype = "SPS"
+    else:
+        ntype = "TBT"
+    prods = it.get("productsFreeTextPlain", it.get("productsFreeText", ""))
     if isinstance(prods, str):
         prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
     elif not isinstance(prods, list):
         prods = []
     date_raw = it.get("distributionDate", it.get("date", ""))
     dead_raw = it.get("commentDeadlineDate", "")
+    open_val = it.get("isOpenForComments", False)
     return {
         "id": sym,
         "symbol": sym,
         "member": it.get("notifyingMember", it.get("member", "")),
-        "memberCode": it.get("countryCode", it.get("memberCode", "")),
-        "date": date_raw[:10] if len(date_raw) >= 10 else date_raw,
+        "memberCode": it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
+        "date": date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
         "type": ntype,
-        "title": it.get("title", sym),
-        "titleEn": it.get("titleEnglish", ""),
-        "status": "مفتوح للتعليق" if it.get("isOpenForComments", False) else "منتهي",
+        "title": it.get("titlePlain", it.get("title", sym)),
+        "titleEn": it.get("titlePlain", it.get("titleEnglish", "")),
+        "status": "مفتوح للتعليق" if open_val else "منتهي",
         "products": prods,
-        "commentDeadline": dead_raw[:10] if len(dead_raw) >= 10 else dead_raw,
+        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
         "docs": build_docs(sym) if sym else [],
     }
+
+
+def extract_rows(d):
+    if isinstance(d, list):
+        return d
+    if not isinstance(d, dict):
+        return []
+    log.info("Response keys: " + str(list(d.keys())))
+    for key in ["notifications", "rows", "items", "data", "results", "content"]:
+        val = d.get(key)
+        if val is not None:
+            if isinstance(val, list):
+                return val
+            if isinstance(val, dict):
+                for k2 in ["items", "notifications", "rows", "data"]:
+                    v2 = val.get(k2)
+                    if isinstance(v2, list):
+                        return v2
+    return []
 
 
 def fetch_data():
@@ -75,22 +99,17 @@ def fetch_data():
             )
             log.info("ePing API page " + str(pg) + " status: " + str(r.status_code))
             if r.status_code != 200:
-                log.error("Error response: " + r.text[:300])
+                log.error("Error: " + r.text[:300])
                 break
             d = r.json()
-            if isinstance(d, list):
-    rows = d
-elif isinstance(d, dict):
-    rows = d.get("notifications") or d.get("rows") or d.get("items") or d.get("data") or []
-    if isinstance(rows, dict):
-        rows = rows.get("items") or rows.get("notifications") or []
-else:
-    rows = []
-log.info("Response keys: " + str(list(d.keys()) if isinstance(d, dict) else type(d)))
+            rows = extract_rows(d)
             if not rows:
+                log.info("No rows found in response")
                 break
             all_data.extend([parse_item(it) for it in rows])
-            total = d.get("total", 0) if isinstance(d, dict) else 0
+            total = 0
+            if isinstance(d, dict):
+                total = d.get("total", d.get("totalCount", d.get("count", 0)))
             if total and len(all_data) >= total:
                 break
             time.sleep(0.5)
@@ -190,11 +209,19 @@ def test():
         r = requests.get(
             "https://api.wto.org/eping/notifications/search",
             headers=headers,
-            params={"page": 1, "pageSize": 3, "language": 1},
+            params={"page": 1, "pageSize": 2, "language": 1},
             timeout=15
         )
         if r.ok:
-            return jsonify({"status": r.status_code, "ok": True, "data": r.json()})
+            d = r.json()
+            rows = extract_rows(d)
+            return jsonify({
+                "status": r.status_code,
+                "ok": True,
+                "keys": list(d.keys()) if isinstance(d, dict) else str(type(d)),
+                "rows_count": len(rows),
+                "sample": rows[0] if rows else None
+            })
         else:
             return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
     except Exception as e:
