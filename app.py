@@ -70,7 +70,7 @@ def extract_rows(d):
     if not isinstance(d, dict):
         return []
     log.info("Response keys: " + str(list(d.keys())))
-    for key in ["notifications", "rows", "items", "data", "results", "content"]:
+    for key in ["items", "notifications", "rows", "data", "results", "content"]:
         val = d.get(key)
         if val is not None:
             if isinstance(val, list):
