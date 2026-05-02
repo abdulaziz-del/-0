@@ -47,7 +47,7 @@ def parse_item(it):
     }
 
 def fetch_data():
-    headers = {"subscription-key": WTO_KEY, "Accept": "application/json"}
+   headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
     all_data = []
     for pg in range(1, 7):
         try:
