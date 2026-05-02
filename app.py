@@ -156,6 +156,7 @@ def notifs():
     t  = request.args.get("type", "").upper()
     st = request.args.get("status", "")
     kw = request.args.get("keyword", "").lower()
+    mc = request.args.get("member", "").lower()
     pg = max(1, int(request.args.get("page", 1)))
     rw = min(200, int(request.args.get("rows", 100)))
     if t in ("SPS", "TBT"):
@@ -164,6 +165,8 @@ def notifs():
         data = [n for n in data if n["status"] == "مفتوح للتعليق"]
     if kw:
         data = [n for n in data if kw in n.get("title", "").lower() or kw in n.get("symbol", "").lower()]
+    if mc:
+        data = [n for n in data if mc in n.get("member", "").lower()]
     total     = len(data)
     page_data = data[(pg - 1) * rw: pg * rw]
     cached_at = datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None
@@ -246,8 +249,6 @@ def analyze():
         return jsonify({"analysis": "", "error": r.text[:300]})
     except Exception as e:
         return jsonify({"error": str(e), "analysis": ""})
-
-
 @app.route("/api/translate", methods=["POST"])
 def translate():
     if not CLAUDE_KEY:
@@ -307,3 +308,35 @@ if __name__ == "__main__":
     threading.Thread(target=bg, daemon=True).start()
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
+
+@app.route("/api/translate-batch", methods=["POST"])
+def translate_batch_ep():
+    if not CLAUDE_KEY:
+        return jsonify({"translations": []})
+    try:
+        body = request.get_json()
+        texts = body.get("texts", [])[:15]
+        if not texts:
+            return jsonify({"translations": []})
+        numbered = "\n".join([str(i+1) + ". " + t for i, t in enumerate(texts)])
+        prompt = "ترجم هذه العناوين من الانجليزية للعربية. اكتب الرقم ثم الترجمة فقط:\n" + numbered
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-opus-4-7", "max_tokens": 2000, "messages": [{"role": "user", "content": prompt}]},
+            timeout=30
+        )
+        if r.status_code == 200:
+            resp = r.json()["content"][0]["text"].strip()
+            result_lines = [l.strip() for l in resp.split("\n") if l.strip()]
+            translations = []
+            for line in result_lines:
+                clean = re.sub(r"^[0-9]+[.)]\s*", "", line).strip()
+                if clean:
+                    translations.append(clean)
+            if len(translations) == len(texts):
+                return jsonify({"translations": translations})
+        return jsonify({"translations": []})
+    except Exception as e:
+        return jsonify({"translations": [], "error": str(e)})
