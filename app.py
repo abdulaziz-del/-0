@@ -189,6 +189,24 @@ def analyze():
     try:
         n     = request.get_json()
         ntype = n.get("type", "")
+        # محاولة جلب وقراءة PDF المرفق
+        pdf_text = ""
+        docs = n.get("docs", [])
+        for doc in docs:
+            url = doc.get("url", "")
+            if "members.wto.org" in url and url.endswith(".pdf"):
+                try:
+                    pr = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+                    if pr.status_code == 200 and len(pr.content) > 1000:
+                        # استخراج نص بسيط من PDF
+                        import re as re2
+                        raw = pr.content.decode("latin-1", errors="ignore")
+                        text_parts = re2.findall(r"[A-Za-z؀-ۿ][A-Za-z؀-ۿ\s,.\-:;()/]{20,}", raw)
+                        if text_parts:
+                            pdf_text = " ".join(text_parts[:50])[:2000]
+                            break
+                except:
+                    pass
         lines = [
             "أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية.",
             "حلّل إشعار ePing:",
@@ -210,6 +228,10 @@ def analyze():
             "3-4 توصيات عملية للدول المتضررة.",
             "اكتب بالعربية الفصحى بأسلوب قانوني احترافي.",
         ]
+        if pdf_text:
+            lines.append("")
+            lines.append("نص من المستند الرسمي المرفق:")
+            lines.append(pdf_text[:1000])
         prompt = "\n".join(lines)
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
@@ -238,7 +260,7 @@ def translate():
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 200, "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]},
+            json={"model": "claude-opus-4-7", "max_tokens": 300, "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]},
             timeout=15
         )
         if r.status_code == 200:
