@@ -217,10 +217,11 @@ def analyze():
             json={"model": "claude-3-haiku-20240307", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
             timeout=30
         )
+        log.info("Claude analyze status: " + str(r.status_code) + " resp: " + r.text[:300])
         if r.status_code == 200:
             text = r.json()["content"][0]["text"].strip()
             return jsonify({"analysis": text})
-        return jsonify({"analysis": "", "error": r.text[:200]})
+        return jsonify({"analysis": "", "error": r.text[:300]})
     except Exception as e:
         return jsonify({"error": str(e), "analysis": ""})
 
