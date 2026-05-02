@@ -70,7 +70,7 @@ def fetch_data():
             r = requests.get(
                 "https://api.wto.org/eping/notifications/search",
                 headers=headers,
-                params={"page": pg, "pageSize": 50},
+                params={"page": pg, "pageSize": 50, "language": 1},
                 timeout=25
             )
             log.info("ePing API page " + str(pg) + " status: " + str(r.status_code))
@@ -182,7 +182,7 @@ def test():
         r = requests.get(
             "https://api.wto.org/eping/notifications/search",
             headers=headers,
-            params={"page": 1, "pageSize": 3},
+            params={"page": 1, "pageSize": 3, "language": 1},
             timeout=15
         )
         if r.ok:
