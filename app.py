@@ -3,6 +3,7 @@ import time
 import logging
 import threading
 import re
+import json
 import requests
 from datetime import datetime
 from flask import Flask, jsonify, request
@@ -13,64 +14,110 @@ log = logging.getLogger("eping")
 app = Flask(__name__)
 CORS(app)
 
-WTO_KEY = os.getenv("WTO_API_KEY", "")
-CACHE_TTL = 3600
-_cache = {"data": [], "at": 0}
-_lock = threading.Lock()
+WTO_KEY     = os.getenv("WTO_API_KEY", "")
+CLAUDE_KEY  = os.getenv("CLAUDE_API_KEY", "")
+CACHE_TTL   = 3600
+_cache      = {"data": [], "at": 0}
+_lock       = threading.Lock()
 
 
 def cache_fresh():
     return (time.time() - _cache["at"]) < CACHE_TTL and bool(_cache["data"])
 
 
+def translate_batch(titles_en):
+    """ترجمة مجموعة عناوين إلى العربية دفعة واحدة"""
+    if not CLAUDE_KEY or not titles_en:
+        return titles_en
+    try:
+        numbered = "\n".join([str(i+1) + ". " + t for i, t in enumerate(titles_en)])
+        prompt = (
+            "ترجم هذه العناوين من الإنجليزية إلى العربية الفصحى. "
+            "أعد فقط الأرقام والترجمات بنفس الترتيب بدون أي نص إضافي:\n\n"
+            + numbered
+        )
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": CLAUDE_KEY,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 2000,
+                "messages": [{"role": "user", "content": prompt}]
+            },
+            timeout=30
+        )
+        if r.status_code == 200:
+            text = r.json()["content"][0]["text"]
+            lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
+            result = []
+            for line in lines:
+                clean = re.sub(r"^\d+\.\s*", "", line).strip()
+                if clean:
+                    result.append(clean)
+            if len(result) == len(titles_en):
+                return result
+    except Exception as e:
+        log.error("Translation error: " + str(e))
+    return titles_en
+
+
 def build_docs(sym, doc_link="", dol_link=""):
-    enc = requests.utils.quote(sym, safe="")
+    enc  = requests.utils.quote(sym, safe="")
     slug = sym.replace("/", "-")
     docs = []
     if doc_link:
         for url in doc_link.split(","):
             url = url.strip()
-            if url:
+            if url and url.startswith("http"):
                 docs.append({"name": "وثيقة الإشعار الرسمية (PDF)", "url": url})
     if dol_link:
-        clean = dol_link.replace("\\", "/").replace("//", "/")
-        dol_url = "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=" + clean
+        clean = dol_link.replace("\\", "/")
+        dol_url = clean if clean.startswith("http") else "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=" + clean
         docs.append({"name": "النص الرسمي - " + sym, "url": dol_url})
-    docs.append({"name": "البحث في وثائق WTO", "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc})
-    docs.append({"name": "صفحة ePing", "url": "https://eping.wto.org/en/Notification/Details/" + slug})
+    docs.append({
+        "name": "البحث في وثائق WTO",
+        "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc
+    })
+    docs.append({
+        "name": "صفحة الإشعار على ePing",
+        "url": "https://eping.wto.org/en/Notification/Details/" + slug
+    })
     return docs
 
 
 def parse_item(it):
-    sym = it.get("documentSymbol", it.get("symbol", ""))
-    area = it.get("area", "")
-    if area == "SPS" or "/SPS/" in sym:
-        ntype = "SPS"
-    else:
-        ntype = "TBT"
+    sym   = it.get("documentSymbol", it.get("symbol", ""))
+    area  = it.get("area", "")
+    ntype = "SPS" if (area == "SPS" or "/SPS/" in sym) else "TBT"
+    title_en = it.get("titlePlain", it.get("title", it.get("titleEnglish", sym)))
     prods = it.get("productsFreeTextPlain", it.get("productsFreeText", ""))
     if isinstance(prods, str):
         prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
     elif not isinstance(prods, list):
         prods = []
-    date_raw = it.get("distributionDate", it.get("date", ""))
-    dead_raw = it.get("commentDeadlineDate", "")
-    open_val = it.get("isOpenForComments", False)
-    doc_link = it.get("notifiedDocumentLink", "")
-    dol_link = it.get("dolLink", "")
+    date_raw  = it.get("distributionDate", it.get("date", ""))
+    dead_raw  = it.get("commentDeadlineDate", "")
+    open_val  = it.get("isOpenForComments", False)
+    doc_link  = it.get("notifiedDocumentLink", "")
+    dol_link  = it.get("dolLink", "")
     return {
-        "id": sym,
-        "symbol": sym,
-        "member": it.get("notifyingMember", it.get("member", "")),
-        "memberCode": it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
-        "date": date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
-        "type": ntype,
-        "title": it.get("titlePlain", it.get("title", sym)),
-        "titleEn": it.get("titlePlain", it.get("titleEnglish", "")),
-        "status": "مفتوح للتعليق" if open_val else "منتهي",
-        "products": prods,
+        "id":              sym,
+        "symbol":          sym,
+        "member":          it.get("notifyingMember", it.get("member", "")),
+        "memberCode":      it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
+        "date":            date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
+        "type":            ntype,
+        "title":           title_en,
+        "titleEn":         title_en,
+        "titleAr":         "",
+        "status":          "مفتوح للتعليق" if open_val else "منتهي",
+        "products":        prods,
         "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
-        "docs": build_docs(sym, doc_link, dol_link) if sym else [],
+        "docs":            build_docs(sym, doc_link, dol_link) if sym else [],
     }
 
 
@@ -106,24 +153,38 @@ def fetch_data():
                 params={"page": pg, "pageSize": 50, "language": 1},
                 timeout=25
             )
-            log.info("ePing API page " + str(pg) + " status: " + str(r.status_code))
+            log.info("ePing page " + str(pg) + " → " + str(r.status_code))
             if r.status_code != 200:
-                log.error("Error: " + r.text[:300])
                 break
-            d = r.json()
+            d    = r.json()
             rows = extract_rows(d)
             if not rows:
                 break
             all_data.extend([parse_item(it) for it in rows])
             total = 0
             if isinstance(d, dict):
-                total = d.get("totalCount", d.get("total", d.get("count", 0)))
+                total = d.get("totalCount", d.get("total", 0))
             if total and len(all_data) >= total:
                 break
             time.sleep(0.5)
         except Exception as e:
             log.error("Fetch error: " + str(e))
             break
+
+    # ترجمة العناوين دفعات (كل 20 عنوان)
+    if CLAUDE_KEY and all_data:
+        log.info("Translating titles...")
+        batch_size = 20
+        for i in range(0, len(all_data), batch_size):
+            batch = all_data[i:i + batch_size]
+            titles_en = [n["titleEn"] for n in batch]
+            titles_ar = translate_batch(titles_en)
+            for j, item in enumerate(batch):
+                item["titleAr"] = titles_ar[j] if j < len(titles_ar) else item["titleEn"]
+                item["title"]   = item["titleAr"]
+            time.sleep(0.3)
+        log.info("Translation done")
+
     return all_data
 
 
@@ -138,10 +199,10 @@ def refresh(force=False):
         if data:
             data.sort(key=lambda x: x.get("date", ""), reverse=True)
             _cache["data"] = data
-            _cache["at"] = time.time()
+            _cache["at"]   = time.time()
             log.info("Cached " + str(len(data)) + " notifications")
         else:
-            log.warning("No data returned from ePing API")
+            log.warning("No data from ePing API")
 
 
 def bg():
@@ -149,7 +210,7 @@ def bg():
         try:
             refresh()
         except Exception as e:
-            log.error("BG error: " + str(e))
+            log.error("BG: " + str(e))
         time.sleep(CACHE_TTL)
 
 
@@ -157,7 +218,8 @@ def bg():
 def root():
     return jsonify({
         "notifications": len(_cache["data"]),
-        "api_key": bool(WTO_KEY)
+        "api_key":    bool(WTO_KEY),
+        "claude_key": bool(CLAUDE_KEY)
     })
 
 
@@ -166,7 +228,7 @@ def notifs():
     if request.args.get("refresh") == "1":
         refresh(force=True)
     data = list(_cache["data"])
-    t = request.args.get("type", "").upper()
+    t  = request.args.get("type", "").upper()
     st = request.args.get("status", "")
     kw = request.args.get("keyword", "").lower()
     pg = max(1, int(request.args.get("page", 1)))
@@ -177,15 +239,15 @@ def notifs():
         data = [n for n in data if n["status"] == "مفتوح للتعليق"]
     if kw:
         data = [n for n in data if kw in n.get("title", "").lower() or kw in n.get("symbol", "").lower()]
-    total = len(data)
-    page_data = data[(pg - 1) * rw: pg * rw]
+    total     = len(data)
+    page_data = data[(pg-1)*rw : pg*rw]
     cached_at = datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None
     return jsonify({
         "notifications": page_data,
-        "total": total,
-        "page": pg,
-        "rows": rw,
-        "pages": (total + rw - 1) // rw,
+        "total":     total,
+        "page":      pg,
+        "rows":      rw,
+        "pages":     (total + rw - 1) // rw,
         "cached_at": cached_at
     })
 
@@ -195,9 +257,9 @@ def stats():
     d = _cache["data"]
     return jsonify({
         "total": len(d),
-        "sps": sum(1 for n in d if n["type"] == "SPS"),
-        "tbt": sum(1 for n in d if n["type"] == "TBT"),
-        "open": sum(1 for n in d if n["status"] == "مفتوح للتعليق")
+        "sps":   sum(1 for n in d if n["type"] == "SPS"),
+        "tbt":   sum(1 for n in d if n["type"] == "TBT"),
+        "open":  sum(1 for n in d if n["status"] == "مفتوح للتعليق")
     })
 
 
@@ -209,10 +271,7 @@ def force_refresh():
 
 @app.route("/api/test")
 def test():
-    headers = {
-        "Ocp-Apim-Subscription-Key": WTO_KEY,
-        "Accept": "application/json"
-    }
+    headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
     try:
         r = requests.get(
             "https://api.wto.org/eping/notifications/search",
@@ -221,16 +280,10 @@ def test():
             timeout=15
         )
         if r.ok:
-            d = r.json()
+            d    = r.json()
             rows = extract_rows(d)
-            return jsonify({
-                "status": r.status_code,
-                "ok": True,
-                "rows_count": len(rows),
-                "sample": rows[0] if rows else None
-            })
-        else:
-            return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
+            return jsonify({"status": r.status_code, "ok": True, "rows_count": len(rows), "sample": rows[0] if rows else None})
+        return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
     except Exception as e:
         return jsonify({"error": str(e)})
 
