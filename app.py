@@ -214,7 +214,7 @@ def analyze():
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-3-5-sonnet-20241022", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
+            json={"model": "claude-opus-4-7", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
             timeout=30
         )
         log.info("Claude analyze status: " + str(r.status_code) + " resp: " + r.text[:300])
@@ -238,7 +238,7 @@ def translate():
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-3-5-sonnet-20241022", "max_tokens": 200, "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]},
+            json={"model": "claude-opus-4-7", "max_tokens": 200, "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]},
             timeout=15
         )
         if r.status_code == 200:
@@ -259,7 +259,7 @@ def test_claude():
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-3-5-sonnet-20241022", "max_tokens": 10, "messages": [{"role": "user", "content": "test"}]},
+            json={"model": "claude-opus-4-7", "max_tokens": 10, "messages": [{"role": "user", "content": "test"}]},
             timeout=15
         )
         return jsonify({"status": r.status_code, "key_prefix": key[:12], "key_len": len(key), "resp": r.text[:300]})
