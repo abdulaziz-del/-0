@@ -269,6 +269,38 @@ def force_refresh():
     return jsonify({"ok": True, "total": len(_cache["data"])})
 
 
+@app.route("/api/translate", methods=["POST"])
+def translate():
+    """ترجمة عنوان واحد عبر Claude API"""
+    if not CLAUDE_KEY:
+        return jsonify({"error": "No Claude key", "ar": ""})
+    try:
+        body = request.get_json()
+        text = body.get("text", "")
+        if not text:
+            return jsonify({"ar": ""})
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": CLAUDE_KEY,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 200,
+                "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]
+            },
+            timeout=15
+        )
+        if r.status_code == 200:
+            ar = r.json()["content"][0]["text"].strip()
+            return jsonify({"ar": ar})
+        return jsonify({"ar": ""})
+    except Exception as e:
+        return jsonify({"error": str(e), "ar": ""})
+
+
 @app.route("/api/test")
 def test():
     headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
