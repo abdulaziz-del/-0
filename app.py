@@ -310,6 +310,66 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
 
 
+
+@app.route("/api/analyze-doc", methods=["POST"])
+def analyze_doc():
+    if not CLAUDE_KEY:
+        return jsonify({"error": "No Claude key", "analysis": ""})
+    try:
+        body = request.get_json()
+        pdf_url = body.get("pdf_url", "")
+        sym = body.get("symbol", "")
+        member = body.get("member", "")
+        ntype = body.get("type", "")
+        title = body.get("title", "")
+        if not pdf_url:
+            return jsonify({"error": "No PDF URL", "analysis": ""})
+        # تحميل PDF
+        pdf_text = ""
+        try:
+            pr = requests.get(
+                pdf_url, timeout=20,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+                allow_redirects=True
+            )
+            if pr.status_code == 200 and len(pr.content) > 500:
+                raw = pr.content.decode("latin-1", errors="ignore")
+                chunks = re.findall(r"[\x20-\x7E]{15,}", raw)
+                pdf_text = " ".join(chunks[:200])[:4000]
+                log.info("PDF fetched: " + str(len(pdf_text)) + " chars")
+        except Exception as pe:
+            log.error("PDF fetch error: " + str(pe))
+        if not pdf_text:
+            return jsonify({"analysis": "تعذّر قراءة محتوى PDF. قد يكون الملف مشفراً أو محمياً."})
+        prompt = (
+            "أنت محلل قانوني متخصص في منظمة التجارة العالمية." + chr(10) +
+            "اقرأ نص المستند الرسمي التالي وقدم تحليلاً شاملاً له:" + chr(10) +
+            "الرمز: " + sym + " | الدولة: " + member + " | النوع: " + ntype + chr(10) +
+            "العنوان: " + title + chr(10) + chr(10) +
+            "=== نص المستند ==="  + chr(10) +
+            pdf_text + chr(10) + chr(10) +
+            "=== المطلوب ==="  + chr(10) +
+            "1. ملخص المستند: ما هو جوهر هذا المستند الرسمي؟" + chr(10) +
+            "2. المتطلبات الرئيسية: ما هي الاشتراطات والمتطلبات المحددة؟" + chr(10) +
+            "3. المنتجات والأسواق المتأثرة" + chr(10) +
+            "4. الأثر على الدول المصدِّرة" + chr(10) +
+            "5. التوصيات العملية" + chr(10) +
+            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي."
+        )
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-opus-4-7", "max_tokens": 1500,
+                  "messages": [{"role": "user", "content": prompt}]},
+            timeout=45
+        )
+        if r.status_code == 200:
+            analysis = r.json()["content"][0]["text"].strip()
+            return jsonify({"analysis": analysis})
+        return jsonify({"analysis": "", "error": r.text[:200]})
+    except Exception as e:
+        return jsonify({"error": str(e), "analysis": ""})
+
 @app.route("/api/translate-batch", methods=["POST"])
 def translate_batch_ep():
     if not CLAUDE_KEY:
