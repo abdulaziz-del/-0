@@ -379,10 +379,11 @@ async function translateOne(n){
   }catch(e){}
 }
 
-function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');async function analyzeDoc(id){
+function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');doLoad();}
+
+async function analyzeDoc(id){
   const n=D.find(x=>x.id===id);
   if(!n||n.docLoading)return;
-  // تحقق من وجود PDF
   const pdfDoc=(n.docs||[]).find(d=>d.type==='pdf'||(d.url||'').includes('members.wto.org'));
   if(!pdfDoc){alert('لا يوجد مستند PDF متاح لهذا الإشعار');return;}
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
@@ -399,7 +400,7 @@ function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(x=>x.clas
       const d=await r.json();
       if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
     }
-  }catch(e){}
+  }catch(e){console.log('analyzeDoc error:',e);}
   n.docAnalysis='تعذّر قراءة المستند. قد يكون الملف محمياً أو غير متاح.';
   n.docLoading=false;renderList();renderDet();
 }
