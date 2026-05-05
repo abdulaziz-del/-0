@@ -25,20 +25,13 @@ def cache_fresh():
 
 
 def build_docs(sym, doc_link="", dol_link="", link_to_notif=""):
-    enc  = requests.utils.quote(sym, safe="")
-    slug = sym.replace("/", "-")
     docs = []
-    # PDF من members.wto.org - يعمل مباشرة بدون تسجيل
     if doc_link:
         urls = [u.strip() for u in doc_link.split(",") if u.strip()]
         for i, url in enumerate(urls):
             if url.startswith("http"):
                 label = "تحميل PDF الرسمي" if len(urls) == 1 else "تحميل PDF (" + str(i+1) + ")"
                 docs.append({"name": label, "url": url, "type": "pdf"})
-    # بحث في وثائق WTO
-    docs.append({"name": "بحث في وثائق WTO", "url": "https://docs.wto.org/dol2fe/Pages/FE_Search/FE_S_S009-DP.aspx?language=E&CatalogueIdList=" + enc, "type": "search"})
-    # صفحة ePing
-    docs.append({"name": "صفحة الإشعار على ePing", "url": "https://eping.wto.org/en/Notification/Details/" + slug, "type": "eping"})
     return docs
 
 def parse_item(it):
