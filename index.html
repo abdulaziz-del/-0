@@ -29,7 +29,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 #flt{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
 .sinput{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px}
 .sinput:focus{border-color:var(--ac)}.sinput::placeholder{color:var(--t3)}
-.sselect{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px;cursor:pointer;appearance:auto}
+.sselect{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px;cursor:pointer}
 .frow{display:flex;gap:5px}
 .fb{padding:5px 12px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
 .fb.on{background:var(--ac);color:#fff;border-color:var(--ac)}
@@ -60,19 +60,21 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .ptag{padding:3px 11px;background:#1a2a45;border-radius:20px;font-size:11px;color:var(--t2)}
 .doc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border:1px solid var(--b1);border-radius:9px;margin-bottom:5px}
-.doc-n{font-size:12px;color:#c8d0e8;flex:1}.doc-a{font-size:11px;color:var(--ac);text-decoration:none;white-space:nowrap;margin-right:8px}
+.doc-n{font-size:12px;color:#c8d0e8}.doc-a{font-size:11px;color:var(--ac);text-decoration:none}
 .doc-a:hover{text-decoration:underline}
 .aw{text-align:center;margin:6px 0}
 .abtn{padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px #2563eb35;transition:all .2s}
 .abtn:hover{transform:translateY(-1px)}.abtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.abtn.gr{background:linear-gradient(135deg,#065f46,#059669);box-shadow:0 4px 14px #05966935}
 .ahint{font-size:11px;color:var(--t3);margin-top:6px}
 .tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:4px;width:fit-content;margin-bottom:12px}
 .tb{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit}
 .tb.on{background:#1a2a45;color:var(--t1)}
-.abox{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;line-height:1.9;font-size:13px;color:#c8d0e8;white-space:pre-wrap;min-height:160px}
+.abox{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;line-height:1.9;font-size:13px;color:#c8d0e8;white-space:pre-wrap;min-height:120px}
 .acts{display:flex;gap:8px;margin-top:10px}
 .actb{padding:8px 15px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;border:1px solid var(--b2);background:var(--bg2);color:var(--t2)}
 .actb.bl{border-color:var(--ac);color:var(--ac);background:transparent}
+.actb.grn{border-color:#059669;color:#059669;background:transparent}
 .shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -102,172 +104,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
       <input class="sinput" id="srch" type="text" placeholder="🔍 بحث في الإشعارات..." oninput="renderList()"/>
       <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
         <option value="">🌍 جميع الدول (166 عضو)</option>
-        <option value="Afghanistan">🇦🇫 أفغانستان</option>
-        <option value="Albania">🇦🇱 ألبانيا</option>
-        <option value="Angola">🇦🇴 أنغولا</option>
-        <option value="Antigua and Barbuda">🇦🇬 أنتيغوا وبربودا</option>
-        <option value="Argentina">🇦🇷 الأرجنتين</option>
-        <option value="Armenia">🇦🇲 أرمينيا</option>
-        <option value="Australia">🇦🇺 أستراليا</option>
-        <option value="Austria">🇦🇹 النمسا</option>
-        <option value="Bahrain">🇧🇭 البحرين</option>
-        <option value="Bangladesh">🇧🇩 بنغلاديش</option>
-        <option value="Barbados">🇧🇧 بربادوس</option>
-        <option value="Belgium">🇧🇪 بلجيكا</option>
-        <option value="Belize">🇧🇿 بليز</option>
-        <option value="Benin">🇧🇯 بنين</option>
-        <option value="Bolivia">🇧🇴 بوليفيا</option>
-        <option value="Botswana">🇧🇼 بوتسوانا</option>
-        <option value="Brazil">🇧🇷 البرازيل</option>
-        <option value="Brunei Darussalam">🇧🇳 بروناي دار السلام</option>
-        <option value="Bulgaria">🇧🇬 بلغاريا</option>
-        <option value="Burkina Faso">🇧🇫 بوركينا فاسو</option>
-        <option value="Burundi">🇧🇮 بوروندي</option>
-        <option value="Cabo Verde">🇨🇻 الرأس الأخضر</option>
-        <option value="Cambodia">🇰🇭 كمبوديا</option>
-        <option value="Cameroon">🇨🇲 الكاميرون</option>
-        <option value="Canada">🇨🇦 كندا</option>
-        <option value="Central African Republic">🇨🇫 جمهورية أفريقيا الوسطى</option>
-        <option value="Chad">🇹🇩 تشاد</option>
-        <option value="Chile">🇨🇱 تشيلي</option>
-        <option value="China">🇨🇳 الصين</option>
-        <option value="Colombia">🇨🇴 كولومبيا</option>
-        <option value="Congo">🇨🇬 الكونغو</option>
-        <option value="Costa Rica">🇨🇷 كوستاريكا</option>
-        <option value="Cote d'Ivoire">🇨🇮 كوت ديفوار</option>
-        <option value="Croatia">🇭🇷 كرواتيا</option>
-        <option value="Cuba">🇨🇺 كوبا</option>
-        <option value="Cyprus">🇨🇾 قبرص</option>
-        <option value="Czech Republic">🇨🇿 جمهورية التشيك</option>
-        <option value="Democratic Republic of the Congo">🇨🇩 الكونغو الديمقراطية</option>
-        <option value="Denmark">🇩🇰 الدنمارك</option>
-        <option value="Djibouti">🇩🇯 جيبوتي</option>
-        <option value="Dominica">🇩🇲 دومينيكا</option>
-        <option value="Dominican Republic">🇩🇴 جمهورية الدومينيكان</option>
-        <option value="Ecuador">🇪🇨 الإكوادور</option>
-        <option value="Egypt">🇪🇬 مصر</option>
-        <option value="El Salvador">🇸🇻 السلفادور</option>
-        <option value="Estonia">🇪🇪 إستونيا</option>
-        <option value="Eswatini">🇸🇿 إسواتيني</option>
-        <option value="European Union">🇪🇺 الاتحاد الأوروبي</option>
-        <option value="Fiji">🇫🇯 فيجي</option>
-        <option value="Finland">🇫🇮 فنلندا</option>
-        <option value="France">🇫🇷 فرنسا</option>
-        <option value="Gabon">🇬🇦 الغابون</option>
-        <option value="Gambia">🇬🇲 غامبيا</option>
-        <option value="Georgia">🇬🇪 جورجيا</option>
-        <option value="Germany">🇩🇪 ألمانيا</option>
-        <option value="Ghana">🇬🇭 غانا</option>
-        <option value="Greece">🇬🇷 اليونان</option>
-        <option value="Grenada">🇬🇩 غرينادا</option>
-        <option value="Guatemala">🇬🇹 غواتيمالا</option>
-        <option value="Guinea">🇬🇳 غينيا</option>
-        <option value="Guinea-Bissau">🇬🇼 غينيا بيساو</option>
-        <option value="Guyana">🇬🇾 غيانا</option>
-        <option value="Haiti">🇭🇹 هايتي</option>
-        <option value="Honduras">🇭🇳 هندوراس</option>
-        <option value="Hong Kong">🇭🇰 هونغ كونغ</option>
-        <option value="Hungary">🇭🇺 المجر</option>
-        <option value="Iceland">🇮🇸 آيسلندا</option>
-        <option value="India">🇮🇳 الهند</option>
-        <option value="Indonesia">🇮🇩 إندونيسيا</option>
-        <option value="Ireland">🇮🇪 أيرلندا</option>
-        <option value="Israel">🇮🇱 إسرائيل</option>
-        <option value="Italy">🇮🇹 إيطاليا</option>
-        <option value="Jamaica">🇯🇲 جامايكا</option>
-        <option value="Japan">🇯🇵 اليابان</option>
-        <option value="Jordan">🇯🇴 الأردن</option>
-        <option value="Kazakhstan">🇰🇿 كازاخستان</option>
-        <option value="Kenya">🇰🇪 كينيا</option>
-        <option value="Korea">🇰🇷 كوريا الجنوبية</option>
-        <option value="Kuwait">🇰🇼 الكويت</option>
-        <option value="Kyrgyz Republic">🇰🇬 قيرغيزستان</option>
-        <option value="Lao PDR">🇱🇦 لاوس</option>
-        <option value="Latvia">🇱🇻 لاتفيا</option>
-        <option value="Lesotho">🇱🇸 ليسوتو</option>
-        <option value="Liberia">🇱🇷 ليبيريا</option>
-        <option value="Liechtenstein">🇱🇮 ليختنشتاين</option>
-        <option value="Lithuania">🇱🇹 ليتوانيا</option>
-        <option value="Luxembourg">🇱🇺 لوكسمبورغ</option>
-        <option value="Macao">🇲🇴 ماكاو</option>
-        <option value="Madagascar">🇲🇬 مدغشقر</option>
-        <option value="Malawi">🇲🇼 مالاوي</option>
-        <option value="Malaysia">🇲🇾 ماليزيا</option>
-        <option value="Maldives">🇲🇻 المالديف</option>
-        <option value="Mali">🇲🇱 مالي</option>
-        <option value="Malta">🇲🇹 مالطا</option>
-        <option value="Mauritania">🇲🇷 موريتانيا</option>
-        <option value="Mauritius">🇲🇺 موريشيوس</option>
-        <option value="Mexico">🇲🇽 المكسيك</option>
-        <option value="Moldova">🇲🇩 مولدوفا</option>
-        <option value="Mongolia">🇲🇳 منغوليا</option>
-        <option value="Montenegro">🇲🇪 الجبل الأسود</option>
-        <option value="Morocco">🇲🇦 المغرب</option>
-        <option value="Mozambique">🇲🇿 موزمبيق</option>
-        <option value="Myanmar">🇲🇲 ميانمار</option>
-        <option value="Namibia">🇳🇦 ناميبيا</option>
-        <option value="Nepal">🇳🇵 نيبال</option>
-        <option value="Netherlands">🇳🇱 هولندا</option>
-        <option value="New Zealand">🇳🇿 نيوزيلندا</option>
-        <option value="Nicaragua">🇳🇮 نيكاراغوا</option>
-        <option value="Niger">🇳🇪 النيجر</option>
-        <option value="Nigeria">🇳🇬 نيجيريا</option>
-        <option value="North Macedonia">🇲🇰 مقدونيا الشمالية</option>
-        <option value="Norway">🇳🇴 النرويج</option>
-        <option value="Oman">🇴🇲 عُمان</option>
-        <option value="Pakistan">🇵🇰 باكستان</option>
-        <option value="Panama">🇵🇦 بنما</option>
-        <option value="Papua New Guinea">🇵🇬 بابوا غينيا الجديدة</option>
-        <option value="Paraguay">🇵🇾 باراغواي</option>
-        <option value="Peru">🇵🇪 بيرو</option>
-        <option value="Philippines">🇵🇭 الفلبين</option>
-        <option value="Poland">🇵🇱 بولندا</option>
-        <option value="Portugal">🇵🇹 البرتغال</option>
-        <option value="Qatar">🇶🇦 قطر</option>
-        <option value="Romania">🇷🇴 رومانيا</option>
-        <option value="Russian Federation">🇷🇺 روسيا</option>
-        <option value="Rwanda">🇷🇼 رواندا</option>
-        <option value="Saint Kitts and Nevis">🇰🇳 سانت كيتس ونيفيس</option>
-        <option value="Saint Lucia">🇱🇨 سانت لوسيا</option>
-        <option value="Saudi Arabia">🇸🇦 المملكة العربية السعودية</option>
-        <option value="Senegal">🇸🇳 السنغال</option>
-        <option value="Sierra Leone">🇸🇱 سيراليون</option>
-        <option value="Singapore">🇸🇬 سنغافورة</option>
-        <option value="Slovak Republic">🇸🇰 سلوفاكيا</option>
-        <option value="Slovenia">🇸🇮 سلوفينيا</option>
-        <option value="Solomon Islands">🇸🇧 جزر سليمان</option>
-        <option value="South Africa">🇿🇦 جنوب أفريقيا</option>
-        <option value="Spain">🇪🇸 إسبانيا</option>
-        <option value="Sri Lanka">🇱🇰 سريلانكا</option>
-        <option value="Suriname">🇸🇷 سورينام</option>
-        <option value="Sweden">🇸🇪 السويد</option>
-        <option value="Switzerland">🇨🇭 سويسرا</option>
-        <option value="Chinese Taipei">🇹🇼 تايبيه الصينية</option>
-        <option value="Tajikistan">🇹🇯 طاجيكستان</option>
-        <option value="Tanzania">🇹🇿 تنزانيا</option>
-        <option value="Thailand">🇹🇭 تايلاند</option>
-        <option value="Togo">🇹🇬 توغو</option>
-        <option value="Tonga">🇹🇴 تونغا</option>
-        <option value="Trinidad and Tobago">🇹🇹 ترينيداد وتوباغو</option>
-        <option value="Tunisia">🇹🇳 تونس</option>
-        <option value="Turkey">🇹🇷 تركيا</option>
-        <option value="Uganda">🇺🇬 أوغندا</option>
-        <option value="Ukraine">🇺🇦 أوكرانيا</option>
-        <option value="United Arab Emirates">🇦🇪 الإمارات العربية المتحدة</option>
-        <option value="United Kingdom">🇬🇧 المملكة المتحدة</option>
-        <option value="United States of America">🇺🇸 الولايات المتحدة الأمريكية</option>
-        <option value="Uruguay">🇺🇾 أوروغواي</option>
-        <option value="Vanuatu">🇻🇺 فانواتو</option>
-        <option value="Venezuela">🇻🇪 فنزويلا</option>
-        <option value="Viet Nam">🇻🇳 فيتنام</option>
-        <option value="Yemen">🇾🇪 اليمن</option>
-        <option value="Zambia">🇿🇲 زامبيا</option>
-        <option value="Zimbabwe">🇿🇼 زيمبابوي</option>
-        <option value="Bahrain, Kingdom of">🇧🇭 مملكة البحرين</option>
-        <option value="Comoros">🇰🇲 جزر القمر</option>
-        <option value="Libyan Arab Jamahiriya">🇱🇾 ليبيا</option>
-        <option value="Samoa">🇼🇸 ساموا</option>
-        <option value="Seychelles">🇸🇨 سيشل</option>
+        <option value="Afghanistan">🇦🇫 أفغانستان</option><option value="Albania">🇦🇱 ألبانيا</option><option value="Angola">🇦🇴 أنغولا</option><option value="Argentina">🇦🇷 الأرجنتين</option><option value="Armenia">🇦🇲 أرمينيا</option><option value="Australia">🇦🇺 أستراليا</option><option value="Bahrain">🇧🇭 البحرين</option><option value="Bangladesh">🇧🇩 بنغلاديش</option><option value="Barbados">🇧🇧 بربادوس</option><option value="Belgium">🇧🇪 بلجيكا</option><option value="Belize">🇧🇿 بليز</option><option value="Benin">🇧🇯 بنين</option><option value="Bolivia">🇧🇴 بوليفيا</option><option value="Botswana">🇧🇼 بوتسوانا</option><option value="Brazil">🇧🇷 البرازيل</option><option value="Brunei">🇧🇳 بروناي</option><option value="Bulgaria">🇧🇬 بلغاريا</option><option value="Burkina Faso">🇧🇫 بوركينا فاسو</option><option value="Burundi">🇧🇮 بوروندي</option><option value="Cambodia">🇰🇭 كمبوديا</option><option value="Cameroon">🇨🇲 الكاميرون</option><option value="Canada">🇨🇦 كندا</option><option value="Chad">🇹🇩 تشاد</option><option value="Chile">🇨🇱 تشيلي</option><option value="China">🇨🇳 الصين</option><option value="Colombia">🇨🇴 كولومبيا</option><option value="Congo">🇨🇬 الكونغو</option><option value="Costa Rica">🇨🇷 كوستاريكا</option><option value="Cote d'Ivoire">🇨🇮 كوت ديفوار</option><option value="Croatia">🇭🇷 كرواتيا</option><option value="Cuba">🇨🇺 كوبا</option><option value="Cyprus">🇨🇾 قبرص</option><option value="Czech Republic">🇨🇿 التشيك</option><option value="Denmark">🇩🇰 الدنمارك</option><option value="Djibouti">🇩🇯 جيبوتي</option><option value="Dominican Republic">🇩🇴 الدومينيكان</option><option value="Ecuador">🇪🇨 الإكوادور</option><option value="Egypt">🇪🇬 مصر</option><option value="El Salvador">🇸🇻 السلفادور</option><option value="Estonia">🇪🇪 إستونيا</option><option value="European Union">🇪🇺 الاتحاد الأوروبي</option><option value="Fiji">🇫🇯 فيجي</option><option value="Finland">🇫🇮 فنلندا</option><option value="France">🇫🇷 فرنسا</option><option value="Gabon">🇬🇦 الغابون</option><option value="Gambia">🇬🇲 غامبيا</option><option value="Georgia">🇬🇪 جورجيا</option><option value="Germany">🇩🇪 ألمانيا</option><option value="Ghana">🇬🇭 غانا</option><option value="Greece">🇬🇷 اليونان</option><option value="Guatemala">🇬🇹 غواتيمالا</option><option value="Guinea">🇬🇳 غينيا</option><option value="Guyana">🇬🇾 غيانا</option><option value="Haiti">🇭🇹 هايتي</option><option value="Honduras">🇭🇳 هندوراس</option><option value="Hong Kong">🇭🇰 هونغ كونغ</option><option value="Hungary">🇭🇺 المجر</option><option value="Iceland">🇮🇸 آيسلندا</option><option value="India">🇮🇳 الهند</option><option value="Indonesia">🇮🇩 إندونيسيا</option><option value="Ireland">🇮🇪 أيرلندا</option><option value="Israel">🇮🇱 إسرائيل</option><option value="Italy">🇮🇹 إيطاليا</option><option value="Jamaica">🇯🇲 جامايكا</option><option value="Japan">🇯🇵 اليابان</option><option value="Jordan">🇯🇴 الأردن</option><option value="Kazakhstan">🇰🇿 كازاخستان</option><option value="Kenya">🇰🇪 كينيا</option><option value="Korea">🇰🇷 كوريا الجنوبية</option><option value="Kuwait">🇰🇼 الكويت</option><option value="Kyrgyz Republic">🇰🇬 قيرغيزستان</option><option value="Lao PDR">🇱🇦 لاوس</option><option value="Latvia">🇱🇻 لاتفيا</option><option value="Lesotho">🇱🇸 ليسوتو</option><option value="Liberia">🇱🇷 ليبيريا</option><option value="Lithuania">🇱🇹 ليتوانيا</option><option value="Luxembourg">🇱🇺 لوكسمبورغ</option><option value="Madagascar">🇲🇬 مدغشقر</option><option value="Malawi">🇲🇼 مالاوي</option><option value="Malaysia">🇲🇾 ماليزيا</option><option value="Maldives">🇲🇻 المالديف</option><option value="Mali">🇲🇱 مالي</option><option value="Malta">🇲🇹 مالطا</option><option value="Mauritania">🇲🇷 موريتانيا</option><option value="Mauritius">🇲🇺 موريشيوس</option><option value="Mexico">🇲🇽 المكسيك</option><option value="Moldova">🇲🇩 مولدوفا</option><option value="Mongolia">🇲🇳 منغوليا</option><option value="Montenegro">🇲🇪 الجبل الأسود</option><option value="Morocco">🇲🇦 المغرب</option><option value="Mozambique">🇲🇿 موزمبيق</option><option value="Myanmar">🇲🇲 ميانمار</option><option value="Namibia">🇳🇦 ناميبيا</option><option value="Nepal">🇳🇵 نيبال</option><option value="Netherlands">🇳🇱 هولندا</option><option value="New Zealand">🇳🇿 نيوزيلندا</option><option value="Nicaragua">🇳🇮 نيكاراغوا</option><option value="Niger">🇳🇪 النيجر</option><option value="Nigeria">🇳🇬 نيجيريا</option><option value="Norway">🇳🇴 النرويج</option><option value="Oman">🇴🇲 عُمان</option><option value="Pakistan">🇵🇰 باكستان</option><option value="Panama">🇵🇦 بنما</option><option value="Paraguay">🇵🇾 باراغواي</option><option value="Peru">🇵🇪 بيرو</option><option value="Philippines">🇵🇭 الفلبين</option><option value="Poland">🇵🇱 بولندا</option><option value="Portugal">🇵🇹 البرتغال</option><option value="Qatar">🇶🇦 قطر</option><option value="Romania">🇷🇴 رومانيا</option><option value="Russian Federation">🇷🇺 روسيا</option><option value="Rwanda">🇷🇼 رواندا</option><option value="Saudi Arabia">🇸🇦 المملكة العربية السعودية</option><option value="Senegal">🇸🇳 السنغال</option><option value="Sierra Leone">🇸🇱 سيراليون</option><option value="Singapore">🇸🇬 سنغافورة</option><option value="Slovak Republic">🇸🇰 سلوفاكيا</option><option value="Slovenia">🇸🇮 سلوفينيا</option><option value="South Africa">🇿🇦 جنوب أفريقيا</option><option value="Spain">🇪🇸 إسبانيا</option><option value="Sri Lanka">🇱🇰 سريلانكا</option><option value="Sweden">🇸🇪 السويد</option><option value="Switzerland">🇨🇭 سويسرا</option><option value="Chinese Taipei">🇹🇼 تايبيه الصينية</option><option value="Tanzania">🇹🇿 تنزانيا</option><option value="Thailand">🇹🇭 تايلاند</option><option value="Togo">🇹🇬 توغو</option><option value="Trinidad and Tobago">🇹🇹 ترينيداد وتوباغو</option><option value="Tunisia">🇹🇳 تونس</option><option value="Turkey">🇹🇷 تركيا</option><option value="Uganda">🇺🇬 أوغندا</option><option value="Ukraine">🇺🇦 أوكرانيا</option><option value="United Arab Emirates">🇦🇪 الإمارات العربية المتحدة</option><option value="United Kingdom">🇬🇧 المملكة المتحدة</option><option value="United States of America">🇺🇸 الولايات المتحدة الأمريكية</option><option value="Uruguay">🇺🇾 أوروغواي</option><option value="Viet Nam">🇻🇳 فيتنام</option><option value="Yemen">🇾🇪 اليمن</option><option value="Zambia">🇿🇲 زامبيا</option><option value="Zimbabwe">🇿🇼 زيمبابوي</option>
       </select>
       <div class="frow">
         <button class="fb on" onclick="setF('all',this)">الكل</button>
@@ -287,201 +124,140 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
     <div id="empty">
       <div style="font-size:56px">⚖️</div>
       <div style="font-size:17px;font-weight:600;color:var(--t2)">اختر إشعاراً للتحليل</div>
-      <div style="font-size:13px;max-width:260px;line-height:1.7">اضغط على أي إشعار لعرض تفاصيله وتحليله قانونياً</div>
+      <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إشعار لعرض تفاصيله وتحليله</div>
     </div>
     <div id="det"></div>
   </div>
 </div>
 <script>
 const API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
-const FL={USA:'🇺🇸',EU:'🇪🇺',JPN:'🇯🇵',AUS:'🇦🇺',CHN:'🇨🇳',BRA:'🇧🇷',CAN:'🇨🇦',IND:'🇮🇳',KOR:'🇰🇷',SAU:'🇸🇦',ARE:'🇦🇪',GBR:'🇬🇧',MEX:'🇲🇽',IDN:'🇮🇩',ZAF:'🇿🇦',NZL:'🇳🇿',ARG:'🇦🇷',EGY:'🇪🇬',TUR:'🇹🇷',NGA:'🇳🇬',CHL:'🇨🇱',VNM:'🇻🇳',NOR:'🇳🇴',THA:'🇹🇭',CHE:'🇨🇭',COL:'🇨🇴'};
+const FL={USA:'🇺🇸',EU:'🇪🇺',JPN:'🇯🇵',AUS:'🇦🇺',CHN:'🇨🇳',BRA:'🇧🇷',CAN:'🇨🇦',IND:'🇮🇳',KOR:'🇰🇷',SAU:'🇸🇦',ARE:'🇦🇪',GBR:'🇬🇧',MEX:'🇲🇽',IDN:'🇮🇩',ZAF:'🇿🇦',NZL:'🇳🇿',ARG:'🇦🇷',EGY:'🇪🇬',TUR:'🇹🇷',NGA:'🇳🇬',CHL:'🇨🇱',VNM:'🇻🇳',NOR:'🇳🇴',THA:'🇹🇭',CHE:'🇨🇭',COL:'🇨🇴',C152:'🇨🇱'};
 let D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false;
-const TC={}; // translation cache
+const TC={};
 
-async function doLoad(force=false){
+async function doLoad(force){
   if(busy)return;
   busy=true;
   setStatus('loading','جارٍ الجلب...');
-  btn(true);
+  document.getElementById('rfbtn').disabled=true;
   try{
-    const srch=document.getElementById('srch').value;
-    const mc=document.getElementById('srch2').value;
-    const params=['page='+pg,'rows=50'];
+    var srch=document.getElementById('srch').value;
+    var mc=document.getElementById('srch2').value;
+    var params=['page='+pg,'rows=50'];
     if(flt==='SPS')params.push('type=SPS');
     else if(flt==='TBT')params.push('type=TBT');
     else if(flt==='open')params.push('status=open');
     if(srch)params.push('keyword='+encodeURIComponent(srch));
     if(mc)params.push('member='+encodeURIComponent(mc));
     if(force)params.push('refresh=1');
-    const r=await fetch(API+'/api/notifications?'+params.join('&'));
+    var r=await fetch(API+'/api/notifications?'+params.join('&'));
     if(!r.ok)throw new Error(r.status);
-    const d=await r.json();
-    D=(d.notifications||[]).map(n=>({...n,titleAr:TC[n.symbol]||'',analysis:n.analysis||null,loading:false}));
+    var d=await r.json();
+    D=(d.notifications||[]).map(function(n){return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});});
     tpg=d.pages||1;
-    setStatus('live',d.total+' إشعار — '+new Date(d.cached_at||Date.now()).toLocaleTimeString('ar-SA'));
+    setStatus('live',d.total+' إشعار');
     document.getElementById('sc-t').textContent=d.total||D.length;
-    document.getElementById('sc-o').textContent=D.filter(n=>n.status==='مفتوح للتعليق').length;
-    document.getElementById('sc-s').textContent=D.filter(n=>n.type==='SPS').length;
-    document.getElementById('sc-b').textContent=D.filter(n=>n.type==='TBT').length;
+    document.getElementById('sc-o').textContent=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
+    document.getElementById('sc-s').textContent=D.filter(function(n){return n.type==='SPS';}).length;
+    document.getElementById('sc-b').textContent=D.filter(function(n){return n.type==='TBT';}).length;
     renderList();
-    // ترجمة جماعية للعناوين المرئية
     translateBatch();
   }catch(e){
     setStatus('err','خطأ في الاتصال');
-    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر الاتصال</div>';
+    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر الاتصال بالخادم</div>';
   }
-  busy=false;btn(false);
+  busy=false;
+  document.getElementById('rfbtn').disabled=false;
 }
 
-// ترجمة 10 عناوين دفعة واحدة
 async function translateBatch(){
-  const toTranslate=D.filter(n=>!n.titleAr&&!TC[n.symbol]).slice(0,10);
-  if(!toTranslate.length||!API)return;
+  var toTr=D.filter(function(n){return !n.titleAr&&!TC[n.symbol];}).slice(0,10);
+  if(!toTr.length||!API)return;
   try{
-    const texts=toTranslate.map(n=>n.titleEn||n.title||'').filter(Boolean);
+    var texts=toTr.map(function(n){return n.titleEn||n.title||'';}).filter(Boolean);
     if(!texts.length)return;
-    const r=await fetch(API+'/api/translate-batch',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({texts})
-    });
+    var r=await fetch(API+'/api/translate-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:texts})});
     if(r.ok){
-      const d=await r.json();
-      const translations=d.translations||[];
-      toTranslate.forEach((n,i)=>{
-        if(translations[i]){
-          n.titleAr=translations[i];
-          TC[n.symbol]=translations[i];
-        }
-      });
+      var d=await r.json();
+      var tr=d.translations||[];
+      toTr.forEach(function(n,i){if(tr[i]){n.titleAr=tr[i];TC[n.symbol]=tr[i];}});
       renderList();
-      // ترجمة الدفعة التالية
-      setTimeout(translateBatch,1000);
-    }
-  }catch(e){
-    // fallback: ترجمة فردية
-    translateOne(toTranslate[0]);
-  }
-}
-
-async function translateOne(n){
-  if(!n||n.titleAr||TC[n.symbol])return;
-  const src=n.titleEn||n.title||'';
-  if(!src||!API)return;
-  try{
-    const r=await fetch(API+'/api/translate',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text:src})
-    });
-    if(r.ok){
-      const d=await r.json();
-      if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();const el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}
+      setTimeout(translateBatch,2000);
     }
   }catch(e){}
 }
 
-function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');doLoad();}
-
-async function analyzeDoc(id){
-  const n=D.find(x=>x.id===id);
-  if(!n||n.docLoading)return;
-  const pdfDoc=(n.docs||[]).find(d=>d.type==='pdf'||(d.url||'').includes('members.wto.org'));
-  if(!pdfDoc){alert('لا يوجد مستند PDF متاح لهذا الإشعار');return;}
-  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
+async function translateOne(n){
+  if(!n||n.titleAr||TC[n.symbol])return;
+  var src=n.titleEn||n.title||'';
+  if(!src||!API)return;
   try{
-    const r=await fetch(API+'/api/analyze-doc',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        symbol:n.symbol,member:n.member,type:n.type,
-        title:n.titleEn||n.title,
-        pdf_url:pdfDoc.url
-      })
-    });
+    var r=await fetch(API+'/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:src})});
     if(r.ok){
-      const d=await r.json();
-      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
+      var d=await r.json();
+      if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();var el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}
     }
-  }catch(e){console.log('analyzeDoc error:',e);}
-  n.docAnalysis='تعذّر قراءة المستند. قد يكون الملف محمياً أو غير متاح.';
-  n.docLoading=false;renderList();renderDet();
+  }catch(e){}
 }
 
-function cpDoc(){
-  const n=D.find(x=>x.id===selId);
-  if(n&&n.docAnalysis){
-    navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(()=>{
-      const b=event.target;b.textContent='✅ تم';setTimeout(()=>b.textContent='📋 نسخ',2000);
-    });
-  }
-}
-
-doLoad();
-function chpg(d){pg=Math.max(1,Math.min(tpg,pg+d));doLoad();}
+function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');doLoad();}
+function chpg(delta){pg=Math.max(1,Math.min(tpg,pg+delta));doLoad();}
 
 function renderList(){
-  const q=document.getElementById('srch').value.toLowerCase();
-  let fil=D;
-  if(q)fil=fil.filter(n=>(n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q));
-  const el=document.getElementById('lst');
+  var q=document.getElementById('srch').value.toLowerCase();
+  var fil=D;
+  if(q)fil=fil.filter(function(n){return (n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q);});
+  var el=document.getElementById('lst');
   if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
-  el.innerHTML=fil.map(n=>'<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+n.id+'\')">'+
-    '<div class="nt"><span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span><span class="ndate">'+(n.date||'')+'</span></div>'+
-    '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3);font-style:italic">'+( n.title||n.symbol||'—' )+'</span>')+'</div>'+
-    '<div class="nbot"><span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
-    '<div class="nr">'+
-    (n.loading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
-    (n.analysis&&!n.loading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
-    '<div class="ndot" style="background:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'"></div>'+
-    '<span style="font-size:10px;color:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'">'+
-    (n.status==='مفتوح للتعليق'?'مفتوح':'منتهي')+'</span></div></div></div>').join('');
-  const pb=document.getElementById('pgbar');
+  el.innerHTML=fil.map(function(n){
+    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+n.id+'\')">'+
+      '<div class="nt"><span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span><span class="ndate">'+(n.date||'')+'</span></div>'+
+      '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3)">'+( n.title||n.symbol||'—')+'</span>')+'</div>'+
+      '<div class="nbot"><span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+      '<div class="nr">'+
+      (n.loading||n.docLoading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
+      ((n.analysis||n.docAnalysis)&&!n.loading&&!n.docLoading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
+      '<div class="ndot" style="background:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'"></div>'+
+      '<span style="font-size:10px;color:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'">'+
+      (n.status==='مفتوح للتعليق'?'مفتوح':'منتهي')+'</span></div></div></div>';
+  }).join('');
+  var pb=document.getElementById('pgbar');
   if(tpg>1){pb.style.display='flex';document.getElementById('pglbl').textContent=pg+'/'+tpg;document.getElementById('pp').disabled=pg<=1;document.getElementById('pn').disabled=pg>=tpg;}
   else pb.style.display='none';
 }
 
 function selN(id){
   selId=id;tab='full';renderList();renderDet();
-  const n=D.find(x=>x.id===id);
+  var n=D.find(function(x){return x.id===id;});
   if(n&&!n.titleAr)translateOne(n);
 }
 
 function buildDocs(n){
-  const sym=n.symbol||'';
-  let html='';
-  const docs=n.docs||[];
-  const addedUrls=new Set();
-
-  docs.forEach(d=>{
-    const url=(d.url||'').trim();
-    const name=d.name||'وثيقة';
-    const dtype=d.type||'';
-    if(!url||addedUrls.has(url))return;
-    addedUrls.add(url);
-    if(dtype==='search'||dtype==='eping')return; // نضيفها ثابتاً أدناه
-    if(dtype==='pdf'||url.includes('members.wto.org')){
-      html+='<div class="doc-row" style="border-color:#22c55e40">'+
-        '<span class="doc-n" style="color:#4ade80">📄 '+name+'</span>'+
-        '<a class="doc-a" href="'+url+'" target="_blank" rel="noopener">تحميل PDF ↗</a></div>';
-    } else if(url.startsWith('http')){
-      html+='<div class="doc-row"><span class="doc-n">📎 '+name+'</span>'+
-        '<a class="doc-a" href="'+url+'" target="_blank" rel="noopener">فتح ↗</a></div>';
+  var html='';
+  var docs=n.docs||[];
+  docs.forEach(function(d){
+    var url=(d.url||'').trim();
+    if(!url)return;
+    if(url.includes('members.wto.org')){
+      html+='<div class="doc-row" style="border-color:#22c55e40"><span class="doc-n" style="color:#4ade80">📄 '+(d.name||'تحميل PDF الرسمي')+'</span><a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a></div>';
     }
   });
-
-
-
   return html;
 }
 
 function renderDet(){
-  const n=D.find(x=>x.id===selId);
+  var n=D.find(function(x){return x.id===selId;});
   if(!n)return;
   document.getElementById('empty').style.display='none';
-  const det=document.getElementById('det');
+  var det=document.getElementById('det');
   det.style.display='block';
-  const open=n.status==='مفتوح للتعليق';
-  const titleAr=n.titleAr||TC[n.symbol]||'';
-  const hasPdf=(n.docs||[]).some(d=>d.type==='pdf'||(d.url||'').includes('members.wto.org'));
-  const titleEn=n.titleEn||n.title||n.symbol||'';
+  var open=n.status==='مفتوح للتعليق';
+  var titleAr=n.titleAr||TC[n.symbol]||'';
+  var titleEn=n.titleEn||n.title||n.symbol||'';
+  var hasPdf=(n.docs||[]).some(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  var docsHtml=buildDocs(n);
+  var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
+
   det.innerHTML=
     '<div class="dc">'+
       '<div class="dbd">'+
@@ -489,27 +265,23 @@ function renderDet(){
         '<span class="sbdg" style="'+(open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(n.status||'')+'</span>'+
       '</div>'+
       '<div class="dtit" id="title-ar">'+(titleAr||'<span style="color:var(--am);font-size:12px;font-weight:400">⏳ جارٍ الترجمة...</span>')+'</div>'+
-      '<div class="dtiten" id="title-en">'+titleEn+'</div>'+
+      '<div class="dtiten">'+titleEn+'</div>'+
       '<div class="mg">'+
         '<div><div class="ml">رقم الوثيقة</div><div class="mv">'+(n.symbol||'')+'</div></div>'+
         '<div><div class="ml">الدولة</div><div class="mv">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</div></div>'+
         '<div><div class="ml">تاريخ الإشعار</div><div class="mv">'+(n.date||'—')+'</div></div>'+
         '<div><div class="ml">موعد التعليق</div><div class="mv">'+(n.commentDeadline||'—')+'</div></div>'+
-      '</div>'+
-      ((n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(p=>'<span class="ptag">'+p+'</span>').join('')+'</div>':'')+
+      '</div>'+prods+
     '</div>'+
-    '<div class="dc">'+
-      '<div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+
-      buildDocs(n)+
-    '</div>'+
+    (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+'</div>':'')+
     (!n.analysis?
       '<div class="aw">'+
         '<button class="abtn" onclick="analyzeN(\''+n.id+'\')" '+(n.loading?'disabled':'')+'>'+
           (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل قانوني بالذكاء الاصطناعي')+
         '</button>'+
-        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO + قراءة المستند المرفق</div>'+
-      '</div>':'')+
-    (n.loading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div><div class="shim" style="width:90%"></div></div>':'')+
+        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO</div>'+
+      '</div>':'')+ 
+    (n.loading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
     (n.analysis?
       '<div>'+
         '<div class="tabs">'+
@@ -521,64 +293,77 @@ function renderDet(){
         '<div class="abox" id="abox">'+getTab(n)+'</div>'+
         '<div class="acts">'+
           '<button class="actb" onclick="cpA()">📋 نسخ</button>'+
-          '<button class="actb bl" onclick="analyzeN(\''+n.id+'\')">🔄 إعادة التحليل</button>'+
+          '<button class="actb bl" onclick="analyzeN(\''+n.id+'\')">🔄 إعادة</button>'+
         '</div>'+
       '</div>':'')+
     (hasPdf?
       '<div class="dc" style="border-color:#06564660;margin-top:4px">'+
-        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#4ade80">📄 تحليل PDF الرسمي</div>'+
-        (!n.docAnalysis?
-          '<div class="aw" style="margin:0 0 4px">'+
-            '<button class="abtn" style="background:linear-gradient(135deg,#065f46,#059669);box-shadow:0 4px 14px #05966935" onclick="analyzeDoc(\''+n.id+'\')" '+(n.docLoading?'disabled':'')+'>'+
-              (n.docLoading?'⏳ جارٍ قراءة المستند...':'🤖 تحليل PDF بالذكاء الاصطناعي')+
-            '</button>'+
-            '<div class="ahint">يقرأ محتوى PDF المرفق ويحلله قانونياً</div>'+
-          '</div>':
+        '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي</div>'+
+        (!n.docAnalysis&&!n.docLoading?
+          '<div class="aw" style="margin:0">'+
+            '<button class="abtn gr" onclick="analyzeDoc(\''+n.id+'\')">🤖 تحليل PDF بالذكاء الاصطناعي</button>'+
+            '<div class="ahint">يقرأ محتوى PDF ويحلله قانونياً</div>'+
+          '</div>':'')+
+        (n.docLoading?'<div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
+        (n.docAnalysis?
           '<div class="abox" style="border-color:#06564660">'+n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
           '<div class="acts">'+
             '<button class="actb" onclick="cpDoc()">📋 نسخ</button>'+
-            '<button class="actb" style="border-color:#059669;color:#059669" onclick="analyzeDoc(\''+n.id+'\')">🔄 إعادة التحليل</button>'+
-          '</div>')+
-        (n.docLoading?'<div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
+            '<button class="actb grn" onclick="analyzeDoc(\''+n.id+'\')">🔄 إعادة</button>'+
+          '</div>':'')+
       '</div>':'');
 }
 
 function getTab(n){
   if(!n.analysis)return'';
-  const t=tab==='sum'?(n.sum||n.analysis.slice(0,600)):tab==='leg'?(n.leg||n.analysis.slice(600,1300)):tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
+  var t=tab==='sum'?(n.sum||n.analysis.slice(0,600)):tab==='leg'?(n.leg||n.analysis.slice(600,1300)):tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
   return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
-function swT(t,b){tab=t;document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));b.classList.add('on');const box=document.getElementById('abox');const n=D.find(x=>x.id===selId);if(box&&n)box.innerHTML=getTab(n);}
-function cpA(){const n=D.find(x=>x.id===selId);if(n&&n.analysis){navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(()=>{const b=event.target;b.textContent='✅ تم';setTimeout(()=>b.textContent='📋 نسخ',2000);});}}
+function swT(t,b){tab=t;document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var box=document.getElementById('abox');var n=D.find(function(x){return x.id===selId;});if(box&&n)box.innerHTML=getTab(n);}
+function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis){navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
+function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis){navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
 
 async function analyzeN(id){
-  const n=D.find(x=>x.id===id);
+  var n=D.find(function(x){return x.id===id;});
   if(!n||n.loading)return;
   n.loading=true;n.analysis=null;renderList();renderDet();
   try{
-    const r=await fetch(API+'/api/analyze',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})
-    });
+    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
     if(r.ok){
-      const d=await r.json();
-      if(d.analysis){parseAnalysis(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}
+      var d=await r.json();
+      if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}
     }
   }catch(e){}
-  // تحليل محلي
-  const t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إشعار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. العنوان: '+(n.titleAr||n.titleEn||n.title)+'. الموعد النهائي للتعليق: '+n.commentDeadline+'.\n\n=== التحليل القانوني ===\n• الأساس القانوني: اتفاقية '+(n.type==='SPS'?'التدابير الصحية والنباتية (SPS) المادة 5':'العوائق التقنية أمام التجارة (TBT) المادة 2')+'\n• المعايير الدولية: '+(n.type==='SPS'?'Codex Alimentarius / OIE / IPPC':'ISO / IEC')+'\n• المنتجات المتأثرة: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+n.commentDeadline+'\n2. إجراء تقييم فني للأثر على الصادرات الوطنية\n3. التنسيق مع وزارة التجارة والجهات المختصة\n4. متابعة اجتماعات لجنة '+(n.type==='SPS'?'SPS':'TBT')+' في منظمة التجارة العالمية';
-  parseAnalysis(n,t);n.loading=false;tab='full';renderList();renderDet();
+  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إشعار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. الموعد النهائي: '+n.commentDeadline+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(n.type==='SPS'?'SPS المادة 5':'TBT المادة 2')+'\n• المعايير: '+(n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات قبل '+n.commentDeadline+'\n2. تقييم الأثر على الصادرات\n3. التنسيق مع وزارة التجارة\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT');
+  parseAn(n,t);n.loading=false;tab='full';renderList();renderDet();
 }
 
-function parseAnalysis(n,txt){
-  const s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
-  const l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
-  const rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
+function parseAn(n,txt){
+  var s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  var l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  var rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
   n.analysis=txt;n.sum=s?s[1].trim():txt.slice(0,600);n.leg=l?l[1].trim():txt.slice(600,1300);n.rec=rc?rc[1].trim():txt.slice(1300);
 }
 
+async function analyzeDoc(id){
+  var n=D.find(function(x){return x.id===id;});
+  if(!n||n.docLoading)return;
+  var pdfDoc=(n.docs||[]).find(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  if(!pdfDoc){alert('لا يوجد PDF متاح لهذا الإشعار');return;}
+  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
+  try{
+    var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title,pdf_url:pdfDoc.url})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
+    }
+  }catch(e){console.log('analyzeDoc err:',e);}
+  n.docAnalysis='تعذّر قراءة المستند.';
+  n.docLoading=false;renderList();renderDet();
+}
+
 function setStatus(st,msg){document.getElementById('hlbl').textContent=msg;document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');}
-function btn(dis){const b=document.getElementById('rfbtn');b.disabled=dis;b.textContent=dis?'جارٍ...':'↻ تحديث';}
+
 doLoad();
 </script>
 </body>
