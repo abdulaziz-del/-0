@@ -645,14 +645,13 @@ function selConcern(id){
       kwHtml+
     '</div>'+
     docsHtml+
-    (c.detailUrl?
-      '<div class="dc" style="padding-top:0"><a href="'+c.detailUrl+'" target="_blank" class="actb" style="text-decoration:none;display:inline-block;margin-left:6px">🔗 عرض على ePing</a></div>':'')+
-      '<div class="aw">'+
-        '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
-          (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمام التجاري بالذكاء الاصطناعي')+
-        '</button>'+
-        '<div class="ahint">تحليل قانوني وفق DSU + اتفاقيات WTO</div>'+
-      '</div>':'')+
+    (c.detailUrl?'<div class="dc" style="padding-top:0"><a href="'+c.detailUrl+'" target="_blank" class="actb" style="text-decoration:none;display:inline-block;margin-left:6px">🔗 عرض على ePing</a></div>':'')+
+    '<div class="aw">'+
+      '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
+        (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمام التجاري بالذكاء الاصطناعي')+
+      '</button>'+
+      '<div class="ahint">تحليل قانوني وفق DSU + اتفاقيات WTO</div>'+
+    '</div>'+
     (c.cloading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
     (c.canalysis?
       '<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--am)">⚠️ تحليل الاهتمام التجاري</div>'+
@@ -740,8 +739,16 @@ async function deleteAlert(id){
   ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();
 }
 
-doLoad();
-loadAlerts();
+// إيقاظ الخادم أولاً ثم جلب البيانات
+async function wakeAndLoad(){
+  try{
+    // ping الخادم لإيقاظه
+    await fetch(API+'/');
+  }catch(e){}
+  doLoad();
+  loadAlerts();
+}
+wakeAndLoad();
 </script>
 </body>
 </html>
