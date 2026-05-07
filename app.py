@@ -67,13 +67,35 @@ def parse_item(it):
     obj_raw = it.get("objectives") or []
     objectives = [o.get("name", "") for o in obj_raw if isinstance(o, dict) and o.get("name")][:3]
 
-    # التواريخ
-    date_raw  = it.get("distributionDate") or ""
-    dead_raw  = it.get("commentDeadlineDate") or ""
-    adopt_raw = it.get("proposedAdoptionDate") or it.get("proposedAdoptionDateText") or ""
-    force_raw = it.get("proposedEntryIntoForceDate") or it.get("proposedEntryIntoForceDateText") or ""
+    # التواريخ المقترحة - تنظيف HTML
+    adopt_raw = it.get("proposedAdoptionDate") or ""
+    force_raw = it.get("proposedEntryIntoForceDate") or ""
+    adopt_txt = it.get("proposedAdoptionDateText") or ""
+    force_txt = it.get("proposedEntryIntoForceDateText") or ""
 
-    is_open = bool(dead_raw)
+    def clean_date(raw, txt):
+        if raw and len(str(raw)) >= 10 and not str(raw).startswith("<"):
+            return str(raw)[:10]
+        if txt:
+            return clean_html(txt)[:30]
+        return ""
+
+    adopt_final = clean_date(adopt_raw, adopt_txt)
+    force_final = clean_date(force_raw, force_txt)
+    if it.get("proposedAdoptionDateToBeDetermined"):
+        adopt_final = "يُحدد لاحقاً"
+    if it.get("proposedEntryIntoForceDateToBeDetermined"):
+        force_final = "يُحدد لاحقاً"
+    if it.get("proposedEntryIntoForceFromAdoption6Months"):
+        force_final = "6 أشهر من تاريخ الاعتماد"
+
+    # رابط ePing المباشر الصحيح
+    sym_clean = sym.strip()
+    eping_link = "https://eping.wto.org/en/Search/Index?documentSymbol=" + requests.utils.quote(sym_clean)
+
+    date_raw = it.get("distributionDate") or ""
+    dead_raw = it.get("commentDeadlineDate") or ""
+    is_open  = bool(dead_raw)
 
     # المستندات
     doc_link = it.get("notifiedDocumentLink") or ""
@@ -84,12 +106,6 @@ def parse_item(it):
             docs.append({"name": "PDF رسمي" + (" (" + str(i+1) + ")" if i > 0 else ""), "url": url, "type": "pdf"})
     if dol_link and not docs:
         docs.append({"name": "وثيقة WTO DOL", "url": "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=" + dol_link.replace("\\", "/"), "type": "doc"})
-
-    # رابط الإشعار المباشر في ePing
-    eping_link = it.get("linkToNotification") or ""
-    if not eping_link and sym:
-        sym_clean = sym.strip().replace(" ", "")
-        eping_link = "https://eping.wto.org/en/Search/Index?documentSymbol=" + sym_clean
 
     return {
         "id":              sym or str(it.get("id", "")),
@@ -107,8 +123,8 @@ def parse_item(it):
         "keywords":        kws,
         "objectives":      objectives,
         "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else "",
-        "adoptionDate":    adopt_raw[:10] if adopt_raw and len(adopt_raw) >= 10 else str(adopt_raw)[:10],
-        "entryForceDate":  force_raw[:10] if force_raw and len(force_raw) >= 10 else str(force_raw)[:10],
+        "adoptionDate":    adopt_final,
+        "entryForceDate":  force_final,
         "docs":            docs,
         "epingLink":       eping_link,
     }
