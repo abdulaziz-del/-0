@@ -363,6 +363,120 @@ def analyze_doc():
     except Exception as e:
         return jsonify({"error": str(e), "analysis": ""})
 
+
+# ─── قاعدة بيانات التنبيهات في الذاكرة ───
+_alerts = []
+_alert_id = 0
+
+@app.route("/api/alerts", methods=["GET"])
+def get_alerts():
+    return jsonify({"alerts": _alerts})
+
+@app.route("/api/alerts", methods=["POST"])
+def add_alert():
+    global _alert_id
+    body = request.get_json() or {}
+    _alert_id += 1
+    alert = {
+        "id": _alert_id,
+        "type": body.get("type", "الكل"),
+        "sector": body.get("sector", ""),
+        "country": body.get("country", "جميع الدول"),
+        "frequency": body.get("frequency", "فوري"),
+        "active": True,
+        "created": datetime.now().strftime("%Y-%m-%d")
+    }
+    _alerts.append(alert)
+    return jsonify({"ok": True, "alert": alert})
+
+@app.route("/api/alerts/<int:aid>", methods=["PUT"])
+def toggle_alert(aid):
+    for a in _alerts:
+        if a["id"] == aid:
+            a["active"] = not a["active"]
+            return jsonify({"ok": True, "alert": a})
+    return jsonify({"error": "not found"}), 404
+
+@app.route("/api/alerts/<int:aid>", methods=["DELETE"])
+def delete_alert(aid):
+    global _alerts
+    _alerts = [a for a in _alerts if a["id"] != aid]
+    return jsonify({"ok": True})
+
+
+@app.route("/api/concerns", methods=["GET"])
+def get_concerns():
+    """جلب الاهتمامات التجارية من بيانات الإشعارات + تحليل AI"""
+    data = list(_cache["data"])
+    sector = request.args.get("sector", "").lower()
+    country = request.args.get("country", "").lower()
+    status_f = request.args.get("status", "")
+    # نحول الإشعارات المنتهية أو قرب الانتهاء إلى مخاوف تجارية
+    concerns = []
+    for n in data:
+        if sector and sector not in n.get("title", "").lower() and sector not in " ".join(n.get("products", [])).lower():
+            continue
+        if country and country not in n.get("member", "").lower():
+            continue
+        concern_status = "نشط" if n["status"] == "مفتوح للتعليق" else "مغلق"
+        if status_f == "active" and concern_status != "نشط":
+            continue
+        concerns.append({
+            "id": n["id"],
+            "symbol": n["symbol"],
+            "member": n["member"],
+            "memberCode": n.get("memberCode", ""),
+            "type": n["type"],
+            "title": n["title"],
+            "titleAr": n.get("titleAr", ""),
+            "date": n["date"],
+            "commentDeadline": n.get("commentDeadline", ""),
+            "products": n.get("products", []),
+            "status": concern_status,
+            "article": "المادة 5.7" if n["type"] == "SPS" else "المادة 2.2",
+            "agreement": "اتفاقية SPS" if n["type"] == "SPS" else "اتفاقية TBT",
+        })
+    total = len(concerns)
+    pg = max(1, int(request.args.get("page", 1)))
+    rw = min(100, int(request.args.get("rows", 50)))
+    page_data = concerns[(pg-1)*rw: pg*rw]
+    return jsonify({"concerns": page_data, "total": total, "page": pg, "pages": (total+rw-1)//rw})
+
+
+@app.route("/api/analyze-concern", methods=["POST"])
+def analyze_concern():
+    if not CLAUDE_KEY:
+        return jsonify({"error": "No Claude key", "analysis": ""})
+    try:
+        n = request.get_json()
+        prompt = "\n".join([
+            "أنت محلل قانوني متخصص في منازعات منظمة التجارة العالمية.",
+            "حلّل هذه الاهتمامات التجارية:",
+            "الرمز: " + n.get("symbol","") + " | الدولة: " + n.get("member","") + " | النوع: " + n.get("type",""),
+            "العنوان: " + n.get("title",""),
+            "الأساس القانوني: " + n.get("article","") + " من " + n.get("agreement",""),
+            "",
+            "قدّم:",
+            "1. جوهر الاهتمامات التجارية",
+            "2. الدول المتضررة وحجم التأثير",
+            "3. الحقوق القانونية المتاحة (DSU Article 4 - مشاورات، Panel)",
+            "4. الموقف السعودي المقترح",
+            "5. توصيات للتفاوض أو الاعتراض",
+            "اكتب بالعربية الفصحى بأسلوب قانوني."
+        ])
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-opus-4-7", "max_tokens": 1200, "messages": [{"role": "user", "content": prompt}]},
+            timeout=30
+        )
+        if r.status_code == 200:
+            return jsonify({"analysis": r.json()["content"][0]["text"].strip()})
+        return jsonify({"analysis": "", "error": r.text[:200]})
+    except Exception as e:
+        return jsonify({"error": str(e), "analysis": ""})
+
+
 @app.route("/api/translate-batch", methods=["POST"])
 def translate_batch_ep():
     if not CLAUDE_KEY:
