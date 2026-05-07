@@ -131,6 +131,7 @@ def bg():
     while True:
         try:
             refresh()
+            refresh_concerns()
         except Exception as e:
             log.error("BG: " + str(e))
         time.sleep(CACHE_TTL)
@@ -404,43 +405,137 @@ def delete_alert(aid):
     return jsonify({"ok": True})
 
 
+_concerns_cache = {"data": [], "at": 0}
+_concerns_lock  = threading.Lock()
+
+def parse_concern(it):
+    """تحويل بيانات الاهتمام التجاري من WTO API إلى صيغة موحدة"""
+    domain    = it.get("domainId", it.get("domain", ""))
+    ntype     = "SPS" if str(domain).upper() == "SPS" else "TBT"
+    sym       = it.get("symbol", it.get("imsId", ""))
+    title_en  = it.get("title", it.get("titleEnglish", str(sym)))
+    raising   = it.get("raisingName", it.get("raisingMember", ""))
+    supporting= it.get("supportingName", it.get("supportingMember", ""))
+    subject   = it.get("subjectName", it.get("subject", ""))
+    status    = it.get("status", it.get("reportedStatus", ""))
+    first     = it.get("firstTimeRaised", it.get("firstRaised", ""))
+    last      = it.get("lastTimeRaised",  it.get("lastRaised",  ""))
+    times     = it.get("numberOfTimesRaised", it.get("timesRaised", 0))
+    keywords  = it.get("keywords", [])
+    if isinstance(keywords, list):
+        kw_list = [k.get("item3", k) if isinstance(k, dict) else str(k) for k in keywords]
+    else:
+        kw_list = []
+    docs_raw  = it.get("relatedDocuments", it.get("documents", []))
+    docs_list = [d if isinstance(d, str) else d.get("symbol","") for d in docs_raw] if isinstance(docs_raw, list) else []
+    return {
+        "id":           str(sym),
+        "symbol":       str(sym),
+        "type":         ntype,
+        "title":        title_en,
+        "titleAr":      "",
+        "raisingMember":  raising,
+        "supporting":     supporting,
+        "subject":        subject,
+        "status":         status,
+        "firstRaised":    first[:10] if first and len(first) >= 10 else first,
+        "lastRaised":     last[:10]  if last  and len(last)  >= 10 else last,
+        "timesRaised":    times,
+        "keywords":       kw_list[:8],
+        "relatedDocs":    docs_list[:5],
+        "article":        "المادة 5.7" if ntype == "SPS" else "المادة 2.2",
+        "agreement":      "اتفاقية SPS" if ntype == "SPS" else "اتفاقية TBT",
+    }
+
+def fetch_concerns():
+    """جلب الاهتمامات التجارية من WTO ePing API"""
+    headers  = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
+    all_data = []
+    # تجربة endpoints مختلفة لـ trade concerns
+    endpoints = [
+        "https://api.wto.org/eping/concerns/search",
+        "https://api.wto.org/eping/tradeconcerns/search",
+        "https://api.wto.org/eping/v1/concerns/search",
+    ]
+    for ep in endpoints:
+        try:
+            r = requests.get(ep, headers=headers,
+                             params={"page": 1, "pageSize": 50, "language": 1},
+                             timeout=20)
+            log.info("Concerns endpoint %s status: %d", ep, r.status_code)
+            if r.status_code == 200:
+                d    = r.json()
+                rows = extract_rows(d)
+                if rows:
+                    all_data.extend([parse_concern(it) for it in rows])
+                    # جلب صفحات إضافية
+                    total = d.get("totalCount", d.get("total", 0)) if isinstance(d, dict) else 0
+                    pages = (total // 50) + 1 if total > 50 else 1
+                    for pg in range(2, min(pages + 1, 7)):
+                        try:
+                            r2 = requests.get(ep, headers=headers,
+                                              params={"page": pg, "pageSize": 50, "language": 1},
+                                              timeout=20)
+                            if r2.status_code == 200:
+                                rows2 = extract_rows(r2.json())
+                                if not rows2:
+                                    break
+                                all_data.extend([parse_concern(it) for it in rows2])
+                            time.sleep(0.4)
+                        except Exception as e:
+                            log.error("Concerns page error: %s", e)
+                            break
+                    break  # نجح الـ endpoint، نتوقف
+        except Exception as e:
+            log.error("Concerns endpoint error %s: %s", ep, e)
+            continue
+    return all_data
+
+def refresh_concerns(force=False):
+    ttl = 3600
+    if not force and (time.time() - _concerns_cache["at"]) < ttl and _concerns_cache["data"]:
+        return
+    with _concerns_lock:
+        if not force and (time.time() - _concerns_cache["at"]) < ttl and _concerns_cache["data"]:
+            return
+        data = fetch_concerns()
+        if data:
+            _concerns_cache["data"] = data
+            _concerns_cache["at"]   = time.time()
+            log.info("Cached %d trade concerns", len(data))
+
 @app.route("/api/concerns", methods=["GET"])
 def get_concerns():
-    """جلب الاهتمامات التجارية من بيانات الإشعارات + تحليل AI"""
-    data = list(_cache["data"])
-    sector = request.args.get("sector", "").lower()
-    country = request.args.get("country", "").lower()
-    status_f = request.args.get("status", "")
-    # نحول الإشعارات المنتهية أو قرب الانتهاء إلى مخاوف تجارية
-    concerns = []
-    for n in data:
-        if sector and sector not in n.get("title", "").lower() and sector not in " ".join(n.get("products", [])).lower():
-            continue
-        if country and country not in n.get("member", "").lower():
-            continue
-        concern_status = "نشط" if n["status"] == "مفتوح للتعليق" else "مغلق"
-        if status_f == "active" and concern_status != "نشط":
-            continue
-        concerns.append({
-            "id": n["id"],
-            "symbol": n["symbol"],
-            "member": n["member"],
-            "memberCode": n.get("memberCode", ""),
-            "type": n["type"],
-            "title": n["title"],
-            "titleAr": n.get("titleAr", ""),
-            "date": n["date"],
-            "commentDeadline": n.get("commentDeadline", ""),
-            "products": n.get("products", []),
-            "status": concern_status,
-            "article": "المادة 5.7" if n["type"] == "SPS" else "المادة 2.2",
-            "agreement": "اتفاقية SPS" if n["type"] == "SPS" else "اتفاقية TBT",
-        })
-    total = len(concerns)
-    pg = max(1, int(request.args.get("page", 1)))
-    rw = min(100, int(request.args.get("rows", 50)))
-    page_data = concerns[(pg-1)*rw: pg*rw]
-    return jsonify({"concerns": page_data, "total": total, "page": pg, "pages": (total+rw-1)//rw})
+    """جلب الاهتمامات التجارية الحقيقية من WTO ePing API"""
+    if request.args.get("refresh") == "1" or not _concerns_cache["data"]:
+        refresh_concerns(force=True)
+    data = list(_concerns_cache["data"])
+    t    = request.args.get("type", "").upper()
+    kw   = request.args.get("keyword", "").lower()
+    mc   = request.args.get("member", "").lower()
+    st   = request.args.get("status", "").lower()
+    pg   = max(1, int(request.args.get("page", 1)))
+    rw   = min(100, int(request.args.get("rows", 50)))
+    if t in ("SPS", "TBT"):
+        data = [c for c in data if c["type"] == t]
+    if kw:
+        data = [c for c in data if kw in c.get("title","").lower()
+                or kw in c.get("subject","").lower()
+                or kw in " ".join(c.get("keywords",[])).lower()]
+    if mc:
+        data = [c for c in data if mc in c.get("raisingMember","").lower()
+                or mc in c.get("supporting","").lower()]
+    if st == "active":
+        data = [c for c in data if c.get("status","").lower() in ("resolved","active","not resolved","","نشط")]
+    total     = len(data)
+    page_data = data[(pg-1)*rw: pg*rw]
+    return jsonify({
+        "concerns": page_data,
+        "total":    total,
+        "page":     pg,
+        "pages":    (total + rw - 1) // rw,
+        "cached_at": datetime.fromtimestamp(_concerns_cache["at"]).isoformat() if _concerns_cache["at"] else None
+    })
 
 
 @app.route("/api/analyze-concern", methods=["POST"])
@@ -451,18 +546,25 @@ def analyze_concern():
         n = request.get_json()
         prompt = "\n".join([
             "أنت محلل قانوني متخصص في منازعات منظمة التجارة العالمية.",
-            "حلّل هذه الاهتمامات التجارية:",
-            "الرمز: " + n.get("symbol","") + " | الدولة: " + n.get("member","") + " | النوع: " + n.get("type",""),
+            "حلّل هذا الاهتمام التجاري المُسجَّل في لجنة WTO:",
+            "الرمز: " + str(n.get("symbol","")) + " | النوع: " + n.get("type","") + " | الاتفاقية: " + n.get("agreement",""),
             "العنوان: " + n.get("title",""),
-            "الأساس القانوني: " + n.get("article","") + " من " + n.get("agreement",""),
+            "الدولة المُثيرة: " + n.get("raisingMember",""),
+            "الدول الداعمة: " + n.get("supporting",""),
+            "الموضوع: " + n.get("subject",""),
+            "الحالة: " + n.get("status",""),
+            "عدد مرات الإثارة: " + str(n.get("timesRaised","")),
+            "أول إثارة: " + n.get("firstRaised","") + " | آخر إثارة: " + n.get("lastRaised",""),
+            "الكلمات المفتاحية: " + ", ".join(n.get("keywords",[])),
             "",
-            "قدّم:",
-            "1. جوهر الاهتمامات التجارية",
-            "2. الدول المتضررة وحجم التأثير",
-            "3. الحقوق القانونية المتاحة (DSU Article 4 - مشاورات، Panel)",
-            "4. الموقف السعودي المقترح",
-            "5. توصيات للتفاوض أو الاعتراض",
-            "اكتب بالعربية الفصحى بأسلوب قانوني."
+            "قدّم تحليلاً وفق الهيكل التالي:",
+            "1. جوهر الاهتمام التجاري ومحله",
+            "2. الأساس القانوني: " + n.get("article","") + " من " + n.get("agreement",""),
+            "3. الدول المتضررة وحجم التأثير التجاري",
+            "4. الحقوق القانونية المتاحة (DSU Article 4 - مشاورات، Panel Request)",
+            "5. الموقف السعودي المقترح",
+            "6. توصيات للتفاوض أو الاعتراض",
+            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي."
         ])
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
