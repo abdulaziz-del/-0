@@ -34,82 +34,154 @@ def build_docs(sym, doc_link="", dol_link="", link_to_notif=""):
                 docs.append({"name": label, "url": url, "type": "pdf"})
     return docs
 
+def clean_html(text):
+    """إزالة HTML tags من النص"""
+    if not text:
+        return ""
+    clean = re.sub(r"<[^>]+>", " ", str(text))
+    clean = re.sub(r"&lt;", "<", clean)
+    clean = re.sub(r"&gt;", ">", clean)
+    clean = re.sub(r"&amp;", "&", clean)
+    clean = re.sub(r"&nbsp;", " ", clean)
+    clean = re.sub(r"\s+", " ", clean).strip()
+    return clean
+
+
 def parse_item(it):
-    sym      = it.get("documentSymbol", it.get("symbol", ""))
+    sym      = (it.get("documentSymbol") or it.get("symbol") or "").strip()
     area     = it.get("area", "")
-    ntype    = "SPS" if (area == "SPS" or "/SPS/" in sym) else "TBT"
-    title_en = it.get("titlePlain", it.get("title", it.get("titleEnglish", sym)))
-    prods    = it.get("productsFreeTextPlain", it.get("productsFreeText", ""))
-    if isinstance(prods, str):
-        prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
-    elif not isinstance(prods, list):
+    ntype    = "SPS" if area == "SPS" else "TBT"
+
+    # title يمكن أن يحتوي HTML
+    title_raw = it.get("title") or it.get("titlePlain") or ""
+    title_en  = clean_html(title_raw) or sym
+
+    # المنتجات
+    prods_raw = it.get("productsFreeText") or it.get("productsFreeTextPlain") or ""
+    if isinstance(prods_raw, str) and prods_raw:
+        prods = [p.strip() for p in re.split(r"[,;،]", prods_raw) if p.strip()][:5]
+    else:
         prods = []
-    date_raw = it.get("distributionDate", it.get("date", ""))
-    dead_raw = it.get("commentDeadlineDate", "")
-    open_val = it.get("isOpenForComments", False)
-    doc_link      = it.get("notifiedDocumentLink", "")
-    dol_link      = it.get("dolLink", "")
-    link_to_notif = it.get("linkToNotification", "")
+
+    # الكلمات المفتاحية من keywords أو spsKeywords
+    kws_raw = it.get("keywords") or it.get("spsKeywords") or []
+    kws = [k.get("name", "") for k in kws_raw if isinstance(k, dict)][:6]
+
+    # ICS codes
+    ics_raw = it.get("icsCodes") or []
+    ics = [c.get("name", "") for c in ics_raw if isinstance(c, dict)][:3]
+
+    # الأهداف
+    obj_raw = it.get("objectives") or []
+    objectives = [o.get("name", "") for o in obj_raw if isinstance(o, dict)][:3]
+
+    date_raw = it.get("distributionDate") or ""
+    dead_raw = it.get("commentDeadlineDate") or ""
+
+    # commentDeadlineDate إذا موجود = مفتوح للتعليق
+    is_open  = bool(dead_raw)
+
+    # المستندات
+    doc_link = it.get("notifiedDocumentLink") or ""
+    dol_link = it.get("dolLink") or ""
+
+    # بناء قائمة المستندات
+    docs = []
+    if doc_link:
+        for i, url in enumerate([u.strip() for u in doc_link.split(",") if u.strip()]):
+            if url.startswith("http"):
+                docs.append({"name": "PDF رسمي" + (" (" + str(i+1) + ")" if i > 0 else ""), "url": url, "type": "pdf"})
+    if dol_link and not docs:
+        docs.append({"name": "وثيقة WTO", "url": "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=" + dol_link, "type": "doc"})
+
     return {
-        "id":              sym,
+        "id":              sym or it.get("id", ""),
         "symbol":          sym,
-        "member":          it.get("notifyingMember", it.get("member", "")),
-        "memberCode":      it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
+        "member":          it.get("notifyingMember") or "",
+        "memberCode":      it.get("notifyingMemberCode") or "",
         "date":            date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
         "type":            ntype,
         "title":           title_en,
         "titleEn":         title_en,
         "titleAr":         "",
-        "status":          "مفتوح للتعليق" if open_val else "منتهي",
+        "status":          "مفتوح للتعليق" if is_open else "منتهي",
         "products":        prods,
-        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
-        "docs":            build_docs(sym, doc_link, dol_link, link_to_notif) if sym else [],
+        "keywords":        kws,
+        "ics":             ics,
+        "objectives":      objectives,
+        "notifType":       it.get("notificationType") or "",
+        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else "",
+        "docs":            docs,
     }
 
 
 def extract_rows(d):
+    """استخراج الصفوف من استجابة WTO API - البنية: {items:[], currentPage, pageSize, totalCount}"""
     if isinstance(d, list):
         return d
     if not isinstance(d, dict):
         return []
+    # البنية الرسمية لـ WTO API
     for key in ["items", "notifications", "rows", "data", "results", "content"]:
         val = d.get(key)
-        if val is not None:
-            if isinstance(val, list):
-                return val
-            if isinstance(val, dict):
-                for k2 in ["items", "notifications", "rows", "data"]:
-                    v2 = val.get(k2)
-                    if isinstance(v2, list):
-                        return v2
+        if isinstance(val, list):
+            return val
     return []
 
 
 def fetch_data():
-    headers  = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
+    """جلب الإشعارات من WTO ePing API"""
+    api_headers = {
+        "Ocp-Apim-Subscription-Key": WTO_KEY,
+        "Accept": "application/json",
+        "User-Agent": "WTO-ePing-Monitor/1.0"
+    }
     all_data = []
-    for pg in range(1, 7):
-        try:
-            r = requests.get(
-                "https://api.wto.org/eping/notifications/search",
-                headers=headers,
-                params={"page": pg, "pageSize": 50, "language": 1},
-                timeout=25
-            )
-            if r.status_code != 200:
+    page_size = 100  # الحد الأقصى لكل صفحة
+
+    # جلب أول صفحة لمعرفة العدد الكلي
+    try:
+        r = requests.get(
+            "https://api.wto.org/eping/notifications/search",
+            headers=api_headers,
+            params={"page": 1, "pageSize": page_size, "language": 1},
+            timeout=30
+        )
+        log.info("WTO API first page: status=%d", r.status_code)
+        if r.status_code != 200:
+            log.error("WTO API error: %s", r.text[:300])
+            return []
+        d     = r.json()
+        rows  = extract_rows(d)
+        total = d.get("totalCount", 0) if isinstance(d, dict) else 0
+        log.info("WTO API totalCount=%d rows_in_page=%d", total, len(rows))
+        all_data.extend([parse_item(it) for it in rows])
+
+        # جلب الصفحات المتبقية (حتى 20 صفحة = 2000 إشعار)
+        pages = min(20, (total + page_size - 1) // page_size) if total > page_size else 1
+        for pg in range(2, pages + 1):
+            try:
+                r2 = requests.get(
+                    "https://api.wto.org/eping/notifications/search",
+                    headers=api_headers,
+                    params={"page": pg, "pageSize": page_size, "language": 1},
+                    timeout=30
+                )
+                if r2.status_code != 200:
+                    log.warning("Page %d failed: %d", pg, r2.status_code)
+                    break
+                rows2 = extract_rows(r2.json())
+                if not rows2:
+                    break
+                all_data.extend([parse_item(it) for it in rows2])
+                log.info("Page %d: +%d items (total so far: %d)", pg, len(rows2), len(all_data))
+                time.sleep(0.3)
+            except Exception as e:
+                log.error("Page %d error: %s", pg, e)
                 break
-            d    = r.json()
-            rows = extract_rows(d)
-            if not rows:
-                break
-            all_data.extend([parse_item(it) for it in rows])
-            total = d.get("totalCount", d.get("total", 0)) if isinstance(d, dict) else 0
-            if total and len(all_data) >= total:
-                break
-            time.sleep(0.5)
-        except Exception as e:
-            log.error("Fetch error: " + str(e))
-            break
+    except Exception as e:
+        log.error("fetch_data error: %s", e)
+
     return all_data
 
 
@@ -286,16 +358,60 @@ def test_claude():
 
 @app.route("/api/test")
 def test():
-    headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
+    api_headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json", "User-Agent": "WTO-ePing-Monitor/1.0"}
     try:
-        r = requests.get("https://api.wto.org/eping/notifications/search", headers=headers, params={"page": 1, "pageSize": 2, "language": 1}, timeout=15)
+        r = requests.get("https://api.wto.org/eping/notifications/search", headers=api_headers, params={"page": 1, "pageSize": 2, "language": 1}, timeout=15)
         if r.ok:
             d    = r.json()
             rows = extract_rows(d)
-            return jsonify({"status": r.status_code, "ok": True, "rows_count": len(rows), "sample": rows[0] if rows else None})
+            return jsonify({"status": r.status_code, "ok": True, "totalCount": d.get("totalCount"), "rows_count": len(rows), "sample_keys": list(rows[0].keys()) if rows else []})
         return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
     except Exception as e:
         return jsonify({"error": str(e)})
+
+
+@app.route("/api/wto/search", methods=["GET"])
+def wto_search():
+    """proxy مباشر لـ WTO ePing API - يدعم جميع parameters الرسمية"""
+    api_headers = {
+        "Ocp-Apim-Subscription-Key": WTO_KEY,
+        "Accept": "application/json",
+        "User-Agent": "WTO-ePing-Monitor/1.0"
+    }
+    page_size = min(100, int(request.args.get("pageSize", 20)))
+    params = {
+        "page":     request.args.get("page", 1),
+        "pageSize": page_size,
+        "language": request.args.get("language", 1),
+    }
+    for p in ["domainIds", "documentSymbol", "distributionDateFrom",
+              "distributionDateTo", "countryIds", "hs", "ics", "freeText"]:
+        v = request.args.get(p)
+        if v:
+            params[p] = v
+    try:
+        r = requests.get(
+            "https://api.wto.org/eping/notifications/search",
+            headers=api_headers, params=params, timeout=30
+        )
+        if r.status_code == 200:
+            d      = r.json()
+            rows   = extract_rows(d)
+            parsed = [parse_item(it) for it in rows]
+            total  = d.get("totalCount", len(parsed))
+            return jsonify({
+                "notifications": parsed,
+                "total":  total,
+                "page":   d.get("currentPage", 1),
+                "pageSize": d.get("pageSize", page_size),
+                "pages":  max(1, (total + page_size - 1) // page_size),
+            })
+        return jsonify({"error": r.text[:300], "status": r.status_code, "notifications": []})
+    except Exception as e:
+        return jsonify({"error": str(e), "notifications": []})
+
+
+
 
 
 
