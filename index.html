@@ -701,7 +701,7 @@ async function analyzeConcernDoc(id){
   c.docAnalysis='تعذّر تحليل المستند.';c.docLoading=false;selConcern(id);
 }
 
-
+async function analyzeConcern(id){
   var c=CD.find(function(x){return x.id===id;});
   if(!c||c.cloading)return;
   c.cloading=true;c.canalysis=null;renderConcerns();selConcern(id);
@@ -709,7 +709,7 @@ async function analyzeConcernDoc(id){
     var r=await fetch(API+'/api/analyze-concern',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
     if(r.ok){var d=await r.json();if(d.analysis){c.canalysis=d.analysis;c.cloading=false;renderConcerns();selConcern(id);return;}}
   }catch(e){}
-  c.canalysis='تعذّر الحصول على التحليل. تحقق من الاتصال بالخادم.';c.cloading=false;renderConcerns();selConcern(id);
+  c.canalysis='تعذّر الحصول على التحليل.';c.cloading=false;renderConcerns();selConcern(id);
 }
 
 /* ══════════════════════════════════════
