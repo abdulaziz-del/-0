@@ -413,12 +413,14 @@ def wto_search():
             rows   = extract_rows(d)
             parsed = [parse_item(it) for it in rows]
             total  = d.get("totalCount", len(parsed))
+            cur_pg = int(d.get("currentPage", params["page"]))
+            log.info("wto/search page=%s returned %d rows, total=%d", params["page"], len(rows), total)
             return jsonify({
                 "notifications": parsed,
-                "total":  total,
-                "page":   d.get("currentPage", 1),
+                "total":    total,
+                "page":     cur_pg,
                 "pageSize": d.get("pageSize", page_size),
-                "pages":  max(1, (total + page_size - 1) // page_size),
+                "pages":    max(1, (total + page_size - 1) // page_size),
             })
         return jsonify({"error": r.text[:300], "status": r.status_code, "notifications": []})
     except Exception as e:
