@@ -202,6 +202,11 @@ def refresh(force=False):
 
 @app.route("/")
 def root():
+    # trigger جلب البيانات إذا فارغة
+    if not _cache["data"]:
+        threading.Thread(target=lambda: refresh(force=True), daemon=True).start()
+    if not _concerns_cache["data"]:
+        threading.Thread(target=lambda: refresh_concerns(force=True), daemon=True).start()
     return jsonify({
         "status": "ok",
         "notifications": len(_cache["data"]),
@@ -215,6 +220,10 @@ def root():
 
 @app.route("/api/notifications")
 def notifs():
+    # جلب فوري إذا الكاش فارغ
+    if not _cache["data"]:
+        log.info("Cache empty - fetching now...")
+        refresh(force=True)
     if request.args.get("refresh") == "1":
         refresh(force=True)
     data = list(_cache["data"])
@@ -246,8 +255,14 @@ def stats():
 
 @app.route("/api/refresh", methods=["GET", "POST"])
 def force_refresh():
+    log.info("Manual refresh triggered")
     refresh(force=True)
-    return jsonify({"ok": True, "total": len(_cache["data"])})
+    log.info("Manual refresh done: %d notifications", len(_cache["data"]))
+    return jsonify({
+        "ok": True,
+        "notifications": len(_cache["data"]),
+        "cached_at": datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None
+    })
 
 
 @app.route("/api/analyze", methods=["POST"])
