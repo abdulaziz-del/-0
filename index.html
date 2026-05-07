@@ -145,7 +145,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
     <!-- شريط التبويبات الرئيسية -->
     <div id="svc-bar">
       <button class="svctb on" id="tb-notif" onclick="switchSvc('notif',this)">📋 الإشعارات</button>
-      <button class="svctb" id="tb-concerns" onclick="switchSvc('concerns',this)">⚠️ الاهتمامات التجارية</button>
+      <button class="svctb" id="tb-concerns" onclick="switchSvc('concerns',this)">⚠️ الإشعارات المرتبطة بالاهتمامات</button>
       <button class="svctb" id="tb-alerts" onclick="switchSvc('alerts',this)">🔔 تنبيهاتي</button>
     </div>
     <!-- لوحة الإشعارات الأصلية -->
@@ -180,7 +180,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
     <!-- ── لوحة الاهتمامات التجارية ── -->
     <div id="concerns-panel">
       <div class="cflt">
-        <input class="sinput" id="c-search" type="text" placeholder="🔍 بحث في الاهتمامات..." oninput="renderConcerns()"/>
+        <input class="sinput" id="c-search" type="text" placeholder="🔍 بحث في الإشعارات المرتبطة بالاهتمامات..." oninput="renderConcerns()"/>
         <div class="frow" style="gap:5px">
           <select class="sselect" id="c-type" style="margin-bottom:0;flex:1" onchange="loadConcerns()">
             <option value="">الكل (SPS+TBT)</option>
