@@ -264,7 +264,7 @@ async function doLoad(force){
     });
     tpg=d.pages||1;
     var total=d.total||D.length;
-    setStatus('live',total.toLocaleString()+' إشعار');
+    setStatus('live',total.toLocaleString()+' إشعار | ص '+pg+'/'+tpg);
     document.getElementById('sc-t').textContent=total.toLocaleString();
     document.getElementById('sc-o').textContent=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
     document.getElementById('sc-s').textContent=D.filter(function(n){return n.type==='SPS';}).length;
@@ -309,8 +309,15 @@ async function translateOne(n){
   }catch(e){}
 }
 
-function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');doLoad();}
-function chpg(delta){pg=Math.max(1,Math.min(tpg,pg+delta));doLoad();}
+function setF(f,b){flt=f;pg=1;selId=null;document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');doLoad();}
+function chpg(delta){
+  pg=Math.max(1,Math.min(tpg,pg+delta));
+  selId=null;
+  document.getElementById('det').style.display='none';
+  document.getElementById('empty').style.display='flex';
+  document.getElementById('lst').scrollTop=0;
+  doLoad();
+}
 
 function renderList(){
   var q=document.getElementById('srch').value.toLowerCase();
