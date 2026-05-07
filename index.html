@@ -623,7 +623,23 @@ function selConcern(id){
   det.style.display='block';
   var resolved=(c.status||'').toLowerCase().includes('resolv');
   var kwHtml=(c.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">كلمات مفتاحية:</span>'+(c.keywords||[]).map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
-  var docsHtml=(c.relatedDocs||[]).length?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📄 وثائق ذات صلة</div>'+(c.relatedDocs||[]).map(function(d){return '<div class="doc-row"><span class="doc-n">'+d+'</span></div>';}).join('')+'</div>':'';
+  var docsHtml='';
+  var hasConcernDocs=(c.relatedDocs||[]).some(function(d){return d.url;});
+  if(hasConcernDocs){
+    docsHtml='<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📄 المستندات الرسمية</div>'+
+      (c.relatedDocs||[]).filter(function(d){return d.url;}).map(function(d){
+        return '<div class="doc-row"><span class="doc-n" style="color:#4ade80">📄 '+(d.name||'PDF رسمي')+'</span>'+
+               '<a class="doc-a" href="'+d.url+'" target="_blank">تحميل ↗</a></div>';
+      }).join('')+
+      '<button class="abtn gr" onclick="analyzeConcernDoc(\''+c.id+'\')" style="margin-top:10px;width:100%;font-size:12px">'+
+        (c.docLoading?'⏳ جارٍ التحليل...':'📄 تحليل المستند بالذكاء الاصطناعي')+
+      '</button>'+
+    '</div>';
+  }
+  if(c.docAnalysis){
+    docsHtml+='<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#60a5fa">📄 تحليل المستند</div>'+
+      '<div class="abox">'+c.docAnalysis.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>';
+  }
   det.innerHTML=
     '<div class="dc">'+
       '<div class="dbd">'+
@@ -663,7 +679,29 @@ function selConcern(id){
       '</div>':'');
 }
 
-async function analyzeConcern(id){
+async function analyzeConcernDoc(id){
+  var c=CD.find(function(x){return x.id===id;});
+  if(!c||c.docLoading)return;
+  var pdfDoc=(c.relatedDocs||[]).find(function(d){return d.url;});
+  if(!pdfDoc){alert('لا يوجد مستند متاح');return;}
+  c.docLoading=true;c.docAnalysis=null;selConcern(id);
+  try{
+    var fr=await fetch(API+'/api/fetch-doc',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:pdfDoc.url,symbol:c.symbol})});
+    var docData={text:'',url:pdfDoc.url};
+    if(fr.ok){var fd=await fr.json();docData.text=fd.text||'';}
+    var ar=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:pdfDoc.url,text:docData.text,symbol:c.symbol,title:c.title,type:c.type,context:'concern'})});
+    if(ar.ok){
+      var ad=await ar.json();
+      c.docAnalysis=ad.analysis||ad.error||'تعذّر التحليل';
+      c.docLoading=false;selConcern(id);return;
+    }
+  }catch(e){}
+  c.docAnalysis='تعذّر تحليل المستند.';c.docLoading=false;selConcern(id);
+}
+
+
   var c=CD.find(function(x){return x.id===id;});
   if(!c||c.cloading)return;
   c.cloading=true;c.canalysis=null;renderConcerns();selConcern(id);
