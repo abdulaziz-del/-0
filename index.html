@@ -377,7 +377,9 @@ function renderDet(){
         '<div><div class="ml">موعد التعليق</div><div class="mv">'+(n.commentDeadline||'—')+'</div></div>'+
       '</div>'+prods+
     '</div>'+
-    (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+'</div>':'')+
+    (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+
+      (hasPdf?'<button class="abtn" onclick="analyzeDoc(\''+n.id+'\')" style="margin-top:10px;width:100%">📄 تحليل المستند الرسمي بالذكاء الاصطناعي</button>':'')+'</div>':'')+
+    (n.docAnalysis?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#60a5fa">📄 تحليل المستند</div><div class="abox">'+n.docAnalysis.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>':'')+
     (!n.analysis?
       '<div class="aw">'+
         '<button class="abtn" onclick="analyzeN(\''+n.id+'\')" '+(n.loading?'disabled':'')+'>'+
@@ -512,15 +514,20 @@ function switchSvc(svc,btn){
    الاهتمامات التجارية
 ══════════════════════════════════════ */
 var CD=[],selCId=null,cBusy=false;
-async function loadConcerns(){
+async function loadConcerns(forceRefresh){
   if(cBusy)return;
   cBusy=true;
-  document.getElementById('clist').innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">⏳ جارٍ التحميل...</div>';
+  document.getElementById('clist').innerHTML=
+    '<div style="text-align:center;padding:40px;font-size:13px;color:var(--t2)">'+
+    '⏳ جارٍ تحميل الاهتمامات التجارية من WTO...<br>'+
+    '<span style="font-size:11px;color:var(--t3);margin-top:8px;display:block">يتم جلب الملف الرسمي من ePing · قد يستغرق دقيقة</span>'+
+    '</div>';
   var t=document.getElementById('c-type').value;
   var st=document.getElementById('c-status').value;
   var params=[];
   if(t)params.push('type='+t);
   if(st)params.push('status='+st);
+  if(forceRefresh)params.push('refresh=1');
   try{
     var r=await fetch(API+'/api/concerns'+(params.length?'?'+params.join('&'):''));
     if(r.ok){
@@ -530,9 +537,24 @@ async function loadConcerns(){
       document.getElementById('cs-o').textContent=CD.filter(function(c){return !(c.status||'').toLowerCase().includes('resolv');}).length;
       document.getElementById('cs-s').textContent=CD.filter(function(c){return c.type==='SPS';}).length;
       document.getElementById('cs-b').textContent=CD.filter(function(c){return c.type==='TBT';}).length;
-      renderConcerns();
+      if(!CD.length){
+        document.getElementById('clist').innerHTML=
+          '<div style="text-align:center;padding:40px">'+
+          '<div style="font-size:13px;color:var(--t2);margin-bottom:12px">لم يتم جلب البيانات بعد</div>'+
+          '<button class="abtn" onclick="loadConcerns(true)" style="font-size:12px">🔄 تحميل من WTO الآن</button>'+
+          '<div style="font-size:11px;color:var(--t3);margin-top:8px">المصدر: ePing WTO — ملف Excel الرسمي</div>'+
+          '</div>';
+      } else {
+        renderConcerns();
+      }
     }
-  }catch(e){document.getElementById('clist').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر التحميل</div>';}
+  }catch(e){
+    document.getElementById('clist').innerHTML=
+      '<div style="text-align:center;padding:20px">'+
+      '<div style="font-size:12px;color:var(--rd);margin-bottom:10px">⚠️ تعذّر الاتصال بالخادم</div>'+
+      '<button class="abtn" onclick="loadConcerns(true)">إعادة المحاولة</button>'+
+      '</div>';
+  }
   cBusy=false;
 }
 
@@ -593,7 +615,8 @@ function selConcern(id){
       kwHtml+
     '</div>'+
     docsHtml+
-    (!c.canalysis?
+    (c.detailUrl?
+      '<div class="dc" style="padding-top:0"><a href="'+c.detailUrl+'" target="_blank" class="actb" style="text-decoration:none;display:inline-block;margin-left:6px">🔗 عرض على ePing</a></div>':'')+
       '<div class="aw">'+
         '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
           (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمام التجاري بالذكاء الاصطناعي')+
@@ -623,8 +646,33 @@ async function analyzeConcern(id){
 }
 
 /* ══════════════════════════════════════
-   التنبيهات
+   تحليل المستندات
 ══════════════════════════════════════ */
+async function analyzeDoc(nid){
+  var n=ND.find(function(x){return x.id===nid;});
+  if(!n)return;
+  var pdfDoc=(n.docs||[]).find(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org')||d.url;});
+  if(!pdfDoc){alert('لا يوجد مستند PDF مرتبط بهذا الإشعار');return;}
+  n.docAnalysis=null;n.docLoading=true;selN(n.id);
+  try{
+    // أولاً: نجلب نص المستند
+    var fr=await fetch(API+'/api/fetch-doc',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:pdfDoc.url,symbol:n.symbol})});
+    var docData={text:'',url:pdfDoc.url};
+    if(fr.ok){var fd=await fr.json();docData.text=fd.text||'';}
+    // ثانياً: نحلله
+    var ar=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url:pdfDoc.url,text:docData.text,symbol:n.symbol,title:n.title,type:n.type,context:'notification'})});
+    if(ar.ok){
+      var ad=await ar.json();
+      n.docAnalysis=ad.analysis||ad.error||'تعذّر التحليل';
+      n.docLoading=false;selN(n.id);return;
+    }
+  }catch(e){}
+  n.docAnalysis='تعذّر تحليل المستند. تأكد من الاتصال.';n.docLoading=false;selN(n.id);
+}
+
+
 var ALERTS=[];
 async function loadAlerts(){
   try{var r=await fetch(API+'/api/alerts');if(r.ok){var d=await r.json();ALERTS=d.alerts||[];renderAlerts();}}catch(e){renderAlerts();}
