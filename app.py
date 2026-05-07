@@ -127,19 +127,19 @@ def refresh(force=False):
             log.info("Cached " + str(len(data)) + " notifications")
 
 
-def bg():
-    while True:
-        try:
-            refresh()
-            refresh_concerns()
-        except Exception as e:
-            log.error("BG: " + str(e))
-        time.sleep(CACHE_TTL)
 
 
 @app.route("/")
 def root():
-    return jsonify({"notifications": len(_cache["data"]), "api_key": bool(WTO_KEY), "claude_key": bool(CLAUDE_KEY)})
+    return jsonify({
+        "status": "ok",
+        "notifications": len(_cache["data"]),
+        "concerns": len(_concerns_cache["data"]),
+        "wto_key": bool(WTO_KEY),
+        "claude_key": bool(CLAUDE_KEY),
+        "notifications_cached_at": datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None,
+        "concerns_cached_at": datetime.fromtimestamp(_concerns_cache["at"]).isoformat() if _concerns_cache["at"] else None,
+    })
 
 
 @app.route("/api/notifications")
@@ -296,12 +296,6 @@ def test():
         return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
     except Exception as e:
         return jsonify({"error": str(e)})
-
-
-if __name__ == "__main__":
-    threading.Thread(target=bg, daemon=True).start()
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
 
 
 
@@ -813,6 +807,49 @@ def refresh_concerns_ep():
     return jsonify({"ok": True, "total": len(_concerns_cache["data"])})
 
 
+# ══════════════════════════════════════
+#  بدء التشغيل - يعمل مع gunicorn و python مباشرة
+# ══════════════════════════════════════
+def startup():
+    """يُستدعى عند استيراد الوحدة - يعمل مع gunicorn --preload"""
+    log.info("=" * 50)
+    log.info("STARTUP: WTO_KEY=%s CLAUDE_KEY=%s", bool(WTO_KEY), bool(CLAUDE_KEY))
+    log.info("=" * 50)
+
+    def _init():
+        log.info("THREAD: Starting initial data fetch...")
+        # انتظار ثانية حتى يكتمل بدء gunicorn
+        time.sleep(2)
+        try:
+            log.info("THREAD: Fetching notifications...")
+            refresh(force=True)
+            log.info("THREAD: Notifications done. Count=%d", len(_cache["data"]))
+        except Exception as e:
+            log.error("THREAD: Notifications error: %s", e)
+        try:
+            log.info("THREAD: Fetching trade concerns...")
+            refresh_concerns(force=True)
+            log.info("THREAD: Concerns done. Count=%d", len(_concerns_cache["data"]))
+        except Exception as e:
+            log.error("THREAD: Concerns error: %s", e)
+        # حلقة تحديث دورية
+        while True:
+            try:
+                time.sleep(CACHE_TTL)
+                log.info("THREAD: Periodic refresh...")
+                refresh()
+                refresh_concerns()
+            except Exception as e:
+                log.error("THREAD: Periodic error: %s", e)
+
+    t = threading.Thread(target=_init, daemon=True, name="wto-fetcher")
+    t.start()
+    log.info("STARTUP: Background thread started: %s", t.name)
+
+
+# يُنفَّذ عند الاستيراد (gunicorn --preload يستورد مرة واحدة قبل fork)
+startup()
+
+
 if __name__ == "__main__":
-    threading.Thread(target=bg, daemon=True).start()
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
