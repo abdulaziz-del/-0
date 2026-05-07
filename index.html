@@ -527,7 +527,7 @@ async function loadConcerns(){
       var d=await r.json();
       CD=d.concerns||[];
       document.getElementById('cs-t').textContent=d.total||CD.length;
-      document.getElementById('cs-o').textContent=CD.filter(function(c){return c.status==='نشط';}).length;
+      document.getElementById('cs-o').textContent=CD.filter(function(c){return !(c.status||'').toLowerCase().includes('resolv');}).length;
       document.getElementById('cs-s').textContent=CD.filter(function(c){return c.type==='SPS';}).length;
       document.getElementById('cs-b').textContent=CD.filter(function(c){return c.type==='TBT';}).length;
       renderConcerns();
@@ -540,22 +540,22 @@ function renderConcerns(){
   var q=(document.getElementById('c-search').value||'').toLowerCase();
   var fil=CD.filter(function(c){
     if(!q)return true;
-    return (c.titleAr||c.title||'').toLowerCase().includes(q)||(c.symbol||'').toLowerCase().includes(q)||(c.member||'').toLowerCase().includes(q);
+    return (c.titleAr||c.title||'').toLowerCase().includes(q)||(c.symbol||'').toLowerCase().includes(q)||(c.raisingMember||'').toLowerCase().includes(q)||(c.subject||'').toLowerCase().includes(q);
   });
   var el=document.getElementById('clist');
   if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
   el.innerHTML=fil.map(function(c){
-    var isActive=c.status==='نشط';
+    var resolved=(c.status||'').toLowerCase().includes('resolv');
     return '<div class="cc '+(c.id===selCId?'sel':'')+'" onclick="selConcern(\''+c.id+'\')">'+
       '<div class="nt">'+
         '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'—')+'</span>'+
-        '<span class="ctag '+(isActive?'ctag-op':'ctag-cl')+'">'+(isActive?'نشط':'مغلق')+'</span>'+
-        '<span class="ndate">'+(c.date||'')+'</span>'+
+        '<span class="ctag '+(resolved?'ctag-cl':'ctag-op')+'">'+(resolved?'محلول':'قائم')+'</span>'+
+        '<span class="ndate">'+(c.lastRaised||c.firstRaised||'')+'</span>'+
       '</div>'+
       '<div class="ntit">'+(c.titleAr||c.title||c.symbol||'—')+'</div>'+
       '<div class="nbot">'+
-        '<span class="nmem">'+(FL[c.memberCode]||'🌍')+' '+(c.member||'')+'</span>'+
-        '<span class="ctag ctag-art">'+(c.article||'')+'</span>'+
+        '<span class="nmem">🌍 '+(c.raisingMember||'—')+'</span>'+
+        '<span class="ctag ctag-art">'+(c.timesRaised?'× '+c.timesRaised:c.article||'')+'</span>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -569,34 +569,40 @@ function selConcern(id){
   document.getElementById('empty').style.display='none';
   var det=document.getElementById('cdet');
   det.style.display='block';
-  var isActive=c.status==='نشط';
+  var resolved=(c.status||'').toLowerCase().includes('resolv');
+  var kwHtml=(c.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">كلمات مفتاحية:</span>'+(c.keywords||[]).map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
+  var docsHtml=(c.relatedDocs||[]).length?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📄 وثائق ذات صلة</div>'+(c.relatedDocs||[]).map(function(d){return '<div class="doc-row"><span class="doc-n">'+d+'</span></div>';}).join('')+'</div>':'';
   det.innerHTML=
     '<div class="dc">'+
       '<div class="dbd">'+
         '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'')+'</span>'+
         '<span class="concern-badge concern-art">'+(c.article||'')+'</span>'+
-        '<span class="sbdg" style="'+(isActive?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(isActive?'نشط':'مغلق')+'</span>'+
+        '<span class="sbdg" style="'+(resolved?'background:#1a0d0d;color:#f87171;border:1px solid #ef444440':'background:#0d3320;color:#4ade80;border:1px solid #22c55e40')+'">'+(resolved?'محلول':'قائم')+'</span>'+
       '</div>'+
       '<div class="dtit">'+(c.titleAr||c.title||c.symbol)+'</div>'+
       '<div class="dtiten">'+(c.title||c.symbol)+'</div>'+
-      '<div class="mg">'+
-        '<div><div class="ml">رقم الوثيقة</div><div class="mv">'+(c.symbol||'')+'</div></div>'+
-        '<div><div class="ml">الدولة</div><div class="mv">'+(FL[c.memberCode]||'🌍')+' '+(c.member||'')+'</div></div>'+
-        '<div><div class="ml">الاتفاقية</div><div class="mv">'+(c.agreement||'')+'</div></div>'+
-        '<div><div class="ml">موعد التعليق</div><div class="mv">'+(c.commentDeadline||'—')+'</div></div>'+
+      '<div class="mg" style="grid-template-columns:repeat(3,1fr)">'+
+        '<div><div class="ml">الدولة المُثيرة</div><div class="mv">🌍 '+(c.raisingMember||'—')+'</div></div>'+
+        '<div><div class="ml">أول إثارة</div><div class="mv">'+(c.firstRaised||'—')+'</div></div>'+
+        '<div><div class="ml">آخر إثارة</div><div class="mv">'+(c.lastRaised||'—')+'</div></div>'+
+        '<div><div class="ml">عدد مرات الإثارة</div><div class="mv">'+(c.timesRaised||'—')+'</div></div>'+
+        '<div><div class="ml">الموضوع</div><div class="mv">'+(c.subject||'—')+'</div></div>'+
+        '<div><div class="ml">الاتفاقية</div><div class="mv">'+(c.agreement||'—')+'</div></div>'+
       '</div>'+
-      ((c.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+c.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'')+
+      (c.supporting?'<div style="margin-top:8px;font-size:12px;color:var(--t2)">الدول الداعمة: <span style="color:#c8d0e8">'+c.supporting+'</span></div>':'')+
+      kwHtml+
     '</div>'+
+    docsHtml+
     (!c.canalysis?
       '<div class="aw">'+
         '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
-          (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمامات التجارية بالذكاء الاصطناعي')+
+          (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمام التجاري بالذكاء الاصطناعي')+
         '</button>'+
         '<div class="ahint">تحليل قانوني وفق DSU + اتفاقيات WTO</div>'+
       '</div>':'')+
     (c.cloading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
     (c.canalysis?
-      '<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--am)">⚠️ تحليل الاهتمامات التجارية</div>'+
+      '<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--am)">⚠️ تحليل الاهتمام التجاري</div>'+
         '<div class="abox">'+c.canalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
         '<div class="acts">'+
           '<button class="actb" onclick="navigator.clipboard&&navigator.clipboard.writeText(CD.find(function(x){return x.id===\''+c.id+'\';}).canalysis||\'\')" >📋 نسخ</button>'+
