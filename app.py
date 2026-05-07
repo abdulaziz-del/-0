@@ -1,611 +1,669 @@
-import os
-import time
-import logging
-import threading
-import re
-import requests
-from datetime import datetime
-from flask import Flask, jsonify, request
-from flask_cors import CORS
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>منصة ePing – WTO</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0f1e;--bg2:#0d1628;--bg3:#111d35;--b1:#1a2a45;--b2:#2a3d5a;--t1:#e8eaf0;--t2:#8899bb;--t3:#4a5568;--ac:#2563eb;--gr:#22c55e;--rd:#ef4444;--am:#f59e0b}
+html,body{height:100%;overflow:hidden}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--t1);direction:rtl}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+#hdr{background:#060c18;border-bottom:1px solid var(--b1);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.hlogo{display:flex;align-items:center;gap:11px}
+.hico{width:36px;height:36px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.ht1{font-size:15px;font-weight:700}.ht2{font-size:11px;color:var(--t2);margin-top:1px}
+.hright{display:flex;align-items:center;gap:10px}
+.hdot{width:7px;height:7px;border-radius:50%;background:var(--am);animation:pulse 2s infinite}
+.hdot.live{background:var(--gr);box-shadow:0 0 6px var(--gr)}
+.hlbl{font-size:11px;color:var(--t2)}
+.hbtn{padding:6px 14px;border-radius:8px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit}
+.hbtn:hover{border-color:var(--ac);color:var(--t1)}.hbtn:disabled{opacity:.5;cursor:not-allowed}
+#app{display:flex;height:calc(100vh - 58px)}
+#sb{width:360px;min-width:360px;border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+#stats{display:flex;gap:7px;padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.sc{flex:1;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:8px 7px;text-align:center}
+.sc .n{font-size:18px;font-weight:700}.sc .l{font-size:10px;color:var(--t2);margin-top:2px}
+#flt{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.sinput{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px}
+.sinput:focus{border-color:var(--ac)}.sinput::placeholder{color:var(--t3)}
+.sselect{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px;cursor:pointer}
+.frow{display:flex;gap:5px}
+.fb{padding:5px 12px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
+.fb.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#lst{flex:1;overflow-y:auto;padding:8px}
+.pgbar{display:flex;align-items:center;justify-content:center;gap:8px;padding:7px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--bg2)}
+.pgbtn{padding:4px 12px;border-radius:6px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
+.pgbtn:disabled{opacity:.4;cursor:not-allowed}.pglbl{font-size:11px;color:var(--t2)}
+.nc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px;cursor:pointer;margin-bottom:6px;transition:all .15s}
+.nc:hover{border-color:var(--b2);background:var(--bg3)}
+.nc.sel{border-color:var(--ac);background:var(--bg3)}
+.nt{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.sps{background:#0d3320;color:#4ade80;border:1px solid #22c55e35}
+.tbt{background:#1a1a0d;color:#facc15;border:1px solid #eab30835}
+.ndate{font-size:10px;color:var(--t3)}.ntit{font-size:12px;font-weight:600;line-height:1.5;color:#c8d0e8;margin-bottom:6px}
+.nbot{display:flex;justify-content:space-between;align-items:center}
+.nmem{font-size:11px;color:var(--t2)}.nr{display:flex;align-items:center;gap:5px}.ndot{width:6px;height:6px;border-radius:50%}
+#main{flex:1;overflow-y:auto;padding:18px;background:var(--bg)}
+#empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);text-align:center;gap:8px}
+#det{display:none}
+.dc{background:var(--bg2);border:1px solid var(--b1);border-radius:13px;padding:18px;margin-bottom:12px}
+.dbd{display:flex;gap:6px;margin-bottom:10px}
+.sbdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.dtit{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:4px}
+.dtiten{font-size:11px;color:var(--t2);margin-bottom:4px;line-height:1.5}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--b1)}
+.ml{font-size:10px;color:var(--t3);margin-bottom:3px}.mv{font-size:11px;font-weight:600;color:#c8d0e8}
+.ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.ptag{padding:3px 11px;background:#1a2a45;border-radius:20px;font-size:11px;color:var(--t2)}
+.doc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border:1px solid var(--b1);border-radius:9px;margin-bottom:5px}
+.doc-n{font-size:12px;color:#c8d0e8}.doc-a{font-size:11px;color:var(--ac);text-decoration:none}
+.doc-a:hover{text-decoration:underline}
+.aw{text-align:center;margin:6px 0}
+.abtn{padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px #2563eb35;transition:all .2s}
+.abtn:hover{transform:translateY(-1px)}.abtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.abtn.gr{background:linear-gradient(135deg,#065f46,#059669);box-shadow:0 4px 14px #05966935}
+.ahint{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:4px;width:fit-content;margin-bottom:12px}
+.tb{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit}
+.tb.on{background:#1a2a45;color:var(--t1)}
+.abox{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;line-height:1.9;font-size:13px;color:#c8d0e8;white-space:pre-wrap;min-height:120px}
+.acts{display:flex;gap:8px;margin-top:10px}
+.actb{padding:8px 15px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;border:1px solid var(--b2);background:var(--bg2);color:var(--t2)}
+.actb.bl{border-color:var(--ac);color:var(--ac);background:transparent}
+.actb.grn{border-color:#059669;color:#059669;background:transparent}
+.shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* ── تبويبات الخدمات الرئيسية ── */
+#svc-bar{display:flex;gap:2px;background:#060c18;border-bottom:1px solid var(--b1);padding:0 12px;flex-shrink:0}
+.svctb{padding:10px 16px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
+.svctb.on{color:var(--t1);border-bottom-color:var(--ac)}
+.svctb:hover:not(.on){color:var(--t1)}
+/* ── لوحة الاهتمامات التجارية ── */
+#concerns-panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+#concerns-panel.act{display:flex}
+.cflt{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+#clist{flex:1;overflow-y:auto;padding:8px}
+.cc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px;cursor:pointer;margin-bottom:6px;transition:all .15s}
+.cc:hover{border-color:var(--b2);background:var(--bg3)}
+.cc.sel{border-color:#f59e0b;background:var(--bg3)}
+.ctag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-left:4px}
+.ctag-art{background:#1a1a0d;color:#fbbf24;border:1px solid #f59e0b35}
+.ctag-op{background:#0d2010;color:#4ade80;border:1px solid #22c55e35}
+.ctag-cl{background:#1a0a0a;color:#f87171;border:1px solid #ef444435}
+/* ── لوحة التنبيهات ── */
+#alerts-panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+#alerts-panel.act{display:flex}
+.alerts-body{flex:1;overflow-y:auto;padding:10px 12px}
+.al-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;margin-bottom:7px}
+.al-info{flex:1;padding-left:8px}
+.al-name{font-size:12px;font-weight:600;color:var(--t1)}
+.al-desc{font-size:11px;color:var(--t2);margin-top:2px}
+.al-del{padding:4px 8px;border-radius:6px;border:1px solid #ef444435;background:transparent;color:#f87171;cursor:pointer;font-size:11px}
+.al-del:hover{background:#1a0a0a}
+/* toggle */
+.tgl{position:relative;width:38px;height:20px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0}
+.tslider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:10px;transition:.25s}
+.tslider:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+.tgl input:checked+.tslider{background:var(--ac)}
+.tgl input:checked+.tslider:before{transform:translateX(18px)}
+/* نموذج إضافة تنبيه */
+.al-form{margin:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:14px}
+.al-form-title{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px}
+.al-frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.al-frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.al-field{display:flex;flex-direction:column;gap:4px}
+.al-lbl{font-size:11px;color:var(--t3)}
+.al-addbtn{width:100%;padding:8px;border-radius:8px;border:1px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px}
+.al-addbtn:hover{background:#1a2a45}
+.al-empty{text-align:center;padding:30px;font-size:12px;color:var(--t3)}
+/* concern detail في main */
+.cdet{display:none}
+.concern-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.concern-art{background:#1a1a0d;color:#fbbf24;border:1px solid #f59e0b40}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div class="hlogo">
+    <div class="hico">⚖️</div>
+    <div><div class="ht1">منصة ePing</div><div class="ht2">إشعارات SPS/TBT — منظمة التجارة العالمية</div></div>
+  </div>
+  <div class="hright">
+    <div class="hdot" id="hdot"></div>
+    <span class="hlbl" id="hlbl">جارٍ الاتصال...</span>
+    <button class="hbtn" id="rfbtn" onclick="doLoad(true)">↻ تحديث</button>
+  </div>
+</div>
+<div id="app">
+  <div id="sb">
+    <!-- شريط التبويبات الرئيسية -->
+    <div id="svc-bar">
+      <button class="svctb on" id="tb-notif" onclick="switchSvc('notif',this)">📋 الإشعارات</button>
+      <button class="svctb" id="tb-concerns" onclick="switchSvc('concerns',this)">⚠️ الاهتمامات التجارية</button>
+      <button class="svctb" id="tb-alerts" onclick="switchSvc('alerts',this)">🔔 تنبيهاتي</button>
+    </div>
+    <!-- لوحة الإشعارات الأصلية -->
+    <div id="notif-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div id="stats">
+      <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
+      <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
+      <div class="sc"><div class="n" id="sc-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
+      <div class="sc"><div class="n" id="sc-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
+    </div>
+    <div id="flt">
+      <input class="sinput" id="srch" type="text" placeholder="🔍 بحث في الإشعارات..." oninput="renderList()"/>
+      <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
+        <option value="">🌍 جميع الدول (166 عضو)</option>
+        <option value="Afghanistan">🇦🇫 أفغانستان</option><option value="Albania">🇦🇱 ألبانيا</option><option value="Angola">🇦🇴 أنغولا</option><option value="Argentina">🇦🇷 الأرجنتين</option><option value="Armenia">🇦🇲 أرمينيا</option><option value="Australia">🇦🇺 أستراليا</option><option value="Bahrain">🇧🇭 البحرين</option><option value="Bangladesh">🇧🇩 بنغلاديش</option><option value="Barbados">🇧🇧 بربادوس</option><option value="Belgium">🇧🇪 بلجيكا</option><option value="Belize">🇧🇿 بليز</option><option value="Benin">🇧🇯 بنين</option><option value="Bolivia">🇧🇴 بوليفيا</option><option value="Botswana">🇧🇼 بوتسوانا</option><option value="Brazil">🇧🇷 البرازيل</option><option value="Brunei">🇧🇳 بروناي</option><option value="Bulgaria">🇧🇬 بلغاريا</option><option value="Burkina Faso">🇧🇫 بوركينا فاسو</option><option value="Burundi">🇧🇮 بوروندي</option><option value="Cambodia">🇰🇭 كمبوديا</option><option value="Cameroon">🇨🇲 الكاميرون</option><option value="Canada">🇨🇦 كندا</option><option value="Chad">🇹🇩 تشاد</option><option value="Chile">🇨🇱 تشيلي</option><option value="China">🇨🇳 الصين</option><option value="Colombia">🇨🇴 كولومبيا</option><option value="Congo">🇨🇬 الكونغو</option><option value="Costa Rica">🇨🇷 كوستاريكا</option><option value="Cote d'Ivoire">🇨🇮 كوت ديفوار</option><option value="Croatia">🇭🇷 كرواتيا</option><option value="Cuba">🇨🇺 كوبا</option><option value="Cyprus">🇨🇾 قبرص</option><option value="Czech Republic">🇨🇿 التشيك</option><option value="Denmark">🇩🇰 الدنمارك</option><option value="Djibouti">🇩🇯 جيبوتي</option><option value="Dominican Republic">🇩🇴 الدومينيكان</option><option value="Ecuador">🇪🇨 الإكوادور</option><option value="Egypt">🇪🇬 مصر</option><option value="El Salvador">🇸🇻 السلفادور</option><option value="Estonia">🇪🇪 إستونيا</option><option value="European Union">🇪🇺 الاتحاد الأوروبي</option><option value="Fiji">🇫🇯 فيجي</option><option value="Finland">🇫🇮 فنلندا</option><option value="France">🇫🇷 فرنسا</option><option value="Gabon">🇬🇦 الغابون</option><option value="Gambia">🇬🇲 غامبيا</option><option value="Georgia">🇬🇪 جورجيا</option><option value="Germany">🇩🇪 ألمانيا</option><option value="Ghana">🇬🇭 غانا</option><option value="Greece">🇬🇷 اليونان</option><option value="Guatemala">🇬🇹 غواتيمالا</option><option value="Guinea">🇬🇳 غينيا</option><option value="Guyana">🇬🇾 غيانا</option><option value="Haiti">🇭🇹 هايتي</option><option value="Honduras">🇭🇳 هندوراس</option><option value="Hong Kong">🇭🇰 هونغ كونغ</option><option value="Hungary">🇭🇺 المجر</option><option value="Iceland">🇮🇸 آيسلندا</option><option value="India">🇮🇳 الهند</option><option value="Indonesia">🇮🇩 إندونيسيا</option><option value="Ireland">🇮🇪 أيرلندا</option><option value="Israel">🇮🇱 إسرائيل</option><option value="Italy">🇮🇹 إيطاليا</option><option value="Jamaica">🇯🇲 جامايكا</option><option value="Japan">🇯🇵 اليابان</option><option value="Jordan">🇯🇴 الأردن</option><option value="Kazakhstan">🇰🇿 كازاخستان</option><option value="Kenya">🇰🇪 كينيا</option><option value="Korea">🇰🇷 كوريا الجنوبية</option><option value="Kuwait">🇰🇼 الكويت</option><option value="Kyrgyz Republic">🇰🇬 قيرغيزستان</option><option value="Lao PDR">🇱🇦 لاوس</option><option value="Latvia">🇱🇻 لاتفيا</option><option value="Lesotho">🇱🇸 ليسوتو</option><option value="Liberia">🇱🇷 ليبيريا</option><option value="Lithuania">🇱🇹 ليتوانيا</option><option value="Luxembourg">🇱🇺 لوكسمبورغ</option><option value="Madagascar">🇲🇬 مدغشقر</option><option value="Malawi">🇲🇼 مالاوي</option><option value="Malaysia">🇲🇾 ماليزيا</option><option value="Maldives">🇲🇻 المالديف</option><option value="Mali">🇲🇱 مالي</option><option value="Malta">🇲🇹 مالطا</option><option value="Mauritania">🇲🇷 موريتانيا</option><option value="Mauritius">🇲🇺 موريشيوس</option><option value="Mexico">🇲🇽 المكسيك</option><option value="Moldova">🇲🇩 مولدوفا</option><option value="Mongolia">🇲🇳 منغوليا</option><option value="Montenegro">🇲🇪 الجبل الأسود</option><option value="Morocco">🇲🇦 المغرب</option><option value="Mozambique">🇲🇿 موزمبيق</option><option value="Myanmar">🇲🇲 ميانمار</option><option value="Namibia">🇳🇦 ناميبيا</option><option value="Nepal">🇳🇵 نيبال</option><option value="Netherlands">🇳🇱 هولندا</option><option value="New Zealand">🇳🇿 نيوزيلندا</option><option value="Nicaragua">🇳🇮 نيكاراغوا</option><option value="Niger">🇳🇪 النيجر</option><option value="Nigeria">🇳🇬 نيجيريا</option><option value="Norway">🇳🇴 النرويج</option><option value="Oman">🇴🇲 عُمان</option><option value="Pakistan">🇵🇰 باكستان</option><option value="Panama">🇵🇦 بنما</option><option value="Paraguay">🇵🇾 باراغواي</option><option value="Peru">🇵🇪 بيرو</option><option value="Philippines">🇵🇭 الفلبين</option><option value="Poland">🇵🇱 بولندا</option><option value="Portugal">🇵🇹 البرتغال</option><option value="Qatar">🇶🇦 قطر</option><option value="Romania">🇷🇴 رومانيا</option><option value="Russian Federation">🇷🇺 روسيا</option><option value="Rwanda">🇷🇼 رواندا</option><option value="Saudi Arabia">🇸🇦 المملكة العربية السعودية</option><option value="Senegal">🇸🇳 السنغال</option><option value="Sierra Leone">🇸🇱 سيراليون</option><option value="Singapore">🇸🇬 سنغافورة</option><option value="Slovak Republic">🇸🇰 سلوفاكيا</option><option value="Slovenia">🇸🇮 سلوفينيا</option><option value="South Africa">🇿🇦 جنوب أفريقيا</option><option value="Spain">🇪🇸 إسبانيا</option><option value="Sri Lanka">🇱🇰 سريلانكا</option><option value="Sweden">🇸🇪 السويد</option><option value="Switzerland">🇨🇭 سويسرا</option><option value="Chinese Taipei">🇹🇼 تايبيه الصينية</option><option value="Tanzania">🇹🇿 تنزانيا</option><option value="Thailand">🇹🇭 تايلاند</option><option value="Togo">🇹🇬 توغو</option><option value="Trinidad and Tobago">🇹🇹 ترينيداد وتوباغو</option><option value="Tunisia">🇹🇳 تونس</option><option value="Turkey">🇹🇷 تركيا</option><option value="Uganda">🇺🇬 أوغندا</option><option value="Ukraine">🇺🇦 أوكرانيا</option><option value="United Arab Emirates">🇦🇪 الإمارات العربية المتحدة</option><option value="United Kingdom">🇬🇧 المملكة المتحدة</option><option value="United States of America">🇺🇸 الولايات المتحدة الأمريكية</option><option value="Uruguay">🇺🇾 أوروغواي</option><option value="Viet Nam">🇻🇳 فيتنام</option><option value="Yemen">🇾🇪 اليمن</option><option value="Zambia">🇿🇲 زامبيا</option><option value="Zimbabwe">🇿🇼 زيمبابوي</option>
+      </select>
+      <div class="frow">
+        <button class="fb on" onclick="setF('all',this)">الكل</button>
+        <button class="fb" onclick="setF('SPS',this)">SPS</button>
+        <button class="fb" onclick="setF('TBT',this)">TBT</button>
+        <button class="fb" onclick="setF('open',this)">مفتوح</button>
+      </div>
+    </div>
+    <div id="lst"><div style="text-align:center;padding:40px 10px;font-size:12px;color:var(--t3)">⏳ جارٍ الاتصال...</div></div>
+    <div class="pgbar" id="pgbar" style="display:none">
+      <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
+      <span class="pglbl" id="pglbl">1/1</span>
+      <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
+    </div>
+    </div><!-- /notif-panel -->
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("eping")
-app = Flask(__name__)
-CORS(app)
+    <!-- ── لوحة الاهتمامات التجارية ── -->
+    <div id="concerns-panel">
+      <div class="cflt">
+        <input class="sinput" id="c-search" type="text" placeholder="🔍 بحث في الاهتمامات..." oninput="renderConcerns()"/>
+        <div class="frow" style="gap:5px">
+          <select class="sselect" id="c-type" style="margin-bottom:0;flex:1" onchange="loadConcerns()">
+            <option value="">الكل (SPS+TBT)</option>
+            <option value="SPS">SPS</option>
+            <option value="TBT">TBT</option>
+          </select>
+          <select class="sselect" id="c-status" style="margin-bottom:0;flex:1" onchange="loadConcerns()">
+            <option value="">كل الحالات</option>
+            <option value="active">نشط فقط</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:4px">
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-o" style="color:var(--gr)">—</div><div class="l">نشط</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
+        </div>
+      </div>
+      <div id="clist" style="flex:1;overflow-y:auto;padding:8px"><div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">⏳ جارٍ التحميل...</div></div>
+    </div><!-- /concerns-panel -->
 
-WTO_KEY    = os.getenv("WTO_API_KEY", "")
-CLAUDE_KEY = os.getenv("CLAUDE_API_KEY", "")
-CACHE_TTL  = 3600
-_cache     = {"data": [], "at": 0}
-_lock      = threading.Lock()
+    <!-- ── لوحة التنبيهات ── -->
+    <div id="alerts-panel">
+      <div style="flex:1;overflow-y:auto;padding:10px 12px">
+        <div id="alerts-list"></div>
+        <div class="al-form">
+          <div class="al-form-title">➕ إضافة تنبيه جديد</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+            <div class="al-field"><span class="al-lbl">النوع</span>
+              <select class="sselect" id="al-type" style="margin-bottom:0"><option value="الكل">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option></select></div>
+            <div class="al-field"><span class="al-lbl">التكرار</span>
+              <select class="sselect" id="al-freq" style="margin-bottom:0"><option value="فوري">فوري</option><option value="يومي">يومي</option><option value="أسبوعي">أسبوعي</option><option value="شهري">شهري</option></select></div>
+            <div class="al-field"><span class="al-lbl">الدولة</span>
+              <select class="sselect" id="al-country" style="margin-bottom:0"><option value="جميع الدول">الجميع</option><option value="European Union">الاتحاد الأوروبي</option><option value="United States of America">الولايات المتحدة</option><option value="China">الصين</option><option value="Saudi Arabia">المملكة العربية السعودية</option></select></div>
+          </div>
+          <input class="sinput" id="al-sector" type="text" placeholder="القطاع / الكلمة المفتاحية (مثال: أغذية، بتروكيماويات...)" style="margin-bottom:8px"/>
+          <button class="al-addbtn" onclick="addAlert()">➕ إضافة التنبيه</button>
+        </div>
+      </div>
+    </div><!-- /alerts-panel -->
 
+  </div>
+  <div id="main">
+    <div id="empty">
+      <div style="font-size:56px">⚖️</div>
+      <div style="font-size:17px;font-weight:600;color:var(--t2)">اختر إشعاراً للتحليل</div>
+      <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إشعار لعرض تفاصيله وتحليله</div>
+    </div>
+    <div id="det"></div>
+    <div id="cdet" class="cdet"></div>
+  </div>
+</div>
+<script>
+const API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
+const FL={USA:'🇺🇸',EU:'🇪🇺',JPN:'🇯🇵',AUS:'🇦🇺',CHN:'🇨🇳',BRA:'🇧🇷',CAN:'🇨🇦',IND:'🇮🇳',KOR:'🇰🇷',SAU:'🇸🇦',ARE:'🇦🇪',GBR:'🇬🇧',MEX:'🇲🇽',IDN:'🇮🇩',ZAF:'🇿🇦',NZL:'🇳🇿',ARG:'🇦🇷',EGY:'🇪🇬',TUR:'🇹🇷',NGA:'🇳🇬',CHL:'🇨🇱',VNM:'🇻🇳',NOR:'🇳🇴',THA:'🇹🇭',CHE:'🇨🇭',COL:'🇨🇴',C152:'🇨🇱'};
+let D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false;
+const TC={};
 
-def cache_fresh():
-    return (time.time() - _cache["at"]) < CACHE_TTL and bool(_cache["data"])
+async function doLoad(force){
+  if(busy)return;
+  busy=true;
+  setStatus('loading','جارٍ الجلب...');
+  document.getElementById('rfbtn').disabled=true;
+  try{
+    var srch=document.getElementById('srch').value;
+    var mc=document.getElementById('srch2').value;
+    var params=['page='+pg,'rows=50'];
+    if(flt==='SPS')params.push('type=SPS');
+    else if(flt==='TBT')params.push('type=TBT');
+    else if(flt==='open')params.push('status=open');
+    if(srch)params.push('keyword='+encodeURIComponent(srch));
+    if(mc)params.push('member='+encodeURIComponent(mc));
+    if(force)params.push('refresh=1');
+    var r=await fetch(API+'/api/notifications?'+params.join('&'));
+    if(!r.ok)throw new Error(r.status);
+    var d=await r.json();
+    D=(d.notifications||[]).map(function(n){return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});});
+    tpg=d.pages||1;
+    setStatus('live',d.total+' إشعار');
+    document.getElementById('sc-t').textContent=d.total||D.length;
+    document.getElementById('sc-o').textContent=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
+    document.getElementById('sc-s').textContent=D.filter(function(n){return n.type==='SPS';}).length;
+    document.getElementById('sc-b').textContent=D.filter(function(n){return n.type==='TBT';}).length;
+    renderList();
+    translateBatch();
+  }catch(e){
+    setStatus('err','خطأ في الاتصال');
+    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر الاتصال بالخادم</div>';
+  }
+  busy=false;
+  document.getElementById('rfbtn').disabled=false;
+}
 
-
-def build_docs(sym, doc_link="", dol_link="", link_to_notif=""):
-    docs = []
-    if doc_link:
-        urls = [u.strip() for u in doc_link.split(",") if u.strip()]
-        for i, url in enumerate(urls):
-            if url.startswith("http"):
-                label = "تحميل PDF الرسمي" if len(urls) == 1 else "تحميل PDF (" + str(i+1) + ")"
-                docs.append({"name": label, "url": url, "type": "pdf"})
-    return docs
-
-def parse_item(it):
-    sym      = it.get("documentSymbol", it.get("symbol", ""))
-    area     = it.get("area", "")
-    ntype    = "SPS" if (area == "SPS" or "/SPS/" in sym) else "TBT"
-    title_en = it.get("titlePlain", it.get("title", it.get("titleEnglish", sym)))
-    prods    = it.get("productsFreeTextPlain", it.get("productsFreeText", ""))
-    if isinstance(prods, str):
-        prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
-    elif not isinstance(prods, list):
-        prods = []
-    date_raw = it.get("distributionDate", it.get("date", ""))
-    dead_raw = it.get("commentDeadlineDate", "")
-    open_val = it.get("isOpenForComments", False)
-    doc_link      = it.get("notifiedDocumentLink", "")
-    dol_link      = it.get("dolLink", "")
-    link_to_notif = it.get("linkToNotification", "")
-    return {
-        "id":              sym,
-        "symbol":          sym,
-        "member":          it.get("notifyingMember", it.get("member", "")),
-        "memberCode":      it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
-        "date":            date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
-        "type":            ntype,
-        "title":           title_en,
-        "titleEn":         title_en,
-        "titleAr":         "",
-        "status":          "مفتوح للتعليق" if open_val else "منتهي",
-        "products":        prods,
-        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
-        "docs":            build_docs(sym, doc_link, dol_link, link_to_notif) if sym else [],
+async function translateBatch(){
+  var toTr=D.filter(function(n){return !n.titleAr&&!TC[n.symbol];}).slice(0,10);
+  if(!toTr.length||!API)return;
+  try{
+    var texts=toTr.map(function(n){return n.titleEn||n.title||'';}).filter(Boolean);
+    if(!texts.length)return;
+    var r=await fetch(API+'/api/translate-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:texts})});
+    if(r.ok){
+      var d=await r.json();
+      var tr=d.translations||[];
+      toTr.forEach(function(n,i){if(tr[i]){n.titleAr=tr[i];TC[n.symbol]=tr[i];}});
+      renderList();
+      setTimeout(translateBatch,2000);
     }
+  }catch(e){}
+}
 
-
-def extract_rows(d):
-    if isinstance(d, list):
-        return d
-    if not isinstance(d, dict):
-        return []
-    for key in ["items", "notifications", "rows", "data", "results", "content"]:
-        val = d.get(key)
-        if val is not None:
-            if isinstance(val, list):
-                return val
-            if isinstance(val, dict):
-                for k2 in ["items", "notifications", "rows", "data"]:
-                    v2 = val.get(k2)
-                    if isinstance(v2, list):
-                        return v2
-    return []
-
-
-def fetch_data():
-    headers  = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
-    all_data = []
-    for pg in range(1, 7):
-        try:
-            r = requests.get(
-                "https://api.wto.org/eping/notifications/search",
-                headers=headers,
-                params={"page": pg, "pageSize": 50, "language": 1},
-                timeout=25
-            )
-            if r.status_code != 200:
-                break
-            d    = r.json()
-            rows = extract_rows(d)
-            if not rows:
-                break
-            all_data.extend([parse_item(it) for it in rows])
-            total = d.get("totalCount", d.get("total", 0)) if isinstance(d, dict) else 0
-            if total and len(all_data) >= total:
-                break
-            time.sleep(0.5)
-        except Exception as e:
-            log.error("Fetch error: " + str(e))
-            break
-    return all_data
-
-
-def refresh(force=False):
-    if not force and cache_fresh():
-        return
-    with _lock:
-        if not force and cache_fresh():
-            return
-        data = fetch_data()
-        if data:
-            data.sort(key=lambda x: x.get("date", ""), reverse=True)
-            _cache["data"] = data
-            _cache["at"]   = time.time()
-            log.info("Cached " + str(len(data)) + " notifications")
-
-
-def bg():
-    while True:
-        try:
-            refresh()
-            refresh_concerns()
-        except Exception as e:
-            log.error("BG: " + str(e))
-        time.sleep(CACHE_TTL)
-
-
-@app.route("/")
-def root():
-    return jsonify({"notifications": len(_cache["data"]), "api_key": bool(WTO_KEY), "claude_key": bool(CLAUDE_KEY)})
-
-
-@app.route("/api/notifications")
-def notifs():
-    if request.args.get("refresh") == "1":
-        refresh(force=True)
-    data = list(_cache["data"])
-    t  = request.args.get("type", "").upper()
-    st = request.args.get("status", "")
-    kw = request.args.get("keyword", "").lower()
-    mc = request.args.get("member", "").lower()
-    pg = max(1, int(request.args.get("page", 1)))
-    rw = min(200, int(request.args.get("rows", 100)))
-    if t in ("SPS", "TBT"):
-        data = [n for n in data if n["type"] == t]
-    if st == "open":
-        data = [n for n in data if n["status"] == "مفتوح للتعليق"]
-    if kw:
-        data = [n for n in data if kw in n.get("title", "").lower() or kw in n.get("symbol", "").lower()]
-    if mc:
-        data = [n for n in data if mc in n.get("member", "").lower()]
-    total     = len(data)
-    page_data = data[(pg - 1) * rw: pg * rw]
-    cached_at = datetime.fromtimestamp(_cache["at"]).isoformat() if _cache["at"] else None
-    return jsonify({"notifications": page_data, "total": total, "page": pg, "rows": rw, "pages": (total + rw - 1) // rw, "cached_at": cached_at})
-
-
-@app.route("/api/stats")
-def stats():
-    d = _cache["data"]
-    return jsonify({"total": len(d), "sps": sum(1 for n in d if n["type"] == "SPS"), "tbt": sum(1 for n in d if n["type"] == "TBT"), "open": sum(1 for n in d if n["status"] == "مفتوح للتعليق")})
-
-
-@app.route("/api/refresh", methods=["GET", "POST"])
-def force_refresh():
-    refresh(force=True)
-    return jsonify({"ok": True, "total": len(_cache["data"])})
-
-
-@app.route("/api/analyze", methods=["POST"])
-def analyze():
-    if not CLAUDE_KEY:
-        return jsonify({"error": "No Claude key", "analysis": ""})
-    try:
-        n     = request.get_json()
-        ntype = n.get("type", "")
-        # محاولة جلب وقراءة PDF المرفق
-        pdf_text = ""
-        docs = n.get("docs", [])
-        for doc in docs:
-            url = doc.get("url", "")
-            if "members.wto.org" in url and url.endswith(".pdf"):
-                try:
-                    pr = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-                    if pr.status_code == 200 and len(pr.content) > 1000:
-                        # استخراج نص بسيط من PDF
-                        import re as re2
-                        raw = pr.content.decode("latin-1", errors="ignore")
-                        text_parts = re2.findall(r"[A-Za-z؀-ۿ][A-Za-z؀-ۿ\s,.\-:;()/]{20,}", raw)
-                        if text_parts:
-                            pdf_text = " ".join(text_parts[:50])[:2000]
-                            break
-                except:
-                    pass
-        lines = [
-            "أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية.",
-            "حلّل إشعار ePing:",
-            "الرمز: " + n.get("symbol", "") + " | الدولة: " + n.get("member", "") + " | النوع: " + ("SPS - تدابير صحية" if ntype == "SPS" else "TBT - عوائق تقنية"),
-            "التاريخ: " + n.get("date", "") + " | موعد التعليق: " + n.get("commentDeadline", ""),
-            "العنوان: " + n.get("title", ""),
-            "المنتجات: " + ", ".join(n.get("products", [])),
-            "",
-            "=== الملخص التنفيذي ===",
-            "(4-5 جمل عن جوهر الإشعار وأهميته التجارية)",
-            "",
-            "=== التحليل القانوني ===",
-            "الأساس القانوني في اتفاقية " + ("SPS المادة 5" if ntype == "SPS" else "TBT المادة 2"),
-            "التوافق مع معايير " + ("Codex / OIE / IPPC" if ntype == "SPS" else "ISO / IEC"),
-            "الأثر على التجارة الدولية",
-            "حقوق الدول الأعضاء في الاعتراض",
-            "",
-            "=== التوصيات ===",
-            "3-4 توصيات عملية للدول المتضررة.",
-            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي.",
-        ]
-        if pdf_text:
-            lines.append("")
-            lines.append("نص من المستند الرسمي المرفق:")
-            lines.append(pdf_text[:1000])
-        prompt = "\n".join(lines)
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
-            timeout=30
-        )
-        log.info("Claude analyze status: " + str(r.status_code) + " resp: " + r.text[:300])
-        if r.status_code == 200:
-            text = r.json()["content"][0]["text"].strip()
-            return jsonify({"analysis": text})
-        return jsonify({"analysis": "", "error": r.text[:300]})
-    except Exception as e:
-        return jsonify({"error": str(e), "analysis": ""})
-@app.route("/api/translate", methods=["POST"])
-def translate():
-    if not CLAUDE_KEY:
-        return jsonify({"error": "No Claude key", "ar": ""})
-    try:
-        body = request.get_json()
-        text = body.get("text", "")
-        if not text:
-            return jsonify({"ar": ""})
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 300, "messages": [{"role": "user", "content": "ترجم هذا العنوان إلى العربية الفصحى فقط بدون أي نص إضافي:\n" + text}]},
-            timeout=15
-        )
-        if r.status_code == 200:
-            ar = r.json()["content"][0]["text"].strip()
-            return jsonify({"ar": ar})
-        return jsonify({"ar": ""})
-    except Exception as e:
-        return jsonify({"error": str(e), "ar": ""})
-
-
-@app.route("/api/test-claude")
-def test_claude():
-    import os
-    key = CLAUDE_KEY
-    if not key:
-        return jsonify({"error": "No key", "key_len": 0})
-    try:
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 10, "messages": [{"role": "user", "content": "test"}]},
-            timeout=15
-        )
-        return jsonify({"status": r.status_code, "key_prefix": key[:12], "key_len": len(key), "resp": r.text[:300]})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-
-@app.route("/api/test")
-def test():
-    headers = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
-    try:
-        r = requests.get("https://api.wto.org/eping/notifications/search", headers=headers, params={"page": 1, "pageSize": 2, "language": 1}, timeout=15)
-        if r.ok:
-            d    = r.json()
-            rows = extract_rows(d)
-            return jsonify({"status": r.status_code, "ok": True, "rows_count": len(rows), "sample": rows[0] if rows else None})
-        return jsonify({"status": r.status_code, "ok": False, "error": r.text[:500]})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-
-if __name__ == "__main__":
-    threading.Thread(target=bg, daemon=True).start()
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
-
-@app.route("/api/analyze-doc", methods=["POST"])
-def analyze_doc():
-    if not CLAUDE_KEY:
-        return jsonify({"error": "No Claude key", "analysis": ""})
-    try:
-        body = request.get_json()
-        pdf_url = body.get("pdf_url", "")
-        sym = body.get("symbol", "")
-        member = body.get("member", "")
-        ntype = body.get("type", "")
-        title = body.get("title", "")
-        if not pdf_url:
-            return jsonify({"error": "No PDF URL", "analysis": ""})
-        # تحميل PDF
-        pdf_text = ""
-        try:
-            pr = requests.get(
-                pdf_url, timeout=20,
-                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
-                allow_redirects=True
-            )
-            if pr.status_code == 200 and len(pr.content) > 500:
-                raw = pr.content.decode("latin-1", errors="ignore")
-                chunks = re.findall(r"[\x20-\x7E]{15,}", raw)
-                pdf_text = " ".join(chunks[:200])[:4000]
-                log.info("PDF fetched: " + str(len(pdf_text)) + " chars")
-        except Exception as pe:
-            log.error("PDF fetch error: " + str(pe))
-        if not pdf_text:
-            return jsonify({"analysis": "تعذّر قراءة محتوى PDF. قد يكون الملف مشفراً أو محمياً."})
-        prompt = (
-            "أنت محلل قانوني متخصص في منظمة التجارة العالمية." + chr(10) +
-            "اقرأ نص المستند الرسمي التالي وقدم تحليلاً شاملاً له:" + chr(10) +
-            "الرمز: " + sym + " | الدولة: " + member + " | النوع: " + ntype + chr(10) +
-            "العنوان: " + title + chr(10) + chr(10) +
-            "=== نص المستند ==="  + chr(10) +
-            pdf_text + chr(10) + chr(10) +
-            "=== المطلوب ==="  + chr(10) +
-            "1. ملخص المستند: ما هو جوهر هذا المستند الرسمي؟" + chr(10) +
-            "2. المتطلبات الرئيسية: ما هي الاشتراطات والمتطلبات المحددة؟" + chr(10) +
-            "3. المنتجات والأسواق المتأثرة" + chr(10) +
-            "4. الأثر على الدول المصدِّرة" + chr(10) +
-            "5. التوصيات العملية" + chr(10) +
-            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي."
-        )
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 1500,
-                  "messages": [{"role": "user", "content": prompt}]},
-            timeout=45
-        )
-        if r.status_code == 200:
-            analysis = r.json()["content"][0]["text"].strip()
-            return jsonify({"analysis": analysis})
-        return jsonify({"analysis": "", "error": r.text[:200]})
-    except Exception as e:
-        return jsonify({"error": str(e), "analysis": ""})
-
-
-# ─── قاعدة بيانات التنبيهات في الذاكرة ───
-_alerts = []
-_alert_id = 0
-
-@app.route("/api/alerts", methods=["GET"])
-def get_alerts():
-    return jsonify({"alerts": _alerts})
-
-@app.route("/api/alerts", methods=["POST"])
-def add_alert():
-    global _alert_id
-    body = request.get_json() or {}
-    _alert_id += 1
-    alert = {
-        "id": _alert_id,
-        "type": body.get("type", "الكل"),
-        "sector": body.get("sector", ""),
-        "country": body.get("country", "جميع الدول"),
-        "frequency": body.get("frequency", "فوري"),
-        "active": True,
-        "created": datetime.now().strftime("%Y-%m-%d")
+async function translateOne(n){
+  if(!n||n.titleAr||TC[n.symbol])return;
+  var src=n.titleEn||n.title||'';
+  if(!src||!API)return;
+  try{
+    var r=await fetch(API+'/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:src})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();var el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}
     }
-    _alerts.append(alert)
-    return jsonify({"ok": True, "alert": alert})
+  }catch(e){}
+}
 
-@app.route("/api/alerts/<int:aid>", methods=["PUT"])
-def toggle_alert(aid):
-    for a in _alerts:
-        if a["id"] == aid:
-            a["active"] = not a["active"]
-            return jsonify({"ok": True, "alert": a})
-    return jsonify({"error": "not found"}), 404
+function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');doLoad();}
+function chpg(delta){pg=Math.max(1,Math.min(tpg,pg+delta));doLoad();}
 
-@app.route("/api/alerts/<int:aid>", methods=["DELETE"])
-def delete_alert(aid):
-    global _alerts
-    _alerts = [a for a in _alerts if a["id"] != aid]
-    return jsonify({"ok": True})
+function renderList(){
+  var q=document.getElementById('srch').value.toLowerCase();
+  var fil=D;
+  if(q)fil=fil.filter(function(n){return (n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q);});
+  var el=document.getElementById('lst');
+  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
+  el.innerHTML=fil.map(function(n){
+    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+n.id+'\')">'+
+      '<div class="nt"><span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span><span class="ndate">'+(n.date||'')+'</span></div>'+
+      '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3)">'+( n.title||n.symbol||'—')+'</span>')+'</div>'+
+      '<div class="nbot"><span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+      '<div class="nr">'+
+      (n.loading||n.docLoading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
+      ((n.analysis||n.docAnalysis)&&!n.loading&&!n.docLoading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
+      '<div class="ndot" style="background:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'"></div>'+
+      '<span style="font-size:10px;color:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'">'+
+      (n.status==='مفتوح للتعليق'?'مفتوح':'منتهي')+'</span></div></div></div>';
+  }).join('');
+  var pb=document.getElementById('pgbar');
+  if(tpg>1){pb.style.display='flex';document.getElementById('pglbl').textContent=pg+'/'+tpg;document.getElementById('pp').disabled=pg<=1;document.getElementById('pn').disabled=pg>=tpg;}
+  else pb.style.display='none';
+}
 
+function selN(id){
+  selId=id;tab='full';renderList();renderDet();
+  var n=D.find(function(x){return x.id===id;});
+  if(n&&!n.titleAr)translateOne(n);
+}
 
-_concerns_cache = {"data": [], "at": 0}
-_concerns_lock  = threading.Lock()
-
-def parse_concern(it):
-    """تحويل بيانات الاهتمام التجاري من WTO API إلى صيغة موحدة"""
-    domain    = it.get("domainId", it.get("domain", ""))
-    ntype     = "SPS" if str(domain).upper() == "SPS" else "TBT"
-    sym       = it.get("symbol", it.get("imsId", ""))
-    title_en  = it.get("title", it.get("titleEnglish", str(sym)))
-    raising   = it.get("raisingName", it.get("raisingMember", ""))
-    supporting= it.get("supportingName", it.get("supportingMember", ""))
-    subject   = it.get("subjectName", it.get("subject", ""))
-    status    = it.get("status", it.get("reportedStatus", ""))
-    first     = it.get("firstTimeRaised", it.get("firstRaised", ""))
-    last      = it.get("lastTimeRaised",  it.get("lastRaised",  ""))
-    times     = it.get("numberOfTimesRaised", it.get("timesRaised", 0))
-    keywords  = it.get("keywords", [])
-    if isinstance(keywords, list):
-        kw_list = [k.get("item3", k) if isinstance(k, dict) else str(k) for k in keywords]
-    else:
-        kw_list = []
-    docs_raw  = it.get("relatedDocuments", it.get("documents", []))
-    docs_list = [d if isinstance(d, str) else d.get("symbol","") for d in docs_raw] if isinstance(docs_raw, list) else []
-    return {
-        "id":           str(sym),
-        "symbol":       str(sym),
-        "type":         ntype,
-        "title":        title_en,
-        "titleAr":      "",
-        "raisingMember":  raising,
-        "supporting":     supporting,
-        "subject":        subject,
-        "status":         status,
-        "firstRaised":    first[:10] if first and len(first) >= 10 else first,
-        "lastRaised":     last[:10]  if last  and len(last)  >= 10 else last,
-        "timesRaised":    times,
-        "keywords":       kw_list[:8],
-        "relatedDocs":    docs_list[:5],
-        "article":        "المادة 5.7" if ntype == "SPS" else "المادة 2.2",
-        "agreement":      "اتفاقية SPS" if ntype == "SPS" else "اتفاقية TBT",
+function buildDocs(n){
+  var html='';
+  var docs=n.docs||[];
+  docs.forEach(function(d){
+    var url=(d.url||'').trim();
+    if(!url)return;
+    if(url.includes('members.wto.org')){
+      html+='<div class="doc-row" style="border-color:#22c55e40"><span class="doc-n" style="color:#4ade80">📄 '+(d.name||'تحميل PDF الرسمي')+'</span><a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a></div>';
     }
+  });
+  return html;
+}
 
-def fetch_concerns():
-    """جلب الاهتمامات التجارية من WTO ePing API"""
-    headers  = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
-    all_data = []
-    # تجربة endpoints مختلفة لـ trade concerns
-    endpoints = [
-        "https://api.wto.org/eping/concerns/search",
-        "https://api.wto.org/eping/tradeconcerns/search",
-        "https://api.wto.org/eping/v1/concerns/search",
-    ]
-    for ep in endpoints:
-        try:
-            r = requests.get(ep, headers=headers,
-                             params={"page": 1, "pageSize": 50, "language": 1},
-                             timeout=20)
-            log.info("Concerns endpoint %s status: %d", ep, r.status_code)
-            if r.status_code == 200:
-                d    = r.json()
-                rows = extract_rows(d)
-                if rows:
-                    all_data.extend([parse_concern(it) for it in rows])
-                    # جلب صفحات إضافية
-                    total = d.get("totalCount", d.get("total", 0)) if isinstance(d, dict) else 0
-                    pages = (total // 50) + 1 if total > 50 else 1
-                    for pg in range(2, min(pages + 1, 7)):
-                        try:
-                            r2 = requests.get(ep, headers=headers,
-                                              params={"page": pg, "pageSize": 50, "language": 1},
-                                              timeout=20)
-                            if r2.status_code == 200:
-                                rows2 = extract_rows(r2.json())
-                                if not rows2:
-                                    break
-                                all_data.extend([parse_concern(it) for it in rows2])
-                            time.sleep(0.4)
-                        except Exception as e:
-                            log.error("Concerns page error: %s", e)
-                            break
-                    break  # نجح الـ endpoint، نتوقف
-        except Exception as e:
-            log.error("Concerns endpoint error %s: %s", ep, e)
-            continue
-    return all_data
+function renderDet(){
+  var n=D.find(function(x){return x.id===selId;});
+  if(!n)return;
+  document.getElementById('empty').style.display='none';
+  var det=document.getElementById('det');
+  det.style.display='block';
+  var open=n.status==='مفتوح للتعليق';
+  var titleAr=n.titleAr||TC[n.symbol]||'';
+  var titleEn=n.titleEn||n.title||n.symbol||'';
+  var hasPdf=(n.docs||[]).some(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  var docsHtml=buildDocs(n);
+  var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
 
-def refresh_concerns(force=False):
-    ttl = 3600
-    if not force and (time.time() - _concerns_cache["at"]) < ttl and _concerns_cache["data"]:
-        return
-    with _concerns_lock:
-        if not force and (time.time() - _concerns_cache["at"]) < ttl and _concerns_cache["data"]:
-            return
-        data = fetch_concerns()
-        if data:
-            _concerns_cache["data"] = data
-            _concerns_cache["at"]   = time.time()
-            log.info("Cached %d trade concerns", len(data))
+  det.innerHTML=
+    '<div class="dc">'+
+      '<div class="dbd">'+
+        '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
+        '<span class="sbdg" style="'+(open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(n.status||'')+'</span>'+
+      '</div>'+
+      '<div class="dtit" id="title-ar">'+(titleAr||'<span style="color:var(--am);font-size:12px;font-weight:400">⏳ جارٍ الترجمة...</span>')+'</div>'+
+      '<div class="dtiten">'+titleEn+'</div>'+
+      '<div class="mg">'+
+        '<div><div class="ml">رقم الوثيقة</div><div class="mv">'+(n.symbol||'')+'</div></div>'+
+        '<div><div class="ml">الدولة</div><div class="mv">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</div></div>'+
+        '<div><div class="ml">تاريخ الإشعار</div><div class="mv">'+(n.date||'—')+'</div></div>'+
+        '<div><div class="ml">موعد التعليق</div><div class="mv">'+(n.commentDeadline||'—')+'</div></div>'+
+      '</div>'+prods+
+    '</div>'+
+    (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+'</div>':'')+
+    (!n.analysis?
+      '<div class="aw">'+
+        '<button class="abtn" onclick="analyzeN(\''+n.id+'\')" '+(n.loading?'disabled':'')+'>'+
+          (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل قانوني بالذكاء الاصطناعي')+
+        '</button>'+
+        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO</div>'+
+      '</div>':'')+ 
+    (n.loading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
+    (n.analysis?
+      '<div>'+
+        '<div class="tabs">'+
+          '<button class="tb '+(tab==='sum'?'on':'')+'" onclick="swT(\'sum\',this)">📋 الملخص</button>'+
+          '<button class="tb '+(tab==='leg'?'on':'')+'" onclick="swT(\'leg\',this)">⚖️ التحليل</button>'+
+          '<button class="tb '+(tab==='rec'?'on':'')+'" onclick="swT(\'rec\',this)">💡 التوصيات</button>'+
+          '<button class="tb '+(tab==='full'?'on':'')+'" onclick="swT(\'full\',this)">📄 الكامل</button>'+
+        '</div>'+
+        '<div class="abox" id="abox">'+getTab(n)+'</div>'+
+        '<div class="acts">'+
+          '<button class="actb" onclick="cpA()">📋 نسخ</button>'+
+          '<button class="actb bl" onclick="analyzeN(\''+n.id+'\')">🔄 إعادة</button>'+
+        '</div>'+
+      '</div>':'')+
+    (hasPdf?
+      '<div class="dc" style="border-color:#06564660;margin-top:4px">'+
+        '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي</div>'+
+        (!n.docAnalysis&&!n.docLoading?
+          '<div class="aw" style="margin:0">'+
+            '<button class="abtn gr" onclick="analyzeDoc(\''+n.id+'\')">🤖 تحليل PDF بالذكاء الاصطناعي</button>'+
+            '<div class="ahint">يقرأ محتوى PDF ويحلله قانونياً</div>'+
+          '</div>':'')+
+        (n.docLoading?'<div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
+        (n.docAnalysis?
+          '<div class="abox" style="border-color:#06564660">'+n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+          '<div class="acts">'+
+            '<button class="actb" onclick="cpDoc()">📋 نسخ</button>'+
+            '<button class="actb grn" onclick="analyzeDoc(\''+n.id+'\')">🔄 إعادة</button>'+
+          '</div>':'')+
+      '</div>':'');
+}
 
-@app.route("/api/concerns", methods=["GET"])
-def get_concerns():
-    """جلب الاهتمامات التجارية الحقيقية من WTO ePing API"""
-    if request.args.get("refresh") == "1" or not _concerns_cache["data"]:
-        refresh_concerns(force=True)
-    data = list(_concerns_cache["data"])
-    t    = request.args.get("type", "").upper()
-    kw   = request.args.get("keyword", "").lower()
-    mc   = request.args.get("member", "").lower()
-    st   = request.args.get("status", "").lower()
-    pg   = max(1, int(request.args.get("page", 1)))
-    rw   = min(100, int(request.args.get("rows", 50)))
-    if t in ("SPS", "TBT"):
-        data = [c for c in data if c["type"] == t]
-    if kw:
-        data = [c for c in data if kw in c.get("title","").lower()
-                or kw in c.get("subject","").lower()
-                or kw in " ".join(c.get("keywords",[])).lower()]
-    if mc:
-        data = [c for c in data if mc in c.get("raisingMember","").lower()
-                or mc in c.get("supporting","").lower()]
-    if st == "active":
-        data = [c for c in data if c.get("status","").lower() in ("resolved","active","not resolved","","نشط")]
-    total     = len(data)
-    page_data = data[(pg-1)*rw: pg*rw]
-    return jsonify({
-        "concerns": page_data,
-        "total":    total,
-        "page":     pg,
-        "pages":    (total + rw - 1) // rw,
-        "cached_at": datetime.fromtimestamp(_concerns_cache["at"]).isoformat() if _concerns_cache["at"] else None
-    })
+function getTab(n){
+  if(!n.analysis)return'';
+  var t=tab==='sum'?(n.sum||n.analysis.slice(0,600)):tab==='leg'?(n.leg||n.analysis.slice(600,1300)):tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
+  return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function swT(t,b){tab=t;document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var box=document.getElementById('abox');var n=D.find(function(x){return x.id===selId;});if(box&&n)box.innerHTML=getTab(n);}
+function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis){navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
+function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis){navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
 
+async function analyzeN(id){
+  var n=D.find(function(x){return x.id===id;});
+  if(!n||n.loading)return;
+  n.loading=true;n.analysis=null;renderList();renderDet();
+  try{
+    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}
+    }
+  }catch(e){}
+  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إشعار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. الموعد النهائي: '+n.commentDeadline+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(n.type==='SPS'?'SPS المادة 5':'TBT المادة 2')+'\n• المعايير: '+(n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات قبل '+n.commentDeadline+'\n2. تقييم الأثر على الصادرات\n3. التنسيق مع وزارة التجارة\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT');
+  parseAn(n,t);n.loading=false;tab='full';renderList();renderDet();
+}
 
-@app.route("/api/analyze-concern", methods=["POST"])
-def analyze_concern():
-    if not CLAUDE_KEY:
-        return jsonify({"error": "No Claude key", "analysis": ""})
-    try:
-        n = request.get_json()
-        prompt = "\n".join([
-            "أنت محلل قانوني متخصص في منازعات منظمة التجارة العالمية.",
-            "حلّل هذا الاهتمام التجاري المُسجَّل في لجنة WTO:",
-            "الرمز: " + str(n.get("symbol","")) + " | النوع: " + n.get("type","") + " | الاتفاقية: " + n.get("agreement",""),
-            "العنوان: " + n.get("title",""),
-            "الدولة المُثيرة: " + n.get("raisingMember",""),
-            "الدول الداعمة: " + n.get("supporting",""),
-            "الموضوع: " + n.get("subject",""),
-            "الحالة: " + n.get("status",""),
-            "عدد مرات الإثارة: " + str(n.get("timesRaised","")),
-            "أول إثارة: " + n.get("firstRaised","") + " | آخر إثارة: " + n.get("lastRaised",""),
-            "الكلمات المفتاحية: " + ", ".join(n.get("keywords",[])),
-            "",
-            "قدّم تحليلاً وفق الهيكل التالي:",
-            "1. جوهر الاهتمام التجاري ومحله",
-            "2. الأساس القانوني: " + n.get("article","") + " من " + n.get("agreement",""),
-            "3. الدول المتضررة وحجم التأثير التجاري",
-            "4. الحقوق القانونية المتاحة (DSU Article 4 - مشاورات، Panel Request)",
-            "5. الموقف السعودي المقترح",
-            "6. توصيات للتفاوض أو الاعتراض",
-            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي."
-        ])
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 1200, "messages": [{"role": "user", "content": prompt}]},
-            timeout=30
-        )
-        if r.status_code == 200:
-            return jsonify({"analysis": r.json()["content"][0]["text"].strip()})
-        return jsonify({"analysis": "", "error": r.text[:200]})
-    except Exception as e:
-        return jsonify({"error": str(e), "analysis": ""})
+function parseAn(n,txt){
+  var s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  var l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  var rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
+  n.analysis=txt;n.sum=s?s[1].trim():txt.slice(0,600);n.leg=l?l[1].trim():txt.slice(600,1300);n.rec=rc?rc[1].trim():txt.slice(1300);
+}
 
+async function analyzeDoc(id){
+  var n=D.find(function(x){return x.id===id;});
+  if(!n||n.docLoading)return;
+  var pdfDoc=(n.docs||[]).find(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  if(!pdfDoc){alert('لا يوجد PDF متاح لهذا الإشعار');return;}
+  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
+  try{
+    var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title,pdf_url:pdfDoc.url})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
+    }
+  }catch(e){console.log('analyzeDoc err:',e);}
+  n.docAnalysis='تعذّر قراءة المستند.';
+  n.docLoading=false;renderList();renderDet();
+}
 
-@app.route("/api/translate-batch", methods=["POST"])
-def translate_batch_ep():
-    if not CLAUDE_KEY:
-        return jsonify({"translations": []})
-    try:
-        body = request.get_json()
-        texts = body.get("texts", [])[:15]
-        if not texts:
-            return jsonify({"translations": []})
-        numbered = "\n".join([str(i+1) + ". " + t for i, t in enumerate(texts)])
-        prompt = "ترجم هذه العناوين من الانجليزية للعربية. اكتب الرقم ثم الترجمة فقط:\n" + numbered
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 2000, "messages": [{"role": "user", "content": prompt}]},
-            timeout=30
-        )
-        if r.status_code == 200:
-            resp = r.json()["content"][0]["text"].strip()
-            result_lines = [l.strip() for l in resp.split("\n") if l.strip()]
-            translations = []
-            for line in result_lines:
-                clean = re.sub(r"^[0-9]+[.)]\s*", "", line).strip()
-                if clean:
-                    translations.append(clean)
-            if len(translations) == len(texts):
-                return jsonify({"translations": translations})
-        return jsonify({"translations": []})
-    except Exception as e:
-        return jsonify({"translations": [], "error": str(e)})
+function setStatus(st,msg){document.getElementById('hlbl').textContent=msg;document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');}
+
+/* ══════════════════════════════════════
+   تبديل الخدمات الرئيسية
+══════════════════════════════════════ */
+var curSvc='notif';
+function switchSvc(svc,btn){
+  curSvc=svc;
+  document.querySelectorAll('.svctb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  // إخفاء جميع اللوحات
+  document.getElementById('notif-panel').style.display='none';
+  document.getElementById('concerns-panel').style.display='none';
+  document.getElementById('alerts-panel').style.display='none';
+  // إخفاء main content
+  document.getElementById('det').style.display='none';
+  document.getElementById('cdet').style.display='none';
+  document.getElementById('empty').style.display='none';
+  if(svc==='notif'){
+    document.getElementById('notif-panel').style.display='flex';
+    document.getElementById('notif-panel').style.flexDirection='column';
+    document.getElementById('notif-panel').style.overflow='hidden';
+    if(selId){document.getElementById('det').style.display='block';}
+    else{document.getElementById('empty').style.display='flex';}
+  } else if(svc==='concerns'){
+    document.getElementById('concerns-panel').style.display='flex';
+    document.getElementById('concerns-panel').style.flexDirection='column';
+    document.getElementById('concerns-panel').style.flex='1';
+    document.getElementById('concerns-panel').style.overflow='hidden';
+    if(!CD.length)loadConcerns();
+    if(selCId){document.getElementById('cdet').style.display='block';}
+    else{document.getElementById('empty').style.display='flex';}
+  } else if(svc==='alerts'){
+    document.getElementById('alerts-panel').style.display='flex';
+    document.getElementById('alerts-panel').style.flexDirection='column';
+    document.getElementById('alerts-panel').style.flex='1';
+    document.getElementById('alerts-panel').style.overflow='hidden';
+    document.getElementById('empty').style.display='flex';
+    renderAlerts();
+  }
+}
+
+/* ══════════════════════════════════════
+   الاهتمامات التجارية
+══════════════════════════════════════ */
+var CD=[],selCId=null,cBusy=false;
+async function loadConcerns(){
+  if(cBusy)return;
+  cBusy=true;
+  document.getElementById('clist').innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">⏳ جارٍ التحميل...</div>';
+  var t=document.getElementById('c-type').value;
+  var st=document.getElementById('c-status').value;
+  var params=[];
+  if(t)params.push('type='+t);
+  if(st)params.push('status='+st);
+  try{
+    var r=await fetch(API+'/api/concerns'+(params.length?'?'+params.join('&'):''));
+    if(r.ok){
+      var d=await r.json();
+      CD=d.concerns||[];
+      document.getElementById('cs-t').textContent=d.total||CD.length;
+      document.getElementById('cs-o').textContent=CD.filter(function(c){return !(c.status||'').toLowerCase().includes('resolv');}).length;
+      document.getElementById('cs-s').textContent=CD.filter(function(c){return c.type==='SPS';}).length;
+      document.getElementById('cs-b').textContent=CD.filter(function(c){return c.type==='TBT';}).length;
+      renderConcerns();
+    }
+  }catch(e){document.getElementById('clist').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر التحميل</div>';}
+  cBusy=false;
+}
+
+function renderConcerns(){
+  var q=(document.getElementById('c-search').value||'').toLowerCase();
+  var fil=CD.filter(function(c){
+    if(!q)return true;
+    return (c.titleAr||c.title||'').toLowerCase().includes(q)||(c.symbol||'').toLowerCase().includes(q)||(c.raisingMember||'').toLowerCase().includes(q)||(c.subject||'').toLowerCase().includes(q);
+  });
+  var el=document.getElementById('clist');
+  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
+  el.innerHTML=fil.map(function(c){
+    var resolved=(c.status||'').toLowerCase().includes('resolv');
+    return '<div class="cc '+(c.id===selCId?'sel':'')+'" onclick="selConcern(\''+c.id+'\')">'+
+      '<div class="nt">'+
+        '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'—')+'</span>'+
+        '<span class="ctag '+(resolved?'ctag-cl':'ctag-op')+'">'+(resolved?'محلول':'قائم')+'</span>'+
+        '<span class="ndate">'+(c.lastRaised||c.firstRaised||'')+'</span>'+
+      '</div>'+
+      '<div class="ntit">'+(c.titleAr||c.title||c.symbol||'—')+'</div>'+
+      '<div class="nbot">'+
+        '<span class="nmem">🌍 '+(c.raisingMember||'—')+'</span>'+
+        '<span class="ctag ctag-art">'+(c.timesRaised?'× '+c.timesRaised:c.article||'')+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function selConcern(id){
+  selCId=id;
+  renderConcerns();
+  var c=CD.find(function(x){return x.id===id;});
+  if(!c)return;
+  document.getElementById('empty').style.display='none';
+  var det=document.getElementById('cdet');
+  det.style.display='block';
+  var resolved=(c.status||'').toLowerCase().includes('resolv');
+  var kwHtml=(c.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">كلمات مفتاحية:</span>'+(c.keywords||[]).map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
+  var docsHtml=(c.relatedDocs||[]).length?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📄 وثائق ذات صلة</div>'+(c.relatedDocs||[]).map(function(d){return '<div class="doc-row"><span class="doc-n">'+d+'</span></div>';}).join('')+'</div>':'';
+  det.innerHTML=
+    '<div class="dc">'+
+      '<div class="dbd">'+
+        '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'')+'</span>'+
+        '<span class="concern-badge concern-art">'+(c.article||'')+'</span>'+
+        '<span class="sbdg" style="'+(resolved?'background:#1a0d0d;color:#f87171;border:1px solid #ef444440':'background:#0d3320;color:#4ade80;border:1px solid #22c55e40')+'">'+(resolved?'محلول':'قائم')+'</span>'+
+      '</div>'+
+      '<div class="dtit">'+(c.titleAr||c.title||c.symbol)+'</div>'+
+      '<div class="dtiten">'+(c.title||c.symbol)+'</div>'+
+      '<div class="mg" style="grid-template-columns:repeat(3,1fr)">'+
+        '<div><div class="ml">الدولة المُثيرة</div><div class="mv">🌍 '+(c.raisingMember||'—')+'</div></div>'+
+        '<div><div class="ml">أول إثارة</div><div class="mv">'+(c.firstRaised||'—')+'</div></div>'+
+        '<div><div class="ml">آخر إثارة</div><div class="mv">'+(c.lastRaised||'—')+'</div></div>'+
+        '<div><div class="ml">عدد مرات الإثارة</div><div class="mv">'+(c.timesRaised||'—')+'</div></div>'+
+        '<div><div class="ml">الموضوع</div><div class="mv">'+(c.subject||'—')+'</div></div>'+
+        '<div><div class="ml">الاتفاقية</div><div class="mv">'+(c.agreement||'—')+'</div></div>'+
+      '</div>'+
+      (c.supporting?'<div style="margin-top:8px;font-size:12px;color:var(--t2)">الدول الداعمة: <span style="color:#c8d0e8">'+c.supporting+'</span></div>':'')+
+      kwHtml+
+    '</div>'+
+    docsHtml+
+    (!c.canalysis?
+      '<div class="aw">'+
+        '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
+          (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمام التجاري بالذكاء الاصطناعي')+
+        '</button>'+
+        '<div class="ahint">تحليل قانوني وفق DSU + اتفاقيات WTO</div>'+
+      '</div>':'')+
+    (c.cloading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
+    (c.canalysis?
+      '<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--am)">⚠️ تحليل الاهتمام التجاري</div>'+
+        '<div class="abox">'+c.canalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+        '<div class="acts">'+
+          '<button class="actb" onclick="navigator.clipboard&&navigator.clipboard.writeText(CD.find(function(x){return x.id===\''+c.id+'\';}).canalysis||\'\')" >📋 نسخ</button>'+
+          '<button class="actb bl" onclick="analyzeConcern(\''+c.id+'\')">🔄 إعادة</button>'+
+        '</div>'+
+      '</div>':'');
+}
+
+async function analyzeConcern(id){
+  var c=CD.find(function(x){return x.id===id;});
+  if(!c||c.cloading)return;
+  c.cloading=true;c.canalysis=null;renderConcerns();selConcern(id);
+  try{
+    var r=await fetch(API+'/api/analyze-concern',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
+    if(r.ok){var d=await r.json();if(d.analysis){c.canalysis=d.analysis;c.cloading=false;renderConcerns();selConcern(id);return;}}
+  }catch(e){}
+  c.canalysis='تعذّر الحصول على التحليل. تحقق من الاتصال بالخادم.';c.cloading=false;renderConcerns();selConcern(id);
+}
+
+/* ══════════════════════════════════════
+   التنبيهات
+══════════════════════════════════════ */
+var ALERTS=[];
+async function loadAlerts(){
+  try{var r=await fetch(API+'/api/alerts');if(r.ok){var d=await r.json();ALERTS=d.alerts||[];renderAlerts();}}catch(e){renderAlerts();}
+}
+function renderAlerts(){
+  var el=document.getElementById('alerts-list');
+  if(!ALERTS.length){
+    el.innerHTML='<div class="al-empty">🔔 لا توجد تنبيهات نشطة<br><span style="font-size:11px;color:var(--t3)">أضف تنبيهاً جديداً أدناه</span></div>';
+    return;
+  }
+  el.innerHTML=ALERTS.map(function(a){
+    return '<div class="al-row">'+
+      '<label class="tgl"><input type="checkbox" '+(a.active?'checked':'')+' onchange="toggleAlert('+a.id+',this)"/><span class="tslider"></span></label>'+
+      '<div class="al-info">'+
+        '<div class="al-name">'+(a.type||'الكل')+' — '+(a.sector||'جميع القطاعات')+'</div>'+
+        '<div class="al-desc">'+(a.frequency||'فوري')+' · '+(a.country||'جميع الدول')+'</div>'+
+      '</div>'+
+      '<button class="al-del" onclick="deleteAlert('+a.id+')">✕</button>'+
+    '</div>';
+  }).join('');
+}
+async function addAlert(){
+  var body={type:document.getElementById('al-type').value,sector:document.getElementById('al-sector').value,country:document.getElementById('al-country').value,frequency:document.getElementById('al-freq').value};
+  try{
+    var r=await fetch(API+'/api/alerts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.ok){var d=await r.json();ALERTS.push(d.alert);renderAlerts();document.getElementById('al-sector').value='';}
+  }catch(e){alert('تعذّر الإضافة');}
+}
+async function toggleAlert(id,cb){
+  try{await fetch(API+'/api/alerts/'+id,{method:'PUT'});}catch(e){cb.checked=!cb.checked;}
+  var a=ALERTS.find(function(x){return x.id===id;});if(a)a.active=cb.checked;
+}
+async function deleteAlert(id){
+  try{await fetch(API+'/api/alerts/'+id,{method:'DELETE'});}catch(e){}
+  ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();
+}
+
+doLoad();
+loadAlerts();
+</script>
+</body>
+</html>
