@@ -78,6 +78,54 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* ── تبويبات الخدمات الرئيسية ── */
+#svc-bar{display:flex;gap:2px;background:#060c18;border-bottom:1px solid var(--b1);padding:0 12px;flex-shrink:0}
+.svctb{padding:10px 16px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
+.svctb.on{color:var(--t1);border-bottom-color:var(--ac)}
+.svctb:hover:not(.on){color:var(--t1)}
+/* ── لوحة الاهتمامات التجارية ── */
+#concerns-panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+#concerns-panel.act{display:flex}
+.cflt{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+#clist{flex:1;overflow-y:auto;padding:8px}
+.cc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px;cursor:pointer;margin-bottom:6px;transition:all .15s}
+.cc:hover{border-color:var(--b2);background:var(--bg3)}
+.cc.sel{border-color:#f59e0b;background:var(--bg3)}
+.ctag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-left:4px}
+.ctag-art{background:#1a1a0d;color:#fbbf24;border:1px solid #f59e0b35}
+.ctag-op{background:#0d2010;color:#4ade80;border:1px solid #22c55e35}
+.ctag-cl{background:#1a0a0a;color:#f87171;border:1px solid #ef444435}
+/* ── لوحة التنبيهات ── */
+#alerts-panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+#alerts-panel.act{display:flex}
+.alerts-body{flex:1;overflow-y:auto;padding:10px 12px}
+.al-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;margin-bottom:7px}
+.al-info{flex:1;padding-left:8px}
+.al-name{font-size:12px;font-weight:600;color:var(--t1)}
+.al-desc{font-size:11px;color:var(--t2);margin-top:2px}
+.al-del{padding:4px 8px;border-radius:6px;border:1px solid #ef444435;background:transparent;color:#f87171;cursor:pointer;font-size:11px}
+.al-del:hover{background:#1a0a0a}
+/* toggle */
+.tgl{position:relative;width:38px;height:20px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0}
+.tslider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:10px;transition:.25s}
+.tslider:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+.tgl input:checked+.tslider{background:var(--ac)}
+.tgl input:checked+.tslider:before{transform:translateX(18px)}
+/* نموذج إضافة تنبيه */
+.al-form{margin:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:14px}
+.al-form-title{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px}
+.al-frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.al-frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.al-field{display:flex;flex-direction:column;gap:4px}
+.al-lbl{font-size:11px;color:var(--t3)}
+.al-addbtn{width:100%;padding:8px;border-radius:8px;border:1px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px}
+.al-addbtn:hover{background:#1a2a45}
+.al-empty{text-align:center;padding:30px;font-size:12px;color:var(--t3)}
+/* concern detail في main */
+.cdet{display:none}
+.concern-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.concern-art{background:#1a1a0d;color:#fbbf24;border:1px solid #f59e0b40}
 </style>
 </head>
 <body>
@@ -94,6 +142,14 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 </div>
 <div id="app">
   <div id="sb">
+    <!-- شريط التبويبات الرئيسية -->
+    <div id="svc-bar">
+      <button class="svctb on" id="tb-notif" onclick="switchSvc('notif',this)">📋 الإشعارات</button>
+      <button class="svctb" id="tb-concerns" onclick="switchSvc('concerns',this)">⚠️ الاهتمامات التجارية</button>
+      <button class="svctb" id="tb-alerts" onclick="switchSvc('alerts',this)">🔔 تنبيهاتي</button>
+    </div>
+    <!-- لوحة الإشعارات الأصلية -->
+    <div id="notif-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
     <div id="stats">
       <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
       <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
@@ -119,6 +175,53 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
       <span class="pglbl" id="pglbl">1/1</span>
       <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
     </div>
+    </div><!-- /notif-panel -->
+
+    <!-- ── لوحة الاهتمامات التجارية ── -->
+    <div id="concerns-panel">
+      <div class="cflt">
+        <input class="sinput" id="c-search" type="text" placeholder="🔍 بحث في الاهتمامات..." oninput="renderConcerns()"/>
+        <div class="frow" style="gap:5px">
+          <select class="sselect" id="c-type" style="margin-bottom:0;flex:1" onchange="loadConcerns()">
+            <option value="">الكل (SPS+TBT)</option>
+            <option value="SPS">SPS</option>
+            <option value="TBT">TBT</option>
+          </select>
+          <select class="sselect" id="c-status" style="margin-bottom:0;flex:1" onchange="loadConcerns()">
+            <option value="">كل الحالات</option>
+            <option value="active">نشط فقط</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:4px">
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-o" style="color:var(--gr)">—</div><div class="l">نشط</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
+          <div class="sc" style="background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:7px;text-align:center;flex:1"><div class="n" id="cs-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
+        </div>
+      </div>
+      <div id="clist" style="flex:1;overflow-y:auto;padding:8px"><div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">⏳ جارٍ التحميل...</div></div>
+    </div><!-- /concerns-panel -->
+
+    <!-- ── لوحة التنبيهات ── -->
+    <div id="alerts-panel">
+      <div style="flex:1;overflow-y:auto;padding:10px 12px">
+        <div id="alerts-list"></div>
+        <div class="al-form">
+          <div class="al-form-title">➕ إضافة تنبيه جديد</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+            <div class="al-field"><span class="al-lbl">النوع</span>
+              <select class="sselect" id="al-type" style="margin-bottom:0"><option value="الكل">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option></select></div>
+            <div class="al-field"><span class="al-lbl">التكرار</span>
+              <select class="sselect" id="al-freq" style="margin-bottom:0"><option value="فوري">فوري</option><option value="يومي">يومي</option><option value="أسبوعي">أسبوعي</option><option value="شهري">شهري</option></select></div>
+            <div class="al-field"><span class="al-lbl">الدولة</span>
+              <select class="sselect" id="al-country" style="margin-bottom:0"><option value="جميع الدول">الجميع</option><option value="European Union">الاتحاد الأوروبي</option><option value="United States of America">الولايات المتحدة</option><option value="China">الصين</option><option value="Saudi Arabia">المملكة العربية السعودية</option></select></div>
+          </div>
+          <input class="sinput" id="al-sector" type="text" placeholder="القطاع / الكلمة المفتاحية (مثال: أغذية، بتروكيماويات...)" style="margin-bottom:8px"/>
+          <button class="al-addbtn" onclick="addAlert()">➕ إضافة التنبيه</button>
+        </div>
+      </div>
+    </div><!-- /alerts-panel -->
+
   </div>
   <div id="main">
     <div id="empty">
@@ -127,6 +230,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
       <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إشعار لعرض تفاصيله وتحليله</div>
     </div>
     <div id="det"></div>
+    <div id="cdet" class="cdet"></div>
   </div>
 </div>
 <script>
@@ -364,7 +468,196 @@ async function analyzeDoc(id){
 
 function setStatus(st,msg){document.getElementById('hlbl').textContent=msg;document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');}
 
+/* ══════════════════════════════════════
+   تبديل الخدمات الرئيسية
+══════════════════════════════════════ */
+var curSvc='notif';
+function switchSvc(svc,btn){
+  curSvc=svc;
+  document.querySelectorAll('.svctb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  // إخفاء جميع اللوحات
+  document.getElementById('notif-panel').style.display='none';
+  document.getElementById('concerns-panel').style.display='none';
+  document.getElementById('alerts-panel').style.display='none';
+  // إخفاء main content
+  document.getElementById('det').style.display='none';
+  document.getElementById('cdet').style.display='none';
+  document.getElementById('empty').style.display='none';
+  if(svc==='notif'){
+    document.getElementById('notif-panel').style.display='flex';
+    document.getElementById('notif-panel').style.flexDirection='column';
+    document.getElementById('notif-panel').style.overflow='hidden';
+    if(selId){document.getElementById('det').style.display='block';}
+    else{document.getElementById('empty').style.display='flex';}
+  } else if(svc==='concerns'){
+    document.getElementById('concerns-panel').style.display='flex';
+    document.getElementById('concerns-panel').style.flexDirection='column';
+    document.getElementById('concerns-panel').style.flex='1';
+    document.getElementById('concerns-panel').style.overflow='hidden';
+    if(!CD.length)loadConcerns();
+    if(selCId){document.getElementById('cdet').style.display='block';}
+    else{document.getElementById('empty').style.display='flex';}
+  } else if(svc==='alerts'){
+    document.getElementById('alerts-panel').style.display='flex';
+    document.getElementById('alerts-panel').style.flexDirection='column';
+    document.getElementById('alerts-panel').style.flex='1';
+    document.getElementById('alerts-panel').style.overflow='hidden';
+    document.getElementById('empty').style.display='flex';
+    renderAlerts();
+  }
+}
+
+/* ══════════════════════════════════════
+   الاهتمامات التجارية
+══════════════════════════════════════ */
+var CD=[],selCId=null,cBusy=false;
+async function loadConcerns(){
+  if(cBusy)return;
+  cBusy=true;
+  document.getElementById('clist').innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">⏳ جارٍ التحميل...</div>';
+  var t=document.getElementById('c-type').value;
+  var st=document.getElementById('c-status').value;
+  var params=[];
+  if(t)params.push('type='+t);
+  if(st)params.push('status='+st);
+  try{
+    var r=await fetch(API+'/api/concerns'+(params.length?'?'+params.join('&'):''));
+    if(r.ok){
+      var d=await r.json();
+      CD=d.concerns||[];
+      document.getElementById('cs-t').textContent=d.total||CD.length;
+      document.getElementById('cs-o').textContent=CD.filter(function(c){return c.status==='نشط';}).length;
+      document.getElementById('cs-s').textContent=CD.filter(function(c){return c.type==='SPS';}).length;
+      document.getElementById('cs-b').textContent=CD.filter(function(c){return c.type==='TBT';}).length;
+      renderConcerns();
+    }
+  }catch(e){document.getElementById('clist').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر التحميل</div>';}
+  cBusy=false;
+}
+
+function renderConcerns(){
+  var q=(document.getElementById('c-search').value||'').toLowerCase();
+  var fil=CD.filter(function(c){
+    if(!q)return true;
+    return (c.titleAr||c.title||'').toLowerCase().includes(q)||(c.symbol||'').toLowerCase().includes(q)||(c.member||'').toLowerCase().includes(q);
+  });
+  var el=document.getElementById('clist');
+  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
+  el.innerHTML=fil.map(function(c){
+    var isActive=c.status==='نشط';
+    return '<div class="cc '+(c.id===selCId?'sel':'')+'" onclick="selConcern(\''+c.id+'\')">'+
+      '<div class="nt">'+
+        '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'—')+'</span>'+
+        '<span class="ctag '+(isActive?'ctag-op':'ctag-cl')+'">'+(isActive?'نشط':'مغلق')+'</span>'+
+        '<span class="ndate">'+(c.date||'')+'</span>'+
+      '</div>'+
+      '<div class="ntit">'+(c.titleAr||c.title||c.symbol||'—')+'</div>'+
+      '<div class="nbot">'+
+        '<span class="nmem">'+(FL[c.memberCode]||'🌍')+' '+(c.member||'')+'</span>'+
+        '<span class="ctag ctag-art">'+(c.article||'')+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function selConcern(id){
+  selCId=id;
+  renderConcerns();
+  var c=CD.find(function(x){return x.id===id;});
+  if(!c)return;
+  document.getElementById('empty').style.display='none';
+  var det=document.getElementById('cdet');
+  det.style.display='block';
+  var isActive=c.status==='نشط';
+  det.innerHTML=
+    '<div class="dc">'+
+      '<div class="dbd">'+
+        '<span class="bdg '+(c.type||'').toLowerCase()+'">'+(c.type||'')+'</span>'+
+        '<span class="concern-badge concern-art">'+(c.article||'')+'</span>'+
+        '<span class="sbdg" style="'+(isActive?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(isActive?'نشط':'مغلق')+'</span>'+
+      '</div>'+
+      '<div class="dtit">'+(c.titleAr||c.title||c.symbol)+'</div>'+
+      '<div class="dtiten">'+(c.title||c.symbol)+'</div>'+
+      '<div class="mg">'+
+        '<div><div class="ml">رقم الوثيقة</div><div class="mv">'+(c.symbol||'')+'</div></div>'+
+        '<div><div class="ml">الدولة</div><div class="mv">'+(FL[c.memberCode]||'🌍')+' '+(c.member||'')+'</div></div>'+
+        '<div><div class="ml">الاتفاقية</div><div class="mv">'+(c.agreement||'')+'</div></div>'+
+        '<div><div class="ml">موعد التعليق</div><div class="mv">'+(c.commentDeadline||'—')+'</div></div>'+
+      '</div>'+
+      ((c.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+c.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'')+
+    '</div>'+
+    (!c.canalysis?
+      '<div class="aw">'+
+        '<button class="abtn" onclick="analyzeConcern(\''+c.id+'\')" '+(c.cloading?'disabled':'')+'>'+
+          (c.cloading?'⏳ جارٍ التحليل...':'⚠️ تحليل الاهتمامات التجارية بالذكاء الاصطناعي')+
+        '</button>'+
+        '<div class="ahint">تحليل قانوني وفق DSU + اتفاقيات WTO</div>'+
+      '</div>':'')+
+    (c.cloading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
+    (c.canalysis?
+      '<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--am)">⚠️ تحليل الاهتمامات التجارية</div>'+
+        '<div class="abox">'+c.canalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+        '<div class="acts">'+
+          '<button class="actb" onclick="navigator.clipboard&&navigator.clipboard.writeText(CD.find(function(x){return x.id===\''+c.id+'\';}).canalysis||\'\')" >📋 نسخ</button>'+
+          '<button class="actb bl" onclick="analyzeConcern(\''+c.id+'\')">🔄 إعادة</button>'+
+        '</div>'+
+      '</div>':'');
+}
+
+async function analyzeConcern(id){
+  var c=CD.find(function(x){return x.id===id;});
+  if(!c||c.cloading)return;
+  c.cloading=true;c.canalysis=null;renderConcerns();selConcern(id);
+  try{
+    var r=await fetch(API+'/api/analyze-concern',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(c)});
+    if(r.ok){var d=await r.json();if(d.analysis){c.canalysis=d.analysis;c.cloading=false;renderConcerns();selConcern(id);return;}}
+  }catch(e){}
+  c.canalysis='تعذّر الحصول على التحليل. تحقق من الاتصال بالخادم.';c.cloading=false;renderConcerns();selConcern(id);
+}
+
+/* ══════════════════════════════════════
+   التنبيهات
+══════════════════════════════════════ */
+var ALERTS=[];
+async function loadAlerts(){
+  try{var r=await fetch(API+'/api/alerts');if(r.ok){var d=await r.json();ALERTS=d.alerts||[];renderAlerts();}}catch(e){renderAlerts();}
+}
+function renderAlerts(){
+  var el=document.getElementById('alerts-list');
+  if(!ALERTS.length){
+    el.innerHTML='<div class="al-empty">🔔 لا توجد تنبيهات نشطة<br><span style="font-size:11px;color:var(--t3)">أضف تنبيهاً جديداً أدناه</span></div>';
+    return;
+  }
+  el.innerHTML=ALERTS.map(function(a){
+    return '<div class="al-row">'+
+      '<label class="tgl"><input type="checkbox" '+(a.active?'checked':'')+' onchange="toggleAlert('+a.id+',this)"/><span class="tslider"></span></label>'+
+      '<div class="al-info">'+
+        '<div class="al-name">'+(a.type||'الكل')+' — '+(a.sector||'جميع القطاعات')+'</div>'+
+        '<div class="al-desc">'+(a.frequency||'فوري')+' · '+(a.country||'جميع الدول')+'</div>'+
+      '</div>'+
+      '<button class="al-del" onclick="deleteAlert('+a.id+')">✕</button>'+
+    '</div>';
+  }).join('');
+}
+async function addAlert(){
+  var body={type:document.getElementById('al-type').value,sector:document.getElementById('al-sector').value,country:document.getElementById('al-country').value,frequency:document.getElementById('al-freq').value};
+  try{
+    var r=await fetch(API+'/api/alerts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.ok){var d=await r.json();ALERTS.push(d.alert);renderAlerts();document.getElementById('al-sector').value='';}
+  }catch(e){alert('تعذّر الإضافة');}
+}
+async function toggleAlert(id,cb){
+  try{await fetch(API+'/api/alerts/'+id,{method:'PUT'});}catch(e){cb.checked=!cb.checked;}
+  var a=ALERTS.find(function(x){return x.id===id;});if(a)a.active=cb.checked;
+}
+async function deleteAlert(id){
+  try{await fetch(API+'/api/alerts/'+id,{method:'DELETE'});}catch(e){}
+  ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();
+}
+
 doLoad();
+loadAlerts();
 </script>
 </body>
 </html>
