@@ -571,15 +571,19 @@ def fetch_concerns():
 
 
 def _build_concerns_from_notifications():
-    """بناء الاهتمامات من إشعارات مرتبطة باهتمامات تجارية"""
+    """
+    جلب الاهتمامات التجارية من ePing عبر إشعارات مرتبطة باهتمامات تجارية
+    هذا هو المصدر الوحيد المتاح مجاناً لبيانات الاهتمامات التجارية SPS/TBT
+    """
     api_headers = {
         "Ocp-Apim-Subscription-Key": WTO_KEY,
         "Accept": "application/json",
         "User-Agent": "WTO-ePing-Monitor/1.0"
     }
     all_data = []
-    # نجلب إشعارات مرتبطة باهتمامات تجارية
-    for pg in range(1, 6):
+    seen = set()
+
+    for pg in range(1, 11):  # حتى 1000 اهتمام
         try:
             r = requests.get(
                 "https://api.wto.org/eping/notifications/search",
@@ -590,47 +594,73 @@ def _build_concerns_from_notifications():
                     "language": 1,
                     "isRelatedToTradeConcern": "true"
                 },
-                timeout=25
+                timeout=30
             )
-            log.info("Concerns from notif page %d: status=%d", pg, r.status_code)
+            log.info("Concerns build page %d: status=%d", pg, r.status_code)
             if r.status_code != 200:
                 break
             d = r.json()
             rows = extract_rows(d)
             if not rows:
                 break
-            # نحول الإشعارات إلى اهتمامات
+
             for it in rows:
                 sym = (it.get("documentSymbol") or "").strip()
-                area = it.get("area", "")
+                if not sym or sym in seen:
+                    continue
+                seen.add(sym)
+
+                area  = it.get("area", "")
                 ntype = "SPS" if area == "SPS" else "TBT"
                 title = (it.get("titlePlain") or clean_html(it.get("title") or "") or sym).strip()
+
+                # الكلمات المفتاحية
+                kws = [k.get("name","") for k in (it.get("keywords") or []) if isinstance(k, dict) and k.get("name")][:6]
+
+                # الأهداف كموضوع
+                objs = [o.get("name","") for o in (it.get("objectives") or []) if isinstance(o, dict) and o.get("name")]
+                subject = " | ".join(objs[:2]) if objs else ""
+
+                # المستندات
+                doc_link = it.get("notifiedDocumentLink") or ""
+                docs = []
+                if doc_link:
+                    for url in [u.strip() for u in doc_link.split(",") if u.strip().startswith("http")]:
+                        docs.append({"name": "PDF رسمي", "url": url, "type": "pdf"})
+
+                date_raw = it.get("distributionDate") or ""
+                dead_raw = it.get("commentDeadlineDate") or ""
+
                 all_data.append({
-                    "id": sym,
-                    "symbol": sym,
-                    "type": ntype,
-                    "title": title,
-                    "titleAr": "",
+                    "id":            sym,
+                    "symbol":        sym,
+                    "type":          ntype,
+                    "title":         title,
+                    "titleAr":       "",
                     "raisingMember": it.get("notifyingMember") or "",
-                    "supporting": "",
-                    "subject": ", ".join([o.get("name","") for o in (it.get("objectives") or []) if isinstance(o, dict)])[:100],
-                    "status": "قائم",
-                    "firstRaised": (it.get("distributionDate") or "")[:10],
-                    "lastRaised": (it.get("distributionDate") or "")[:10],
-                    "timesRaised": 1,
-                    "keywords": [k.get("name","") for k in (it.get("keywords") or []) if isinstance(k, dict)][:6],
-                    "relatedDocs": [],
-                    "article": "المادة 5.7" if ntype == "SPS" else "المادة 2.2",
-                    "agreement": "اتفاقية SPS" if ntype == "SPS" else "اتفاقية TBT",
-                    "detailUrl": "https://eping.wto.org/en/Search/Index?documentSymbol=" + requests.utils.quote(sym),
+                    "memberCode":    it.get("notifyingMemberCode") or "",
+                    "supporting":    "",
+                    "subject":       subject,
+                    "status":        "مفتوح للتعليق" if dead_raw else "مغلق",
+                    "firstRaised":   date_raw[:10] if date_raw else "",
+                    "lastRaised":    date_raw[:10] if date_raw else "",
+                    "commentDeadline": dead_raw[:10] if dead_raw else "",
+                    "timesRaised":   1,
+                    "keywords":      kws,
+                    "relatedDocs":   docs,
+                    "article":       "المادة 5.7" if ntype == "SPS" else "المادة 2.2",
+                    "agreement":     "اتفاقية SPS" if ntype == "SPS" else "اتفاقية TBT",
+                    "detailUrl":     "https://eping.wto.org/en/Search/Index?documentSymbol=" + requests.utils.quote(sym),
+                    "epingLink":     "https://eping.wto.org/en/Search/Index?documentSymbol=" + requests.utils.quote(sym),
                 })
+
             total = d.get("totalCount", 0)
-            log.info("Built %d concerns so far (total=%d)", len(all_data), total)
-            if len(all_data) >= min(total, 500):
+            log.info("Concerns built: %d / %d", len(all_data), total)
+            if len(all_data) >= min(total, 1000):
                 break
             time.sleep(0.3)
         except Exception as e:
-            log.error("Build concerns error: %s", e)
+            log.error("Build concerns page %d error: %s", pg, e)
             break
 
     log.info("Total concerns built: %d", len(all_data))
