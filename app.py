@@ -515,83 +515,125 @@ def parse_concern(it):
 
 def fetch_concerns():
     """
-    جلب الاهتمامات التجارية من:
-    1. ملف Excel الرسمي من WTO (مجاني، لا يحتاج API key)
-    2. WTO API (إن توفّر المفتاح)
+    جلب الاهتمامات التجارية عبر WTO ePing API
+    نفس المفتاح الذي يعمل مع الإشعارات
     """
-    import io
-
+    api_headers = {
+        "Ocp-Apim-Subscription-Key": WTO_KEY,
+        "Accept": "application/json",
+        "User-Agent": "WTO-ePing-Monitor/1.0"
+    }
     all_data = []
 
-    # ── المحاولة الأولى: ملف Excel الرسمي من WTO ──
-    xlsx_urls = [
-        "https://eping.wto.org/NotificationExcelFiles/TradeConcerns_EN.xlsx",
-        "https://eping.wto.org/NotificationExcelFiles/Concerns_EN.xlsx",
+    # endpoints الاهتمامات التجارية في WTO API
+    endpoints = [
+        "https://api.wto.org/eping/concerns/search",
+        "https://api.wto.org/eping/v1/concerns/search",
+        "https://api.wto.org/eping/stc/search",
+        "https://api.wto.org/eping/tradeconcerns/search",
     ]
-    for xurl in xlsx_urls:
+
+    for ep in endpoints:
         try:
-            log.info("Downloading concerns Excel: %s", xurl)
-            r = requests.get(xurl, timeout=60,
-                             headers={"User-Agent": "Mozilla/5.0"})
-            if r.status_code == 200 and len(r.content) > 5000:
-                try:
-                    import openpyxl
-                    wb = openpyxl.load_workbook(io.BytesIO(r.content), read_only=True, data_only=True)
-                    ws = wb.active
-                    rows_iter = iter(ws.rows)
-                    headers_row = [str(c.value or "").strip() for c in next(rows_iter)]
-                    log.info("Concerns Excel headers: %s", headers_row)
-                    for row in rows_iter:
-                        vals = [c.value for c in row]
-                        it   = dict(zip(headers_row, vals))
-                        parsed = parse_concern_excel(it, headers_row)
-                        if parsed:
-                            all_data.append(parsed)
-                    log.info("Loaded %d concerns from Excel", len(all_data))
-                    if all_data:
-                        return all_data
-                except ImportError:
-                    # openpyxl غير متوفر، نحاول pandas
-                    try:
-                        import pandas as pd
-                        df = pd.read_excel(io.BytesIO(r.content), engine="openpyxl")
-                        for _, row in df.iterrows():
-                            it = row.to_dict()
-                            parsed = parse_concern_excel(it, list(df.columns))
-                            if parsed:
-                                all_data.append(parsed)
-                        log.info("Loaded %d concerns from Excel (pandas)", len(all_data))
-                        if all_data:
-                            return all_data
-                    except Exception as pe:
-                        log.error("pandas parse error: %s", pe)
+            r = requests.get(ep, headers=api_headers,
+                             params={"page": 1, "pageSize": 100, "language": 1},
+                             timeout=25)
+            log.info("Concerns endpoint %s → %d", ep, r.status_code)
+            if r.status_code == 200:
+                d = r.json()
+                rows = extract_rows(d)
+                log.info("Concerns rows from %s: %d", ep, len(rows))
+                if rows:
+                    all_data.extend([parse_concern(it) for it in rows])
+                    # جلب الصفحات الإضافية
+                    total = d.get("totalCount", 0) if isinstance(d, dict) else 0
+                    for pg in range(2, min(11, (total // 100) + 2)):
+                        try:
+                            r2 = requests.get(ep, headers=api_headers,
+                                              params={"page": pg, "pageSize": 100, "language": 1},
+                                              timeout=25)
+                            if r2.status_code == 200:
+                                rows2 = extract_rows(r2.json())
+                                if not rows2:
+                                    break
+                                all_data.extend([parse_concern(it) for it in rows2])
+                                time.sleep(0.3)
+                        except Exception as e:
+                            log.error("Concerns page %d error: %s", pg, e)
+                            break
+                    return all_data
         except Exception as e:
-            log.error("Concerns Excel error %s: %s", xurl, e)
-            continue
+            log.error("Concerns endpoint error %s: %s", ep, e)
 
-    # ── المحاولة الثانية: WTO API (يحتاج مفتاح) ──
-    if WTO_KEY:
-        headers_api = {"Ocp-Apim-Subscription-Key": WTO_KEY, "Accept": "application/json"}
-        endpoints = [
-            "https://api.wto.org/eping/concerns/search",
-            "https://api.wto.org/eping/v1/concerns",
-            "https://api.wto.org/eping/tradeconcerns",
-        ]
-        for ep in endpoints:
-            try:
-                r = requests.get(ep, headers=headers_api,
-                                 params={"page": 1, "pageSize": 100, "language": 1},
-                                 timeout=25)
-                log.info("Concerns API %s → %d", ep, r.status_code)
-                if r.status_code == 200:
-                    rows = extract_rows(r.json())
-                    if rows:
-                        all_data.extend([parse_concern(it) for it in rows])
-                        if all_data:
-                            return all_data
-            except Exception as e:
-                log.error("Concerns API error %s: %s", ep, e)
+    # إذا فشلت كل endpoints - نستخدم الإشعارات المرتبطة باهتمامات تجارية
+    log.info("Concerns API failed - building from notifications with trade concern flag")
+    return _build_concerns_from_notifications()
 
+
+def _build_concerns_from_notifications():
+    """بناء الاهتمامات من إشعارات مرتبطة باهتمامات تجارية"""
+    api_headers = {
+        "Ocp-Apim-Subscription-Key": WTO_KEY,
+        "Accept": "application/json",
+        "User-Agent": "WTO-ePing-Monitor/1.0"
+    }
+    all_data = []
+    # نجلب إشعارات مرتبطة باهتمامات تجارية
+    for pg in range(1, 6):
+        try:
+            r = requests.get(
+                "https://api.wto.org/eping/notifications/search",
+                headers=api_headers,
+                params={
+                    "page": pg,
+                    "pageSize": 100,
+                    "language": 1,
+                    "isRelatedToTradeConcern": "true"
+                },
+                timeout=25
+            )
+            log.info("Concerns from notif page %d: status=%d", pg, r.status_code)
+            if r.status_code != 200:
+                break
+            d = r.json()
+            rows = extract_rows(d)
+            if not rows:
+                break
+            # نحول الإشعارات إلى اهتمامات
+            for it in rows:
+                sym = (it.get("documentSymbol") or "").strip()
+                area = it.get("area", "")
+                ntype = "SPS" if area == "SPS" else "TBT"
+                title = (it.get("titlePlain") or clean_html(it.get("title") or "") or sym).strip()
+                all_data.append({
+                    "id": sym,
+                    "symbol": sym,
+                    "type": ntype,
+                    "title": title,
+                    "titleAr": "",
+                    "raisingMember": it.get("notifyingMember") or "",
+                    "supporting": "",
+                    "subject": ", ".join([o.get("name","") for o in (it.get("objectives") or []) if isinstance(o, dict)])[:100],
+                    "status": "قائم",
+                    "firstRaised": (it.get("distributionDate") or "")[:10],
+                    "lastRaised": (it.get("distributionDate") or "")[:10],
+                    "timesRaised": 1,
+                    "keywords": [k.get("name","") for k in (it.get("keywords") or []) if isinstance(k, dict)][:6],
+                    "relatedDocs": [],
+                    "article": "المادة 5.7" if ntype == "SPS" else "المادة 2.2",
+                    "agreement": "اتفاقية SPS" if ntype == "SPS" else "اتفاقية TBT",
+                    "detailUrl": "https://eping.wto.org/en/Search/Index?documentSymbol=" + requests.utils.quote(sym),
+                })
+            total = d.get("totalCount", 0)
+            log.info("Built %d concerns so far (total=%d)", len(all_data), total)
+            if len(all_data) >= min(total, 500):
+                break
+            time.sleep(0.3)
+        except Exception as e:
+            log.error("Build concerns error: %s", e)
+            break
+
+    log.info("Total concerns built: %d", len(all_data))
     return all_data
 
 
@@ -671,8 +713,7 @@ def refresh_concerns(force=False):
 
 @app.route("/api/concerns", methods=["GET"])
 def get_concerns():
-    """جلب الاهتمامات التجارية الحقيقية من WTO ePing API"""
-    if request.args.get("refresh") == "1" or not _concerns_cache["data"]:
+    if not _concerns_cache["data"] or request.args.get("refresh") == "1":
         refresh_concerns(force=True)
     data = list(_concerns_cache["data"])
     t    = request.args.get("type", "").upper()
