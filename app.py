@@ -1003,15 +1003,32 @@ def startup():
             log.info("THREAD: Concerns done. Count=%d", len(_concerns_cache["data"]))
         except Exception as e:
             log.error("THREAD: Concerns error: %s", e)
-        # حلقة تحديث دورية
+        # حلقة تحديث + keep-alive لمنع نوم Render
+        RENDER_URL = os.getenv("RENDER_EXTERNAL_URL", "")
+        ping_interval = 840  # كل 14 دقيقة
+        last_ping = time.time()
+        last_refresh = time.time()
+
         while True:
             try:
-                time.sleep(CACHE_TTL)
-                log.info("THREAD: Periodic refresh...")
-                refresh()
-                refresh_concerns()
+                time.sleep(60)
+                now = time.time()
+                # keep-alive ping كل 14 دقيقة
+                if RENDER_URL and (now - last_ping) >= ping_interval:
+                    try:
+                        requests.get(RENDER_URL + "/", timeout=10)
+                        log.info("Keep-alive ping sent to %s", RENDER_URL)
+                        last_ping = now
+                    except Exception as pe:
+                        log.warning("Keep-alive ping failed: %s", pe)
+                # تحديث البيانات كل ساعة
+                if (now - last_refresh) >= CACHE_TTL:
+                    log.info("THREAD: Periodic refresh...")
+                    refresh()
+                    refresh_concerns()
+                    last_refresh = now
             except Exception as e:
-                log.error("THREAD: Periodic error: %s", e)
+                log.error("THREAD: BG loop error: %s", e)
 
     t = threading.Thread(target=_init, daemon=True, name="wto-fetcher")
     t.start()
