@@ -1005,8 +1005,10 @@ async function doLoad(force){
     var srch=document.getElementById('srch').value;
     var mc=document.getElementById('srch2').value;
     var params=['page='+pg,'pageSize=50'];
-    if(flt==='SPS')params.push('domainIds=SPS');
-    else if(flt==='TBT')params.push('domainIds=TBT');
+    // WTO API: domainIds=1 → SPS, domainIds=2 → TBT
+    if(flt==='SPS')params.push('domainIds=1');
+    else if(flt==='TBT')params.push('domainIds=2');
+    else if(flt==='open')params.push('status=open');
     else if(flt==='saudi'){mc='C682';}
     if(srch)params.push('freeText='+encodeURIComponent(srch));
     if(mc)params.push('countryIds='+encodeURIComponent(mc));
@@ -1252,7 +1254,7 @@ function renderList(){
            (n.symbol||'').toLowerCase().includes(q)||
            (n.member||'').toLowerCase().includes(q);
   });
-  if(flt==='open')fil=fil.filter(function(n){return n.status==='مفتوح للتعليق';});
+  // open filter is handled server-side via status=open param
   var el=document.getElementById('lst');
   if(!fil.length){
     el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div style="font-size:11px">لا توجد نتائج</div></div>';
@@ -1521,36 +1523,60 @@ function parseAn(n,txt){
 async function analyzeDoc(sid){
   var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n||n.docLoading)return;
+
+  // جمع روابط المستندات
   var allUrls=[];
   (n.docs||[]).forEach(function(d){
     var raw=(d.url||'').replace(/\r\n/g,'\n');
-    raw.split('\n').forEach(function(l){l.split(',').forEach(function(p){p=p.trim();if(p.startsWith('http'))allUrls.push(p);});});
-  });
-  if(!allUrls.length){alert('لا يوجد مستند متاح');return;}
-  n.docLoading=true;n.docAnalysis=null;renderList();renderDet(n);
-  var docText='',usedUrl='';
-  for(var i=0;i<Math.min(allUrls.length,3);i++){
-    try{
-      var resp=await fetch(allUrls[i],{mode:'cors',credentials:'omit'});
-      if(resp.ok){
-        var buf=await resp.arrayBuffer();var bytes=new Uint8Array(buf);var raw='';
-        for(var j=0;j<Math.min(bytes.length,200000);j++)raw+=String.fromCharCode(bytes[j]);
-        var matches=raw.match(/[\x20-\x7E]{12,}/g)||[];
-        var filtered=matches.filter(function(c){return c.split(' ').length>1&&!c.startsWith('/')&&!c.startsWith('stream');});
-        docText=filtered.join(' ').slice(0,6000);
-        if(docText.length>100){usedUrl=allUrls[i];break;}
-      }
-    }catch(e){}
-  }
-  try{
-    var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title||'',
-        pdf_url:usedUrl||allUrls[0],pdf_text:docText,products:n.products||[],
-        keywords:n.keywords||[],commentDeadline:n.commentDeadline||'',notifType:n.notifType||''})
+    raw.split('\n').forEach(function(l){
+      l.split(',').forEach(function(p){p=p.trim();if(p.startsWith('http'))allUrls.push(p);});
     });
-    if(r.ok){var d=await r.json();if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet(n);return;}}
-  }catch(e){}
-  n.docAnalysis='تعذّر تحليل المستند.';n.docLoading=false;renderList();renderDet(n);
+  });
+
+  n.docLoading=true;n.docAnalysis=null;renderList();renderDet(n);
+
+  // إرسال بيانات الإخطار مباشرة للـ backend — لا نعتمد على CORS
+  // الـ backend يحاول جلب PDF من جانبه، وإذا فشل يحلل من البيانات المتاحة
+  try{
+    var payload={
+      symbol:          n.symbol||'',
+      member:          n.member||'',
+      type:            n.type||'',
+      title:           n.titleEn||n.title||n.symbol||'',
+      pdf_url:         allUrls[0]||'',
+      pdf_text:        '',
+      products:        n.products||[],
+      keywords:        n.keywords||[],
+      commentDeadline: n.commentDeadline||'',
+      notifType:       n.notifType||'',
+      date:            n.date||'',
+      status:          n.status||''
+    };
+    var r=await fetch(API+'/api/analyze-doc',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis&&d.analysis.length>30){
+        n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet(n);return;
+      }
+      if(d.error){
+        n.docAnalysis='خطأ: '+d.error;n.docLoading=false;renderList();renderDet(n);return;
+      }
+    }
+  }catch(e){console.error('analyzeDoc error:',e);}
+
+  // Fallback محلي إذا فشل الاتصال
+  var fb='=== تحليل إخطار '+n.symbol+' ===\n\n';
+  fb+='الدولة: '+n.member+' | النوع: '+n.type+'\n';
+  fb+='العنوان: '+(n.titleAr||n.title||n.symbol)+'\n';
+  fb+='التاريخ: '+n.date+'  |  موعد التعليق: '+(n.commentDeadline||'—')+'\n\n';
+  if(allUrls.length)fb+='📄 المستند الرسمي: '+allUrls[0]+'\n(يرجى فتح الرابط لقراءة المستند)\n\n';
+  fb+='المنتجات: '+((n.products||[]).join('، ')||'غير محدد')+'\n\n';
+  fb+='تعذّر الاتصال بالخادم — استخدم زر "تحليل الإخطار" للتحليل الكامل.';
+  n.docAnalysis=fb;n.docLoading=false;renderList();renderDet(n);
 }
 
 // ══ COMPARE ══
