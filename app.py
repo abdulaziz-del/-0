@@ -397,58 +397,72 @@ def analyze_doc():
     try:
         body    = request.get_json() or {}
         pdf_url = body.get("pdf_url", "").strip()
+        pdf_text_from_browser = body.get("pdf_text", "").strip()  # النص من المتصفح
         sym     = body.get("symbol", "")
         member  = body.get("member", "")
         ntype   = body.get("type", "")
         title   = body.get("title", "")
-        if not pdf_url:
+        if not pdf_url and not pdf_text_from_browser:
             return jsonify({"error": "No PDF URL", "analysis": ""})
 
-        # قائمة الروابط للمحاولة (الرابط الأصلي + روابط بديلة)
-        urls_to_try = []
-        # فصل الروابط المتعددة إذا وُجدت
-        raw_urls = pdf_url.replace("\r\n", "\n").replace("\r", "\n")
-        for line in raw_urls.split("\n"):
-            for part in line.split(","):
-                part = part.strip()
-                if part.startswith("http"):
-                    urls_to_try.append(part)
-        if not urls_to_try:
-            urls_to_try = [pdf_url]
+        # إذا أرسل المتصفح نصاً → نستخدمه مباشرة
+        if pdf_text_from_browser and len(pdf_text_from_browser) > 50:
+            pdf_text = pdf_text_from_browser
+            log.info("Using browser-extracted text: %d chars", len(pdf_text))
+        else:
+            # نحاول جلب PDF من الخادم
+            pdf_text = ""
+            urls_to_try = []
+            raw_urls = pdf_url.replace("\r\n", "\n").replace("\r", "\n")
+            for line in raw_urls.split("\n"):
+                for part in line.split(","):
+                    part = part.strip()
+                    if part.startswith("http"):
+                        urls_to_try.append(part)
+            if not urls_to_try:
+                urls_to_try = [pdf_url] if pdf_url else []
 
-        pdf_text = ""
-        session = requests.Session()
-        session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "application/pdf,text/html,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Referer": "https://www.wto.org/",
-        })
-
-        for url in urls_to_try[:3]:  # نجرب حتى 3 روابط
-            try:
-                pr = session.get(url, timeout=25, allow_redirects=True)
-                log.info("PDF try %s -> %d (%d bytes)", url[:60], pr.status_code, len(pr.content))
-                if pr.status_code == 200 and len(pr.content) > 500:
-                    raw = pr.content.decode("latin-1", errors="ignore")
-                    # استخراج نصوص مقروءة من PDF
-                    chunks = re.findall(r"[\x20-\x7E]{12,}", raw)
-                    # تصفية النصوص التقنية (PDF metadata)
-                    filtered = [c for c in chunks if not c.startswith("/") and len(c.split()) > 1]
-                    if not filtered:
-                        filtered = chunks
-                    extracted = " ".join(filtered[:300])[:5000]
-                    if len(extracted) > 100:
-                        pdf_text = extracted
-                        log.info("PDF extracted: %d chars from %s", len(pdf_text), url[:50])
-                        break
-            except Exception as pe:
-                log.warning("PDF url failed %s: %s", url[:50], pe)
-                continue
+            session = requests.Session()
+            session.headers.update({
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/pdf,*/*",
+                "Referer": "https://www.wto.org/",
+            })
+            for url in urls_to_try[:3]:
+                try:
+                    pr = session.get(url, timeout=20, allow_redirects=True)
+                    log.info("PDF server-fetch %s -> %d (%d bytes)", url[:60], pr.status_code, len(pr.content))
+                    if pr.status_code == 200 and len(pr.content) > 500:
+                        raw = pr.content.decode("latin-1", errors="ignore")
+                        chunks = re.findall(r"[\x20-\x7E]{12,}", raw)
+                        filtered = [c for c in chunks if not c.startswith("/") and len(c.split()) > 1]
+                        extracted = " ".join(filtered[:300])[:5000]
+                        if len(extracted) > 100:
+                            pdf_text = extracted
+                            log.info("PDF server-extracted: %d chars", len(pdf_text))
+                            break
+                except Exception as pe:
+                    log.warning("PDF server-fetch failed %s: %s", url[:50], pe)
 
         if not pdf_text:
-            log.warning("All PDF URLs failed, using metadata for: %s", sym)
-            pdf_text = "تعذّر جلب محتوى المستند (مقيّد بـ WTO). التحليل يعتمد على بيانات الإخطار."
+            log.warning("All PDF URLs blocked (members.wto.org restricted), analyzing from notification data: %s", sym)
+            # نبني نصاً تحليلياً من بيانات الإخطار المتاحة في الطلب
+            products_str = body.get("products", "")
+            keywords_str = body.get("keywords", "")
+            objectives_str = body.get("objectives", "")
+            comment_deadline = body.get("commentDeadline", "")
+            notif_type = body.get("notifType", "")
+            pdf_text = "\n".join(filter(None, [
+                "العنوان: " + title,
+                "الرمز: " + sym,
+                "الدولة المُخطِرة: " + member,
+                "نوع الإخطار: " + notif_type if notif_type else "",
+                "المنتجات: " + (", ".join(products_str) if isinstance(products_str, list) else str(products_str)) if products_str else "",
+                "الكلمات المفتاحية: " + (", ".join(keywords_str) if isinstance(keywords_str, list) else str(keywords_str)) if keywords_str else "",
+                "الأهداف: " + (", ".join(objectives_str) if isinstance(objectives_str, list) else str(objectives_str)) if objectives_str else "",
+                "موعد التعليق: " + comment_deadline if comment_deadline else "",
+                "رابط المستند: " + urls_to_try[0] if urls_to_try else "",
+            ]))
 
         prompt = "\n".join([
             "أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية (WTO).",
