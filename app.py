@@ -27,43 +27,87 @@ def cache_fresh():
 def build_docs(sym, doc_link="", dol_link="", link_to_notif=""):
     docs = []
     if doc_link:
-        urls = [u.strip() for u in doc_link.split(",") if u.strip()]
-        for i, url in enumerate(urls):
-            if url.startswith("http"):
-                label = "تحميل PDF الرسمي" if len(urls) == 1 else "تحميل PDF (" + str(i+1) + ")"
-                docs.append({"name": label, "url": url, "type": "pdf"})
+        # WTO يفصل الروابط بفاصلة أو سطر جديد أو كليهما
+        raw = doc_link.replace("\r\n", "\n").replace("\r", "\n")
+        # فصل بسطر جديد أولاً ثم بفاصلة
+        parts = []
+        for line in raw.split("\n"):
+            for part in line.split(","):
+                part = part.strip()
+                if part.startswith("http"):
+                    parts.append(part)
+        for i, url in enumerate(parts):
+            label = "مستند رسمي" if len(parts) == 1 else "مستند رسمي (" + str(i+1) + ")"
+            docs.append({"name": label, "url": url, "type": "pdf"})
+    # إذا لا يوجد رابط http، نستخدم dolLink
+    if not docs and dol_link:
+        dol_clean = dol_link.replace("\\", "/")
+        dol_url = "https://docs.wto.org/dol2fe/Pages/SS/directdoc.aspx?filename=q:/" + dol_clean
+        docs.append({"name": "وثيقة WTO", "url": dol_url, "type": "doc"})
     return docs
 
+
 def parse_item(it):
-    sym      = it.get("documentSymbol", it.get("symbol", ""))
+    sym      = (it.get("documentSymbol") or it.get("symbol") or "").strip()
     area     = it.get("area", "")
     ntype    = "SPS" if (area == "SPS" or "/SPS/" in sym) else "TBT"
-    title_en = it.get("titlePlain", it.get("title", it.get("titleEnglish", sym)))
-    prods    = it.get("productsFreeTextPlain", it.get("productsFreeText", ""))
+
+    # العنوان — نستخدم titlePlain أولاً (بدون HTML)
+    title_en = (it.get("titlePlain") or it.get("title") or it.get("titleEnglish") or sym or "").strip()
+    # إزالة HTML بسيطة إذا وُجد
+    if "<" in title_en:
+        title_en = re.sub(r"<[^>]+>", " ", title_en).strip()
+
+    # المنتجات
+    prods = it.get("productsFreeTextPlain") or it.get("productsFreeText") or ""
     if isinstance(prods, str):
         prods = [p.strip() for p in re.split(r"[,;،]", prods) if p.strip()][:5]
     elif not isinstance(prods, list):
         prods = []
-    date_raw = it.get("distributionDate", it.get("date", ""))
-    dead_raw = it.get("commentDeadlineDate", "")
-    open_val = it.get("isOpenForComments", False)
-    doc_link      = it.get("notifiedDocumentLink", "")
-    dol_link      = it.get("dolLink", "")
-    link_to_notif = it.get("linkToNotification", "")
+
+    # الكلمات المفتاحية
+    kws_raw = it.get("keywords") or it.get("spsKeywords") or []
+    kws = [k.get("name","") for k in kws_raw if isinstance(k, dict) and k.get("name")][:6]
+
+    # نوع الإخطار
+    notif_type = it.get("notificationType") or ""
+
+    # التواريخ
+    date_raw = it.get("distributionDate") or ""
+    dead_raw = it.get("commentDeadlineDate") or ""
+
+    # الحالة — commentDeadlineDate موجود = مفتوح للتعليق
+    is_open = bool(dead_raw) or bool(it.get("isOpenForComments"))
+
+    # المستندات
+    doc_link      = it.get("notifiedDocumentLink") or ""
+    dol_link      = it.get("dolLink") or ""
+    link_to_notif = it.get("linkToNotification") or ""
+
+    # رابط ePing
+    sym_clean = sym.strip()
+    eping_link = link_to_notif or (
+        "https://eping.wto.org/en/Search/Index?documentSymbol=" +
+        requests.utils.quote(sym_clean) if sym_clean else ""
+    )
+
     return {
-        "id":              sym,
+        "id":              sym or str(it.get("id", "")),
         "symbol":          sym,
-        "member":          it.get("notifyingMember", it.get("member", "")),
-        "memberCode":      it.get("notifyingMemberCode", it.get("countryCode", it.get("memberCode", ""))),
+        "member":          it.get("notifyingMember") or it.get("member") or "",
+        "memberCode":      it.get("notifyingMemberCode") or it.get("memberCode") or "",
         "date":            date_raw[:10] if date_raw and len(date_raw) >= 10 else date_raw,
         "type":            ntype,
+        "notifType":       notif_type,
         "title":           title_en,
         "titleEn":         title_en,
         "titleAr":         "",
-        "status":          "مفتوح للتعليق" if open_val else "منتهي",
+        "status":          "مفتوح للتعليق" if is_open else "منتهي",
         "products":        prods,
-        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else dead_raw,
-        "docs":            build_docs(sym, doc_link, dol_link, link_to_notif) if sym else [],
+        "keywords":        kws,
+        "commentDeadline": dead_raw[:10] if dead_raw and len(dead_raw) >= 10 else "",
+        "docs":            build_docs(sym, doc_link, dol_link, link_to_notif),
+        "epingLink":       eping_link,
     }
 
 
@@ -351,76 +395,88 @@ def analyze_doc():
     if not CLAUDE_KEY:
         return jsonify({"error": "No Claude key", "analysis": ""})
     try:
-        body = request.get_json()
-        pdf_url = body.get("pdf_url", "")
-        sym = body.get("symbol", "")
-        member = body.get("member", "")
-        ntype = body.get("type", "")
-        title = body.get("title", "")
+        body    = request.get_json() or {}
+        pdf_url = body.get("pdf_url", "").strip()
+        sym     = body.get("symbol", "")
+        member  = body.get("member", "")
+        ntype   = body.get("type", "")
+        title   = body.get("title", "")
         if not pdf_url:
             return jsonify({"error": "No PDF URL", "analysis": ""})
-        # تحميل PDF مع headers متقدمة
+
+        # قائمة الروابط للمحاولة (الرابط الأصلي + روابط بديلة)
+        urls_to_try = []
+        # فصل الروابط المتعددة إذا وُجدت
+        raw_urls = pdf_url.replace("\r\n", "\n").replace("\r", "\n")
+        for line in raw_urls.split("\n"):
+            for part in line.split(","):
+                part = part.strip()
+                if part.startswith("http"):
+                    urls_to_try.append(part)
+        if not urls_to_try:
+            urls_to_try = [pdf_url]
+
         pdf_text = ""
-        try:
-            session = requests.Session()
-            session.headers.update({
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/pdf,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Connection": "keep-alive",
-                "Referer": "https://www.wto.org/",
-                "Origin": "https://www.wto.org",
-            })
-            # زيارة الصفحة الرئيسية أولاً للحصول على cookies
+        session = requests.Session()
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/pdf,text/html,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://www.wto.org/",
+        })
+
+        for url in urls_to_try[:3]:  # نجرب حتى 3 روابط
             try:
-                session.get("https://www.wto.org/", timeout=8)
-            except Exception:
-                pass
-            pr = session.get(
-                pdf_url, timeout=25,
-                allow_redirects=True
-            )
-            log.info("PDF fetch status: %d size: %d", pr.status_code, len(pr.content))
-            if pr.status_code == 200 and len(pr.content) > 500:
-                raw = pr.content.decode("latin-1", errors="ignore")
-                chunks = re.findall(r"[\x20-\x7E]{15,}", raw)
-                pdf_text = " ".join(chunks[:200])[:4000]
-                log.info("PDF text extracted: %d chars", len(pdf_text))
-        except Exception as pe:
-            log.error("PDF fetch error: %s", pe)
+                pr = session.get(url, timeout=25, allow_redirects=True)
+                log.info("PDF try %s -> %d (%d bytes)", url[:60], pr.status_code, len(pr.content))
+                if pr.status_code == 200 and len(pr.content) > 500:
+                    raw = pr.content.decode("latin-1", errors="ignore")
+                    # استخراج نصوص مقروءة من PDF
+                    chunks = re.findall(r"[\x20-\x7E]{12,}", raw)
+                    # تصفية النصوص التقنية (PDF metadata)
+                    filtered = [c for c in chunks if not c.startswith("/") and len(c.split()) > 1]
+                    if not filtered:
+                        filtered = chunks
+                    extracted = " ".join(filtered[:300])[:5000]
+                    if len(extracted) > 100:
+                        pdf_text = extracted
+                        log.info("PDF extracted: %d chars from %s", len(pdf_text), url[:50])
+                        break
+            except Exception as pe:
+                log.warning("PDF url failed %s: %s", url[:50], pe)
+                continue
+
         if not pdf_text:
-            log.warning("PDF not accessible, analyzing from metadata: %s", pdf_url)
-            pdf_text = (
-                "ملاحظة: تعذّر جلب المستند مباشرة.\n"
-                "رابط المستند: " + pdf_url + "\n"
-                "يرجى التحليل بناءً على بيانات الإخطار المتاحة."
-            )
-        prompt = (
-            "أنت محلل قانوني متخصص في منظمة التجارة العالمية." + chr(10) +
-            "اقرأ نص المستند الرسمي التالي وقدم تحليلاً شاملاً له:" + chr(10) +
-            "الرمز: " + sym + " | الدولة: " + member + " | النوع: " + ntype + chr(10) +
-            "العنوان: " + title + chr(10) + chr(10) +
-            "=== نص المستند ==="  + chr(10) +
-            pdf_text + chr(10) + chr(10) +
-            "=== المطلوب ==="  + chr(10) +
-            "1. ملخص المستند: ما هو جوهر هذا المستند الرسمي؟" + chr(10) +
-            "2. المتطلبات الرئيسية: ما هي الاشتراطات والمتطلبات المحددة؟" + chr(10) +
-            "3. المنتجات والأسواق المتأثرة" + chr(10) +
-            "4. الأثر على الدول المصدِّرة" + chr(10) +
-            "5. التوصيات العملية" + chr(10) +
-            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي."
-        )
+            log.warning("All PDF URLs failed, using metadata for: %s", sym)
+            pdf_text = "تعذّر جلب محتوى المستند (مقيّد بـ WTO). التحليل يعتمد على بيانات الإخطار."
+
+        prompt = "\n".join([
+            "أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية (WTO).",
+            "حلّل هذا الإخطار الرسمي في إطار اتفاقية " + ("SPS" if ntype=="SPS" else "TBT") + ":",
+            "الرمز: " + sym + " | الدولة: " + member,
+            "العنوان: " + title,
+            "",
+            "=== محتوى المستند ===",
+            pdf_text,
+            "",
+            "=== التحليل المطلوب ===",
+            "1. ملخص المستند وجوهره",
+            "2. المتطلبات والاشتراطات الرئيسية المحددة",
+            "3. المنتجات والأسواق المتأثرة",
+            "4. التحليل القانوني وفق " + ("المادة 5 SPS ومعايير Codex/OIE/IPPC" if ntype=="SPS" else "المادة 2 TBT ومعايير ISO/IEC"),
+            "5. الأثر على صادرات المملكة العربية السعودية",
+            "6. التوصيات العملية (3-5 توصيات)",
+            "اكتب بالعربية الفصحى بأسلوب قانوني احترافي.",
+        ])
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 1500,
+            json={"model": "claude-opus-4-7", "max_tokens": 1800,
                   "messages": [{"role": "user", "content": prompt}]},
             timeout=45
         )
         if r.status_code == 200:
-            analysis = r.json()["content"][0]["text"].strip()
-            return jsonify({"analysis": analysis})
+            return jsonify({"analysis": r.json()["content"][0]["text"].strip()})
         return jsonify({"analysis": "", "error": r.text[:200]})
     except Exception as e:
         return jsonify({"error": str(e), "analysis": ""})
