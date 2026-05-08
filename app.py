@@ -242,6 +242,48 @@ def analyze():
         return jsonify({"analysis": "", "error": r.text[:300]})
     except Exception as e:
         return jsonify({"error": str(e), "analysis": ""})
+@app.route("/api/wto/search", methods=["GET"])
+def wto_search():
+    """proxy مباشر لـ WTO ePing API"""
+    api_headers = {
+        "Ocp-Apim-Subscription-Key": WTO_KEY,
+        "Accept": "application/json",
+        "User-Agent": "WTO-ePing-Monitor/1.0"
+    }
+    page_size = min(100, int(request.args.get("pageSize", 50)))
+    params = {
+        "page":     request.args.get("page", 1),
+        "pageSize": page_size,
+        "language": 1,
+    }
+    for p in ["domainIds", "documentSymbol", "distributionDateFrom",
+              "distributionDateTo", "countryIds", "hs", "ics", "freeText"]:
+        v = request.args.get(p)
+        if v:
+            params[p] = v
+    try:
+        r = requests.get(
+            "https://api.wto.org/eping/notifications/search",
+            headers=api_headers, params=params, timeout=30
+        )
+        if r.status_code == 200:
+            d    = r.json()
+            rows = extract_rows(d)
+            parsed = [parse_item(it) for it in rows]
+            total  = d.get("totalCount", len(parsed))
+            cur_pg = int(d.get("currentPage", params["page"]))
+            return jsonify({
+                "notifications": parsed,
+                "total":    total,
+                "page":     cur_pg,
+                "pageSize": d.get("pageSize", page_size),
+                "pages":    max(1, (total + page_size - 1) // page_size),
+            })
+        return jsonify({"error": r.text[:300], "status": r.status_code, "notifications": []})
+    except Exception as e:
+        return jsonify({"error": str(e), "notifications": []})
+
+
 @app.route("/api/translate", methods=["POST"])
 def translate():
     if not CLAUDE_KEY:
@@ -413,3 +455,76 @@ def translate_batch_ep():
         return jsonify({"translations": []})
     except Exception as e:
         return jsonify({"translations": [], "error": str(e)})
+
+# ── التنبيهات ──
+_alerts = []
+_alert_id = 0
+
+@app.route("/api/alerts", methods=["GET"])
+def get_alerts():
+    return jsonify({"alerts": _alerts})
+
+@app.route("/api/alerts", methods=["POST"])
+def add_alert():
+    global _alert_id
+    body = request.get_json() or {}
+    _alert_id += 1
+    alert = {
+        "id": _alert_id,
+        "type": body.get("type", "الكل"),
+        "sector": body.get("sector", ""),
+        "country": body.get("country", "جميع الدول"),
+        "frequency": body.get("frequency", "فوري"),
+        "active": True,
+        "created": datetime.now().strftime("%Y-%m-%d")
+    }
+    _alerts.append(alert)
+    return jsonify({"ok": True, "alert": alert})
+
+@app.route("/api/alerts/<int:aid>", methods=["PUT"])
+def toggle_alert(aid):
+    for a in _alerts:
+        if a["id"] == aid:
+            a["active"] = not a["active"]
+            return jsonify({"ok": True, "alert": a})
+    return jsonify({"error": "not found"}), 404
+
+@app.route("/api/alerts/<int:aid>", methods=["DELETE"])
+def delete_alert(aid):
+    global _alerts
+    _alerts = [a for a in _alerts if a["id"] != aid]
+    return jsonify({"ok": True})
+
+
+# ── بدء التشغيل مع gunicorn ──
+def startup():
+    def _init():
+        import time as t
+        t.sleep(2)
+        try:
+            refresh(force=True)
+            log.info("STARTUP: %d notifications loaded", len(_cache["data"]))
+        except Exception as e:
+            log.error("STARTUP error: %s", e)
+        RENDER_URL = os.getenv("RENDER_EXTERNAL_URL", "")
+        ping_interval = 840
+        last_ping = time.time()
+        last_refresh = time.time()
+        while True:
+            try:
+                time.sleep(60)
+                now = time.time()
+                if RENDER_URL and (now - last_ping) >= ping_interval:
+                    try:
+                        requests.get(RENDER_URL + "/api/refresh", timeout=10)
+                        last_ping = now
+                    except Exception:
+                        pass
+                if (now - last_refresh) >= CACHE_TTL:
+                    refresh()
+                    last_refresh = now
+            except Exception as e:
+                log.error("BG error: %s", e)
+    threading.Thread(target=_init, daemon=True, name="wto-fetcher").start()
+
+startup()
