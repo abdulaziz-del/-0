@@ -724,6 +724,7 @@ button{font-family:inherit}
 <!-- ══════════════════════════ JS ══════════════════════════ -->
 <script>
 var API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
+var WTO_KEY="";  // مفتاح WTO API — اتركه فارغاً للوصول العام
 var FL={
   C682:'🇸🇦',C784:'🇦🇪',C634:'🇶🇦',C414:'🇰🇼',C048:'🇧🇭',C512:'🇴🇲',C400:'🇯🇴',
   C818:'🇪🇬',C504:'🇲🇦',C788:'🇹🇳',C012:'🇩🇿',C840:'🇺🇸',C381:'🇪🇺',
@@ -937,59 +938,258 @@ async function doLoad(force){
   busy=true;
   setStatus('loading','جارٍ الجلب...');
   document.getElementById('rfbtn').disabled=true;
-  showProg(true,20);
+  showProg(true,15);
+
+  var srch = document.getElementById('srch').value;
+  var mc   = document.getElementById('srch2').value;
+  if(flt==='saudi') mc='C682';
+
+  // ══ محاولة 1: backend (proxy) ══
+  var loaded = false;
   try{
-    var srch=document.getElementById('srch').value;
-    var mc=document.getElementById('srch2').value;
     var params=['page='+pg,'pageSize=50'];
-    // WTO API: domainIds=2 → SPS, domainIds=1 → TBT
-    if(flt==='SPS')params.push('domainIds=2');
-    else if(flt==='TBT')params.push('domainIds=1');
-    // 'open' and 'saudi' filtered client-side after load
-    else if(flt==='saudi'){mc='C682';}
-    if(srch)params.push('freeText='+encodeURIComponent(srch));
-    if(mc)params.push('countryIds='+encodeURIComponent(mc));
+    if(flt==='SPS')   params.push('domainIds=2');
+    else if(flt==='TBT') params.push('domainIds=1');
+    if(srch) params.push('freeText='+encodeURIComponent(srch));
+    if(mc)   params.push('countryIds='+encodeURIComponent(mc));
+    showProg(true,40);
+    var ctrl = new AbortController();
+    var tid  = setTimeout(function(){ctrl.abort();}, 8000); // 8s timeout
+    var r = await fetch(API+'/api/wto/search?'+params.join('&'), {signal:ctrl.signal});
+    clearTimeout(tid);
+    showProg(true,75);
+    if(r.ok){
+      var d = await r.json();
+      if(d.notifications && d.notifications.length > 0){
+        applyData(d, 'backend');
+        loaded = true;
+      }
+    }
+  }catch(e){ console.warn('Backend failed:', e.message); }
+
+  // ══ محاولة 2: WTO ePing API مباشرة (بدون backend) ══
+  if(!loaded){
+    setStatus('loading','جارٍ الجلب من WTO مباشرة...');
     showProg(true,50);
-    var r=await fetch(API+'/api/wto/search?'+params.join('&'));
-    showProg(true,80);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    var d=await r.json();
-    if(!d.notifications&&d.error)throw new Error(d.error);
-    D=(d.notifications||[]).map(function(n){
-      return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});
-    });
-    showProg(true,100);
-    setTimeout(function(){showProg(false);},500);
-    tpg=d.pages||1;
-    var total=d.total||D.length;
-    setStatus('live',total.toLocaleString()+' إخطار');
-    // update counts
-    var op=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
-    var sp=D.filter(function(n){return n.type==='SPS';}).length;
-    var tb=D.filter(function(n){return n.type==='TBT';}).length;
-    document.getElementById('st-t').textContent=total.toLocaleString();
-    document.getElementById('st-o').textContent=op;
-    document.getElementById('st-s').textContent=sp;
-    document.getElementById('st-b').textContent=tb;
-    document.getElementById('kpi-total').textContent=total.toLocaleString();
-    document.getElementById('kpi-open').textContent=op;
-    document.getElementById('kpi-sps').textContent=sp;
-    document.getElementById('kpi-tbt').textContent=tb;
-    document.getElementById('kpi-open-d').textContent=op>0?'⚠️ تتطلب مراجعة عاجلة':'لا إخطارات مفتوحة';
-    document.getElementById('kpi-sps-d').textContent=sp>0?Math.round(sp/D.length*100)+'% من الإجمالي':'';
-    document.getElementById('kpi-tbt-d').textContent=tb>0?Math.round(tb/D.length*100)+'% من الإجمالي':'';
-    renderList();
-    updateDashboard();
-    translateBatch();
-  }catch(e){
-    showProg(false);
-    setStatus('err','خطأ: '+e.message);
-    document.getElementById('lst').innerHTML='<div class="empty-state"><div class="empty-state-icon">⚠️</div><div style="font-size:11px;color:var(--rd)">'+e.message+'</div></div>';
+    try{
+      // WTO ePing API public endpoint
+      var wtoParams = {
+        page: pg,
+        pageSize: 50,
+        language: 1
+      };
+      if(flt==='SPS')    wtoParams.domainIds = 2;
+      else if(flt==='TBT') wtoParams.domainIds = 1;
+      if(mc)   wtoParams.countryIds = mc;
+      if(srch) wtoParams.freeText   = srch;
+
+      var qs = Object.keys(wtoParams).map(function(k){
+        return encodeURIComponent(k)+'='+encodeURIComponent(wtoParams[k]);
+      }).join('&');
+
+      var wtoUrl = 'https://api.wto.org/eping/notifications/search?' + qs;
+      var wr = await fetch(wtoUrl, {
+        headers:{
+          'Accept':'application/json',
+          'Ocp-Apim-Subscription-Key': WTO_KEY || ''
+        }
+      });
+      showProg(true,85);
+      if(wr.ok){
+        var wd = await wr.json();
+        var rows = extractRows(wd);
+        if(rows.length > 0){
+          var parsed = rows.map(parseItem);
+          var total  = wd.totalCount || wd.total || parsed.length;
+          var pages  = Math.max(1, Math.ceil(total / 50));
+          applyData({notifications: parsed, total: total, pages: pages, page: pg}, 'wto-direct');
+          loaded = true;
+        }
+      }
+    }catch(e){ console.warn('WTO direct failed:', e.message); }
   }
-  busy=false;
-  document.getElementById('rfbtn').disabled=false;
+
+  // ══ محاولة 3: بيانات تجريبية (demo) ══
+  if(!loaded){
+    setStatus('loading','تحميل بيانات تجريبية...');
+    var demoData = buildDemoData();
+    applyData({notifications: demoData, total: demoData.length, pages:1, page:1}, 'demo');
+    loaded = true;
+    setStatus('err','تعذّر الاتصال — بيانات تجريبية');
+  }
+
+  showProg(false);
+  busy = false;
+  document.getElementById('rfbtn').disabled = false;
 }
 
+// ══ استخراج صفوف من استجابة WTO ══
+function extractRows(d){
+  if(Array.isArray(d)) return d;
+  if(!d || typeof d !== 'object') return [];
+  for(var k of ['items','notifications','rows','data','results','content']){
+    if(Array.isArray(d[k])) return d[k];
+    if(d[k] && typeof d[k]==='object'){
+      for(var k2 of ['items','notifications','rows','data']){
+        if(Array.isArray(d[k][k2])) return d[k][k2];
+      }
+    }
+  }
+  return [];
+}
+
+// ══ تحويل صف WTO لكائن موحّد ══
+function parseItem(it){
+  var sym  = (it.documentSymbol||it.symbol||'').trim();
+  var area = it.area||'';
+  var type = (area==='SPS'||sym.includes('/SPS/'))?'SPS':'TBT';
+  var title= (it.titlePlain||it.title||it.titleEnglish||sym||'').replace(/<[^>]+>/g,' ').trim();
+  var prods= it.productsFreeTextPlain||it.productsFreeText||'';
+  if(typeof prods==='string') prods=[...new Set(prods.split(/[,;،]/).map(function(p){return p.trim();}).filter(Boolean))].slice(0,5);
+  else if(!Array.isArray(prods)) prods=[];
+  var kws=(it.keywords||it.spsKeywords||[]).filter(function(k){return k&&k.name;}).map(function(k){return k.name;}).slice(0,6);
+  var dateR=it.distributionDate||'';
+  var deadR=it.commentDeadlineDate||'';
+  var isOpen=!!(deadR||it.isOpenForComments);
+  var docLink=it.notifiedDocumentLink||'';
+  var docs=[];
+  if(docLink){
+    docLink.replace(/\r\n/g,'\n').split('\n').forEach(function(l){
+      l.split(',').forEach(function(p){
+        p=p.trim();
+        if(p.startsWith('http')) docs.push({name:'مستند رسمي',url:p,type:'pdf'});
+      });
+    });
+  }
+  var epingLink=it.linkToNotification||
+    (sym?'https://eping.wto.org/en/Search/Index?documentSymbol='+encodeURIComponent(sym):'');
+  return {
+    id:sym||String(it.id||Math.random()),symbol:sym,
+    member:it.notifyingMember||it.member||'',
+    memberCode:it.notifyingMemberCode||it.memberCode||'',
+    date:dateR?dateR.slice(0,10):dateR,
+    type:type, notifType:it.notificationType||'',
+    title:title, titleEn:title, titleAr:'',
+    status:isOpen?'مفتوح للتعليق':'منتهي',
+    products:prods, keywords:kws,
+    commentDeadline:deadR?deadR.slice(0,10):'',
+    docs:docs, epingLink:epingLink
+  };
+}
+
+// ══ تطبيق البيانات المحمّلة ══
+function applyData(d, source){
+  var raw = d.notifications || [];
+  // إذا جاءت من backend فهي مُحلَّلة — إذا WTO مباشرة فهي خام
+  D = raw.map(function(n){
+    // إذا لم يكن فيها 'type' بالشكل الصحيح نُحلّلها
+    if(!n.type || (n.type!=='SPS'&&n.type!=='TBT')){
+      n = parseItem(n);
+    }
+    return Object.assign({}, n, {
+      titleAr:    TC[n.symbol]||'',
+      analysis:   null,
+      loading:    false,
+      docAnalysis:null,
+      docLoading: false
+    });
+  });
+
+  // فلترة client-side
+  var display = D;
+  if(flt==='open')   display=D.filter(function(n){return n.status==='مفتوح للتعليق';});
+  if(flt==='saudi')  display=D.filter(function(n){return n.memberCode==='C682'||(n.member||'').toLowerCase().includes('saudi');});
+
+  tpg   = d.pages || 1;
+  var total = d.total || D.length;
+
+  setStatus('live', total.toLocaleString() + ' إخطار' + (source==='demo'?' (تجريبي)':source==='wto-direct'?' (WTO مباشر)':''));
+
+  var op = D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
+  var sp = D.filter(function(n){return n.type==='SPS';}).length;
+  var tb = D.filter(function(n){return n.type==='TBT';}).length;
+
+  ['st-t','kpi-total'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=total.toLocaleString();});
+  ['st-o','kpi-open'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=op;});
+  ['st-s','kpi-sps'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=sp;});
+  ['st-b','kpi-tbt'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=tb;});
+  var koEl=document.getElementById('kpi-open-d'); if(koEl) koEl.textContent=op>0?'⚠️ تتطلب مراجعة عاجلة':'لا إخطارات مفتوحة';
+  var ksEl=document.getElementById('kpi-sps-d');  if(ksEl&&D.length) ksEl.textContent=Math.round(sp/D.length*100)+'% من الإجمالي';
+  var ktEl=document.getElementById('kpi-tbt-d');  if(ktEl&&D.length) ktEl.textContent=Math.round(tb/D.length*100)+'% من الإجمالي';
+
+  renderList();
+  updateDashboard();
+  translateBatch();
+}
+
+// ══ بيانات تجريبية (تعمل بدون اتصال) ══
+function buildDemoData(){
+  var today = new Date();
+  var fmt = function(d){ return d.toISOString().slice(0,10); };
+  var add = function(days){ var d=new Date(today); d.setDate(d.getDate()+days); return fmt(d); };
+  return [
+    {id:'G/SPS/N/EU/1001',symbol:'G/SPS/N/EU/1001',member:'European Union',memberCode:'C381',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,15)),type:'SPS',notifType:'Regular',
+     title:'Maximum Residue Levels for Pesticides in Food Products',titleEn:'Maximum Residue Levels for Pesticides in Food Products',titleAr:'الحدود القصوى لبقايا المبيدات في المواد الغذائية',
+     status:'مفتوح للتعليق',products:['أغذية','فواكه','خضروات'],keywords:['pesticides','food safety','MRL'],
+     commentDeadline:add(25),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/TBT/N/USA/2001',symbol:'G/TBT/N/USA/2001',member:'United States of America',memberCode:'C840',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,20)),type:'TBT',notifType:'Regular',
+     title:'Energy Efficiency Standards for Industrial Equipment',titleEn:'Energy Efficiency Standards for Industrial Equipment',titleAr:'معايير كفاءة الطاقة للمعدات الصناعية',
+     status:'مفتوح للتعليق',products:['معدات صناعية','آلات'],keywords:['energy efficiency','standards','equipment'],
+     commentDeadline:add(45),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/SPS/N/CHN/1501',symbol:'G/SPS/N/CHN/1501',member:'China',memberCode:'C156',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-2,5)),type:'SPS',notifType:'Regular',
+     title:'Food Safety Standards for Dairy Products and Infant Formula',titleEn:'Food Safety Standards for Dairy Products and Infant Formula',titleAr:'معايير سلامة الأغذية لمنتجات الألبان وأغذية الأطفال',
+     status:'مفتوح للتعليق',products:['ألبان','أغذية أطفال','مشتقات حليب'],keywords:['dairy','food safety','infant formula'],
+     commentDeadline:add(60),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/TBT/N/JPN/3001',symbol:'G/TBT/N/JPN/3001',member:'Japan',memberCode:'C392',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,10)),type:'TBT',notifType:'Regular',
+     title:'Technical Regulations for Chemical Substances in Electronic Products',titleEn:'Technical Regulations for Chemical Substances in Electronic Products',titleAr:'اللوائح التقنية للمواد الكيميائية في المنتجات الإلكترونية',
+     status:'مفتوح للتعليق',products:['إلكترونيات','كيماويات'],keywords:['chemicals','electronics','RoHS'],
+     commentDeadline:add(12),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/SPS/N/IND/501',symbol:'G/SPS/N/IND/501',member:'India',memberCode:'C356',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-2,18)),type:'SPS',notifType:'Regular',
+     title:'Import Requirements for Animal Feed and Feed Additives',titleEn:'Import Requirements for Animal Feed and Feed Additives',titleAr:'متطلبات استيراد الأعلاف الحيوانية والمضافات',
+     status:'مفتوح للتعليق',products:['أعلاف حيوانية','مضافات غذائية'],keywords:['animal feed','additives','import'],
+     commentDeadline:add(38),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/TBT/N/KOR/2201',symbol:'G/TBT/N/KOR/2201',member:'Korea',memberCode:'C410',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,25)),type:'TBT',notifType:'Regular',
+     title:'Safety Standards for Steel and Metal Construction Materials',titleEn:'Safety Standards for Steel and Metal Construction Materials',titleAr:'معايير السلامة لمواد البناء من الصلب والمعادن',
+     status:'منتهي',products:['حديد وصلب','مواد بناء'],keywords:['steel','construction','safety'],
+     commentDeadline:'',docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/SPS/N/AUS/801',symbol:'G/SPS/N/AUS/801',member:'Australia',memberCode:'C036',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-3,8)),type:'SPS',notifType:'Regular',
+     title:'Biosecurity Requirements for Plant Products and Fresh Produce',titleEn:'Biosecurity Requirements for Plant Products and Fresh Produce',titleAr:'متطلبات الأمن البيولوجي للمنتجات النباتية والمنتجات الطازجة',
+     status:'منتهي',products:['منتجات نباتية','فواكه طازجة'],keywords:['biosecurity','plants','quarantine'],
+     commentDeadline:'',docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/TBT/N/DEU/401',symbol:'G/TBT/N/DEU/401',member:'Germany',memberCode:'C276',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,5)),type:'TBT',notifType:'Regular',
+     title:'Labeling Requirements for Chemical Products and Detergents',titleEn:'Labeling Requirements for Chemical Products and Detergents',titleAr:'اشتراطات وضع العلامات على المنتجات الكيميائية والمنظفات',
+     status:'مفتوح للتعليق',products:['كيماويات','منظفات','بتروكيماويات'],keywords:['labeling','chemicals','detergents'],
+     commentDeadline:add(55),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/SPS/N/TUR/301',symbol:'G/SPS/N/TUR/301',member:'Turkey',memberCode:'C792',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-2,12)),type:'SPS',notifType:'Regular',
+     title:'Veterinary Health Requirements for Meat and Poultry Imports',titleEn:'Veterinary Health Requirements for Meat and Poultry Imports',titleAr:'اشتراطات الصحة البيطرية لاستيراد اللحوم والدواجن',
+     status:'مفتوح للتعليق',products:['لحوم','دواجن','منتجات حيوانية'],keywords:['veterinary','meat','poultry','health'],
+     commentDeadline:add(20),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false},
+    {id:'G/TBT/N/SGP/601',symbol:'G/TBT/N/SGP/601',member:'Singapore',memberCode:'C702',
+     date:fmt(new Date(today.getFullYear(),today.getMonth()-1,30)),type:'TBT',notifType:'Regular',
+     title:'Technical Standards for Petrochemical and Petroleum Products',titleEn:'Technical Standards for Petrochemical and Petroleum Products',titleAr:'المعايير التقنية للمنتجات البتروكيماوية والبترولية',
+     status:'مفتوح للتعليق',products:['بتروكيماويات','مشتقات نفطية'],keywords:['petrochemicals','petroleum','standards'],
+     commentDeadline:add(40),docs:[],epingLink:'https://eping.wto.org',
+     analysis:null,loading:false,docAnalysis:null,docLoading:false}
+  ];
+}
 // ══ DASHBOARD ══
 function updateDashboard(){
   updateTopMembers();
