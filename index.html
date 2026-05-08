@@ -464,11 +464,11 @@ function renderDet(){
       '</div>':'')+
     (hasPdf?
       '<div class="dc" style="border-color:#06564660;margin-top:4px">'+
-        '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي بالذكاء الاصطناعي</div>'+
+        '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي</div>'+
         (!n.docAnalysis&&!n.docLoading?
           '<div class="aw" style="margin:0">'+
-            '<button class="abtn gr" onclick="analyzeDoc(\''+nid+'\')">🤖 تحليل PDF</button>'+
-            '<div class="ahint">يقرأ محتوى PDF ويحلله قانونياً وفق WTO</div>'+
+            '<button class="abtn gr" onclick="analyzeDoc(\''+nid+'\')">🤖 تحليل المستند</button>'+
+            '<div class="ahint">يقرأ محتوى المستند ويحلله قانونياً وفق WTO</div>'+
           '</div>':'')+
         (n.docLoading?'<div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
         (n.docAnalysis?
@@ -512,18 +512,27 @@ function parseAn(n,txt){
 async function analyzeDoc(id){
   var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
   if(!n||n.docLoading) return;
-  // أخذ أول مستند يحتوي URL صالح
   var pdfDoc=(n.docs||[]).find(function(d){
     var url=(d.url||'').split('\n')[0].trim();
     return url.startsWith('http');
   });
   if(!pdfDoc){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
+  var pdfUrl=pdfDoc.url.split('\n')[0].trim();
+  var docText='';
   try{
-    var pdfUrl=pdfDoc.url.split('\n')[0].trim();
-    var fr=await fetch(API+'/api/fetch-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:pdfUrl,symbol:n.symbol})});
-    var docText='';
-    if(fr.ok){var fd=await fr.json();docText=fd.text||'';}
+    // المتصفح يحمّل PDF مباشرة (يتجاوز حجب الخادم)
+    var resp=await fetch(pdfUrl);
+    if(resp.ok){
+      var buf=await resp.arrayBuffer();
+      var raw=new TextDecoder('latin1').decode(new Uint8Array(buf));
+      var chunks=raw.match(/[\x20-\x7E]{15,}/g)||[];
+      docText=chunks.join(' ').slice(0,6000);
+    }
+  }catch(corsErr){
+    // CORS محجوب - الخادم سيحلل بدون نص
+  }
+  try{
     var ar=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({url:pdfUrl,text:docText,symbol:n.symbol,title:n.titleEn||n.title,type:n.type,context:'notification'})});
     if(ar.ok){var ad=await ar.json();n.docAnalysis=ad.analysis||ad.error||'تعذّر التحليل';n.docLoading=false;renderList();renderDet();return;}
