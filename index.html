@@ -3,298 +3,1186 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>منصة ePing – WTO</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<title>منصة ePing — WTO | المملكة العربية السعودية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0f1e;--bg2:#0d1628;--bg3:#111d35;--b1:#1a2a45;--b2:#2a3d5a;--t1:#e8eaf0;--t2:#8899bb;--t3:#4a5568;--ac:#2563eb;--gr:#22c55e;--rd:#ef4444;--am:#f59e0b}
-html,body{height:100%;overflow:hidden}
-body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--t1);direction:rtl}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
-#hdr{background:#060c18;border-bottom:1px solid var(--b1);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.hlogo{display:flex;align-items:center;gap:11px}
-.hico{width:36px;height:36px;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
-.ht1{font-size:15px;font-weight:700}.ht2{font-size:11px;color:var(--t2);margin-top:1px}
-.hright{display:flex;align-items:center;gap:10px}
-.hdot{width:7px;height:7px;border-radius:50%;background:var(--am);animation:pulse 2s infinite}
-.hdot.live{background:var(--gr);box-shadow:0 0 6px var(--gr)}
-.hlbl{font-size:11px;color:var(--t2)}
-.hbtn{padding:6px 14px;border-radius:8px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit}
-.hbtn:hover{border-color:var(--ac);color:var(--t1)}.hbtn:disabled{opacity:.5;cursor:not-allowed}
-#app{display:flex;height:calc(100vh - 58px)}
-#sb{width:360px;min-width:360px;border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
-/* تبويبات */
-#svc-bar{display:flex;gap:2px;background:#060c18;border-bottom:1px solid var(--b1);padding:0 12px;flex-shrink:0}
-.svctb{padding:10px 16px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
-.svctb.on{color:var(--t1);border-bottom-color:var(--ac)}
-.svctb:hover:not(.on){color:var(--t1)}
-/* إحصاءات */
-#stats{display:flex;gap:7px;padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
-.sc{flex:1;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:8px 7px;text-align:center}
-.sc .n{font-size:18px;font-weight:700}.sc .l{font-size:10px;color:var(--t2);margin-top:2px}
-#flt{padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
-.sinput{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px}
-.sinput:focus{border-color:var(--ac)}.sinput::placeholder{color:var(--t3)}
-.sselect{width:100%;padding:7px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;direction:rtl;margin-bottom:6px;cursor:pointer}
-.frow{display:flex;gap:5px}
-.fb{padding:5px 12px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
-.fb.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-#lst{flex:1;overflow-y:auto;padding:8px}
-.pgbar{display:flex;align-items:center;justify-content:center;gap:8px;padding:7px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--bg2)}
-.pgbtn{padding:4px 12px;border-radius:6px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
-.pgbtn:disabled{opacity:.4;cursor:not-allowed}.pglbl{font-size:11px;color:var(--t2)}
-.nc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px;cursor:pointer;margin-bottom:6px;transition:all .15s}
-.nc:hover{border-color:var(--b2);background:var(--bg3)}.nc.sel{border-color:var(--ac);background:var(--bg3)}
-.nt{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-.sps{background:#0d3320;color:#4ade80;border:1px solid #22c55e35}
-.tbt{background:#1a1a0d;color:#facc15;border:1px solid #eab30835}
-.ndate{font-size:10px;color:var(--t3)}.ntit{font-size:12px;font-weight:600;line-height:1.5;color:#c8d0e8;margin-bottom:6px}
-.nbot{display:flex;justify-content:space-between;align-items:center}
-.nmem{font-size:11px;color:var(--t2)}.nr{display:flex;align-items:center;gap:5px}.ndot{width:6px;height:6px;border-radius:50%}
-#main{flex:1;overflow-y:auto;padding:18px;background:var(--bg)}
-#empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);text-align:center;gap:8px}
-#det{display:none}
-.dc{background:var(--bg2);border:1px solid var(--b1);border-radius:13px;padding:18px;margin-bottom:12px}
-.dbd{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.sbdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600}
-.dtit{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:4px}
-.dtiten{font-size:11px;color:var(--t2);margin-bottom:4px;line-height:1.5}
-.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--b1)}
-.ml{font-size:10px;color:var(--t3);margin-bottom:3px}.mv{font-size:11px;font-weight:600;color:#c8d0e8}
-.ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
-.ptag{padding:3px 11px;background:#1a2a45;border-radius:20px;font-size:11px;color:var(--t2)}
-.doc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border:1px solid var(--b1);border-radius:9px;margin-bottom:5px}
-.doc-n{font-size:12px;color:#c8d0e8}.doc-a{font-size:11px;color:var(--ac);text-decoration:none}.doc-a:hover{text-decoration:underline}
-.aw{text-align:center;margin:6px 0}
-.abtn{padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px #2563eb35;transition:all .2s}
-.abtn:hover{transform:translateY(-1px)}.abtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.abtn.gr{background:linear-gradient(135deg,#065f46,#059669);box-shadow:0 4px 14px #05966935}
-.ahint{font-size:11px;color:var(--t3);margin-top:6px}
-.tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:4px;width:fit-content;margin-bottom:12px}
-.tb{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit}
-.tb.on{background:#1a2a45;color:var(--t1)}
-.abox{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;line-height:1.9;font-size:13px;color:#c8d0e8;white-space:pre-wrap;min-height:120px}
-.acts{display:flex;gap:8px;margin-top:10px}
-.actb{padding:8px 15px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;border:1px solid var(--b2);background:var(--bg2);color:var(--t2)}
-.actb.bl{border-color:var(--ac);color:var(--ac);background:transparent}
-.actb.grn{border-color:#059669;color:#059669;background:transparent}
-.shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
-@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
-/* التنبيهات */
-#alerts-panel{display:none;flex-direction:column;flex:1;overflow-y:auto}
-.al-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;margin-bottom:7px}
-.al-info{flex:1;padding-left:8px}
-.al-name{font-size:12px;font-weight:600;color:var(--t1)}.al-desc{font-size:11px;color:var(--t2);margin-top:2px}
-.al-del{padding:4px 8px;border-radius:6px;border:1px solid #ef444435;background:transparent;color:#f87171;cursor:pointer;font-size:11px}
-.tgl{position:relative;width:38px;height:20px;flex-shrink:0}
+:root{
+  --bg:#05080f;--bg2:#090f1e;--bg3:#0d1628;--bg4:#111e35;--bg5:#15243e;
+  --b1:#182844;--b2:#1f3558;--b3:#26406c;--b4:#2d4d80;
+  --t1:#e6ecf8;--t2:#8aaad0;--t3:#4a6285;--t4:#283d5a;
+  --ac:#3b82f6;--ac2:#1d4ed8;--ac3:#60a5fa;
+  --gr:#10b981;--gr2:#059669;--grd:#d1fae5;
+  --rd:#f43f5e;--rd2:#be123c;
+  --am:#f59e0b;--am2:#d97706;
+  --pu:#8b5cf6;--pu2:#6d28d9;
+  --cy:#06b6d4;--cy2:#0891b2;
+  --gac:rgba(59,130,246,.12);--ggr:rgba(16,185,129,.12);
+  --grd2:rgba(244,63,94,.12);--gam:rgba(245,158,11,.12);
+  --gpu:rgba(139,92,246,.12);
+  --r1:9px;--r2:13px;--r3:17px;--r4:22px;
+  --sh1:0 1px 3px rgba(0,0,0,.4);
+  --sh2:0 4px 16px rgba(0,0,0,.5);
+}
+html,body{height:100%;overflow:hidden;font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--t1);direction:rtl}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--b3)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+
+/* ══════════════ HEADER ══════════════ */
+#hdr{
+  height:54px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;z-index:200;position:relative;
+  background:rgba(5,8,15,.95);border-bottom:1px solid var(--b1);
+  backdrop-filter:blur(24px);flex-shrink:0;
+}
+.hlogo{display:flex;align-items:center;gap:11px;min-width:220px}
+.hico{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,#1d4ed8,#06b6d4);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  box-shadow:0 0 16px rgba(59,130,246,.35);
+}
+.htxt .h1{font-size:13px;font-weight:700;letter-spacing:-.2px}
+.htxt .h2{font-size:9px;color:var(--t3);margin-top:1px;letter-spacing:.3px}
+.hnav{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:3px}
+.hnav-btn{
+  padding:5px 13px;border-radius:7px;border:none;background:transparent;
+  color:var(--t3);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:5px;
+  transition:all .15s;white-space:nowrap;
+}
+.hnav-btn.on{background:var(--bg5);color:var(--t1);box-shadow:var(--sh1)}
+.hnav-btn:hover:not(.on){color:var(--t2)}
+.hright{display:flex;align-items:center;gap:8px;min-width:220px;justify-content:flex-end}
+.hstatus{
+  display:flex;align-items:center;gap:6px;padding:4px 10px;
+  border-radius:20px;background:var(--bg3);border:1px solid var(--b1);font-size:10px;
+}
+.hstatus.live{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.06)}
+.hstatus.err{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.06)}
+.hpulse{width:6px;height:6px;border-radius:50%;background:var(--am);animation:pulse 2s infinite;flex-shrink:0}
+.hpulse.on{background:var(--gr);box-shadow:0 0 8px var(--gr)}
+.hpulse.err{background:var(--rd)}
+.hbtn{
+  padding:5px 12px;border-radius:8px;border:1px solid var(--b1);
+  background:transparent;color:var(--t3);cursor:pointer;font-size:11px;
+  transition:all .15s;
+}
+.hbtn:hover{border-color:var(--ac);color:var(--t1);background:var(--gac)}
+.hbtn:disabled{opacity:.4;cursor:not-allowed}
+.hbtn.primary{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;border:none;font-weight:600;box-shadow:0 3px 12px rgba(59,130,246,.3)}
+.hbtn.primary:hover{box-shadow:0 4px 18px rgba(59,130,246,.45);transform:translateY(-1px)}
+
+/* ══════════════ LAYOUT ══════════════ */
+#wrap{display:flex;height:calc(100vh - 54px)}
+#sb{width:340px;min-width:340px;border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;background:var(--bg2)}
+#main{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* ══════════════ SIDEBAR TOP ══════════════ */
+.sb-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:5px;
+  padding:9px;border-bottom:1px solid var(--b1);flex-shrink:0;
+}
+.ssc{
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r1);
+  padding:7px 5px;text-align:center;cursor:pointer;transition:all .15s;
+}
+.ssc:hover{border-color:var(--b2);background:var(--bg4)}
+.ssc.active{border-color:var(--ac);background:rgba(59,130,246,.06)}
+.ssc .n{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.ssc .l{font-size:9px;color:var(--t3);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+
+/* SEARCH */
+.sb-search{padding:9px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.search-wrap{position:relative;margin-bottom:7px}
+.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--t4);pointer-events:none}
+.sinput{
+  width:100%;padding:7px 12px 7px 32px;background:var(--bg3);border:1px solid var(--b1);
+  border-radius:var(--r1);color:var(--t1);font-size:12px;outline:none;direction:rtl;
+  transition:all .15s;
+}
+.sinput:focus{border-color:var(--ac);background:var(--bg4)}
+.sinput::placeholder{color:var(--t4)}
+.sselect{
+  width:100%;padding:6px 12px;background:var(--bg3);border:1px solid var(--b1);
+  border-radius:var(--r1);color:var(--t1);font-size:11px;outline:none;
+  margin-bottom:7px;cursor:pointer;transition:border .15s;-webkit-appearance:none;
+}
+.sselect:focus{border-color:var(--ac)}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{
+  padding:4px 10px;border-radius:20px;border:1px solid var(--b1);
+  background:transparent;color:var(--t4);cursor:pointer;font-size:10px;
+  transition:all .15s;
+}
+.pill:hover{border-color:var(--b2);color:var(--t2)}
+.pill.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 0 10px rgba(59,130,246,.25)}
+
+/* PROG */
+.prog-wrap{padding:0 9px;flex-shrink:0;overflow:hidden;height:0;transition:height .2s}
+.prog-wrap.show{height:14px;padding:5px 9px}
+.prog-bar-track{height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--cy));border-radius:2px;transition:width .4s ease;width:0%}
+
+/* LIST */
+#lst{flex:1;overflow-y:auto;padding:7px}
+.pgbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 9px;border-top:1px solid var(--b1);flex-shrink:0;background:var(--bg);
+}
+.pgbtn{
+  padding:4px 11px;border-radius:6px;border:1px solid var(--b1);
+  background:transparent;color:var(--t3);cursor:pointer;font-size:10px;transition:all .15s;
+}
+.pgbtn:hover:not(:disabled){border-color:var(--ac);color:var(--t1)}
+.pgbtn:disabled{opacity:.3;cursor:not-allowed}
+.pglbl{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+
+/* NOTIF CARD */
+.nc{
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:10px 11px;cursor:pointer;margin-bottom:5px;
+  transition:all .15s;position:relative;overflow:hidden;
+}
+.nc::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:2px;
+  background:transparent;transition:background .15s;
+}
+.nc:hover{border-color:var(--b2);background:var(--bg4)}
+.nc:hover::after{background:var(--ac)}
+.nc.sel{border-color:rgba(59,130,246,.4);background:var(--bg4)}
+.nc.sel::after{background:var(--ac)}
+.nc-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.nc-row2{font-size:11px;font-weight:500;line-height:1.55;color:#b8cce8;margin-bottom:5px}
+.nc-row3{display:flex;justify-content:space-between;align-items:center}
+.nc-mem{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.nc-meta{display:flex;align-items:center;gap:5px}
+.ndate{font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace}
+
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;padding:1px 7px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.bdg.sps{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bdg.tbt{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.bdg.open{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bdg.closed{background:rgba(244,63,94,.1);color:#fb7185;border:1px solid rgba(244,63,94,.2)}
+.bdg.info{background:rgba(6,182,212,.1);color:#22d3ee;border:1px solid rgba(6,182,212,.2)}
+.bdg.purple{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.bdg.gray{background:var(--bg4);color:var(--t2);border:1px solid var(--b2)}
+.ana-done{font-size:9px;color:var(--gr);display:flex;align-items:center;gap:2px}
+.ana-load{font-size:9px;color:var(--am)}
+
+/* ══════════════ MAIN PANELS ══════════════ */
+.panel{display:none;min-height:100%}
+.panel.show{display:block}
+
+/* ── DASHBOARD ── */
+#p-dash{padding:18px}
+.dash-hero{
+  background:linear-gradient(135deg,rgba(29,78,216,.15) 0%,rgba(6,182,212,.08) 100%);
+  border:1px solid rgba(59,130,246,.2);border-radius:var(--r4);
+  padding:22px 26px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.dash-hero::before{
+  content:'';position:absolute;top:-40px;left:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,.1),transparent 70%);
+  pointer-events:none;
+}
+.dash-hero-title{font-size:20px;font-weight:700;margin-bottom:5px}
+.dash-hero-sub{font-size:12px;color:var(--t2);line-height:1.6;max-width:500px}
+.dash-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi-card{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:14px;position:relative;overflow:hidden;transition:all .2s;
+}
+.kpi-card:hover{border-color:var(--b2);transform:translateY(-1px)}
+.kpi-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--kpi-color,var(--ac));
+}
+.kpi-icon{font-size:20px;margin-bottom:8px}
+.kpi-val{font-size:24px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.kpi-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.kpi-delta{font-size:10px;margin-top:4px}
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.dash-row.triple{grid-template-columns:1fr 1fr 1fr}
+.dash-card{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:16px;overflow:hidden;
+}
+.dash-card-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.chart-wrap{position:relative;width:100%}
+.bar-chart{display:flex;flex-direction:column;gap:7px}
+.bar-item{display:flex;align-items:center;gap:8px;font-size:11px}
+.bar-label{width:90px;color:var(--t2);text-align:right;flex-shrink:0;font-size:10px}
+.bar-track{flex:1;height:8px;background:var(--b1);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.bar-val{width:36px;text-align:left;color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:10px;flex-shrink:0}
+.donut-wrap{display:flex;align-items:center;gap:14px}
+.donut-svg{flex-shrink:0}
+.donut-legend{flex:1}
+.donut-item{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:11px}
+.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.donut-name{flex:1;color:var(--t2)}
+.donut-pct{color:var(--t1);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:11px}
+.timeline{display:flex;flex-direction:column;gap:8px}
+.tl-item{
+  display:flex;align-items:flex-start;gap:10px;padding:8px 10px;
+  background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1);
+  transition:border .15s;cursor:pointer;
+}
+.tl-item:hover{border-color:var(--b2)}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-body{flex:1}
+.tl-title{font-size:11px;color:#b8cce8;margin-bottom:2px;line-height:1.5}
+.tl-meta{font-size:10px;color:var(--t3);display:flex;gap:8px}
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.risk-card{
+  background:var(--bg3);border-radius:var(--r2);padding:10px 12px;
+  border:1px solid var(--b1);text-align:center;transition:all .2s;cursor:pointer;
+}
+.risk-card:hover{border-color:var(--b3);transform:translateY(-1px)}
+.risk-card.high{border-color:rgba(244,63,94,.25);background:rgba(244,63,94,.04)}
+.risk-card.med{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.04)}
+.risk-card.low{border-color:rgba(16,185,129,.25);background:rgba(16,185,129,.04)}
+.risk-ico{font-size:18px;margin-bottom:5px}
+.risk-lbl{font-size:10px;color:var(--t3);margin-bottom:3px}
+.risk-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.trend-bar-wrap{display:flex;flex-direction:column;gap:5px}
+.trend-row{display:flex;align-items:center;gap:6px}
+.trend-month{font-size:9px;color:var(--t3);width:28px;text-align:right;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.trend-track{flex:1;height:6px;background:var(--b1);border-radius:3px;overflow:hidden;position:relative}
+.trend-sps{height:100%;background:var(--gr);float:right;transition:width .6s}
+.trend-tbt{height:100%;background:var(--am);float:right;transition:width .6s}
+.trend-split{display:flex;height:100%}
+.trend-val{font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;width:22px;text-align:left;flex-shrink:0}
+.map-placeholder{
+  height:160px;background:var(--bg3);border-radius:var(--r2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  border:1px solid var(--b1);
+}
+.top-members{display:flex;flex-direction:column;gap:5px}
+.tm-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1);transition:border .15s;cursor:pointer}
+.tm-item:hover{border-color:var(--b2)}
+.tm-flag{font-size:14px;flex-shrink:0}
+.tm-name{flex:1;font-size:11px;color:var(--t2)}
+.tm-count{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--t1)}
+.tm-type{display:flex;gap:3px}
+.tm-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;width:60px;background:var(--b1)}
+.tm-bar-sps{background:var(--gr);height:100%}
+.tm-bar-tbt{background:var(--am);height:100%}
+
+/* ── DETAIL ── */
+#p-det{padding:18px}
+.det-empty{
+  height:calc(100vh - 120px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;color:var(--t4);text-align:center;
+}
+.det-empty-icon{
+  width:68px;height:68px;background:var(--bg2);border:1px solid var(--b1);
+  border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;
+}
+.dc{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:16px 18px;margin-bottom:12px;
+}
+.dc-hd{
+  font-size:10px;font-weight:600;color:var(--t4);text-transform:uppercase;
+  letter-spacing:.7px;margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.dc-hd::after{content:'';flex:1;height:1px;background:var(--b1)}
+.dtit{font-size:15px;font-weight:700;line-height:1.55;color:var(--t1);margin-bottom:4px}
+.deng{font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:3px}
+.meta4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--b1)}
+.m4-lbl{font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.m4-val{font-size:11px;font-weight:600;color:#c0d4f0;font-family:'JetBrains Mono',monospace}
+.ptags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.ptag{padding:2px 9px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);border-radius:20px;font-size:10px;color:#93b4dd}
+.kwtag{padding:2px 9px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);border-radius:20px;font-size:10px;color:#b4a0f0}
+.qlinks{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.qlink{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
+  border-radius:7px;border:1px solid var(--b1);background:transparent;
+  color:var(--t3);font-size:10px;cursor:pointer;transition:all .15s;
+}
+.qlink:hover{border-color:var(--b2);color:var(--t2);background:var(--bg3)}
+.doc-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 11px;background:var(--bg);border:1px solid var(--b1);
+  border-radius:var(--r1);margin-bottom:5px;transition:border .15s;
+}
+.doc-row:hover{border-color:var(--b2)}
+.doc-n{font-size:11px;color:#c0d4f0;display:flex;align-items:center;gap:6px}
+.doc-a{
+  font-size:10px;color:var(--ac);padding:3px 9px;border-radius:6px;
+  border:1px solid rgba(59,130,246,.25);transition:all .15s;
+}
+.doc-a:hover{background:var(--gac);border-color:var(--ac)}
+/* AI BUTTONS */
+.btn-ai{
+  padding:9px 20px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--ac2),var(--ac));
+  color:#fff;cursor:pointer;font-size:12px;font-weight:600;
+  display:inline-flex;align-items:center;gap:6px;
+  box-shadow:0 4px 18px rgba(59,130,246,.3);transition:all .2s;
+}
+.btn-ai:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(59,130,246,.4)}
+.btn-ai:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ai.green{background:linear-gradient(135deg,var(--gr2),var(--gr));box-shadow:0 4px 18px rgba(16,185,129,.25)}
+.btn-ai.green:hover{box-shadow:0 6px 22px rgba(16,185,129,.35)}
+.btn-ai.purple{background:linear-gradient(135deg,var(--pu2),var(--pu));box-shadow:0 4px 18px rgba(139,92,246,.25)}
+.btn-hint{font-size:10px;color:var(--t4);margin-top:4px;text-align:center}
+.btn-ctr{text-align:center;margin:10px 0}
+/* TABS */
+.atabs{
+  display:flex;gap:3px;padding:3px;background:var(--bg3);
+  border:1px solid var(--b1);border-radius:10px;width:fit-content;margin-bottom:11px;
+}
+.atab{
+  padding:5px 13px;border-radius:7px;border:none;background:transparent;
+  color:var(--t4);cursor:pointer;font-size:11px;transition:all .15s;
+}
+.atab.on{background:var(--bg5);color:var(--t1);border:1px solid var(--b2)}
+.abox{
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:16px;line-height:1.9;font-size:12px;color:#b8cce8;white-space:pre-wrap;min-height:110px;
+}
+.act-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.actb{
+  padding:6px 13px;border-radius:7px;cursor:pointer;font-size:11px;
+  border:1px solid var(--b2);background:var(--bg3);color:var(--t3);transition:all .15s;
+}
+.actb:hover{border-color:var(--b3);color:var(--t1)}
+.actb.bl{border-color:rgba(59,130,246,.3);color:var(--ac)}.actb.bl:hover{background:var(--gac)}
+.actb.gn{border-color:rgba(16,185,129,.3);color:var(--gr)}.actb.gn:hover{background:var(--ggr)}
+.shim{height:11px;border-radius:4px;background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:300% 100%;animation:shim 1.5s infinite;margin-bottom:8px}
+/* RISK ANALYSIS */
+.risk-analysis{
+  background:var(--bg2);border:1px solid rgba(139,92,246,.2);
+  border-radius:var(--r3);padding:16px;margin-bottom:12px;
+}
+.risk-meter{display:flex;gap:3px;align-items:center;margin:8px 0}
+.risk-seg{height:8px;flex:1;border-radius:2px;opacity:.3;transition:opacity .3s}
+.risk-seg.fill{opacity:1}
+.risk-seg.c-rd{background:var(--rd)}
+.risk-seg.c-am{background:var(--am)}
+.risk-seg.c-gr{background:var(--gr)}
+
+/* ── SEARCH ── */
+#p-search{padding:18px}
+.adv-search{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:18px;margin-bottom:16px;
+}
+.adv-title{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--t1)}
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.adv-field label{font-size:10px;color:var(--t3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.adv-results{display:flex;flex-direction:column;gap:8px}
+.res-card{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:14px;cursor:pointer;transition:all .15s;
+}
+.res-card:hover{border-color:var(--b2);background:var(--bg3)}
+.res-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.res-title{font-size:12px;font-weight:600;color:#b8cce8;line-height:1.5;flex:1;margin-left:10px}
+.res-meta{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.res-body{font-size:11px;color:var(--t3);line-height:1.6}
+.res-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+
+/* ── COMPARE ── */
+#p-compare{padding:18px}
+.cmp-select-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.cmp-slot{
+  background:var(--bg2);border:1px dashed var(--b2);border-radius:var(--r3);
+  padding:14px;min-height:80px;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.cmp-slot.filled{border-style:solid;border-color:var(--b2);justify-content:flex-start;align-items:flex-start;flex-direction:column}
+.cmp-slot:hover:not(.filled){border-color:var(--b3);background:var(--bg3)}
+.cmp-slot-ph{font-size:12px;color:var(--t4);text-align:center}
+.cmp-table{width:100%;border-collapse:collapse;font-size:11px}
+.cmp-table th{padding:8px 12px;background:var(--bg3);border-bottom:1px solid var(--b1);color:var(--t3);font-weight:600;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+.cmp-table td{padding:8px 12px;border-bottom:1px solid var(--b1);vertical-align:top;line-height:1.5}
+.cmp-table tr:hover td{background:var(--bg3)}
+.cmp-diff{background:rgba(245,158,11,.06);border-left:2px solid var(--am)}
+
+/* ── ALERTS ── */
+#p-alerts{padding:18px}
+.al-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.al-card{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:14px;
+}
+.al-card-title{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--t1)}
+.al-row{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r1);margin-bottom:6px;
+  transition:border .15s;
+}
+.al-row:hover{border-color:var(--b2)}
+.al-info{flex:1;min-width:0}
+.al-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.al-desc{font-size:10px;color:var(--t3)}
+.al-del{
+  padding:3px 7px;border-radius:5px;border:1px solid rgba(244,63,94,.2);
+  background:transparent;color:var(--rd);cursor:pointer;font-size:10px;transition:all .15s;flex-shrink:0;
+}
+.al-del:hover{background:var(--grd2);border-color:var(--rd)}
+.tgl{position:relative;width:34px;height:18px;flex-shrink:0}
 .tgl input{opacity:0;width:0;height:0}
-.tslider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:10px;transition:.25s}
-.tslider:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+.tslider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:20px;transition:.2s}
+.tslider::before{content:'';position:absolute;height:12px;width:12px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
 .tgl input:checked+.tslider{background:var(--ac)}
-.tgl input:checked+.tslider:before{transform:translateX(18px)}
-.al-form{margin:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:14px}
-.al-lbl{font-size:11px;color:var(--t3)}
-.al-addbtn{width:100%;padding:8px;border-radius:8px;border:1px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px}
-.al-addbtn:hover{background:#1a2a45}
-.al-empty{text-align:center;padding:30px;font-size:12px;color:var(--t3)}
+.tgl input:checked+.tslider::before{transform:translateX(16px)}
+.al-empty{text-align:center;padding:24px;font-size:11px;color:var(--t4)}
+
+/* ── EXPORT ── */
+#p-export{padding:18px}
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.exp-card{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r3);
+  padding:16px;text-align:center;cursor:pointer;transition:all .2s;
+}
+.exp-card:hover{border-color:var(--b2);transform:translateY(-2px);background:var(--bg3)}
+.exp-icon{font-size:24px;margin-bottom:8px}
+.exp-name{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--t1)}
+.exp-desc{font-size:10px;color:var(--t3);line-height:1.5}
+.res-links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.rl-card{
+  display:flex;align-items:center;gap:9px;padding:10px 12px;
+  background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r2);
+  cursor:pointer;transition:all .15s;
+}
+.rl-card:hover{border-color:var(--b2);background:var(--bg3)}
+.rl-ico{font-size:18px;flex-shrink:0}
+.rl-name{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.rl-url{font-size:9px;color:var(--t3)}
+
+/* SHARED */
+.section-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--t1)}
+.section-title .st-sub{font-size:11px;font-weight:400;color:var(--t3)}
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:40px 20px;color:var(--t4);text-align:center;
+}
+.empty-state-icon{font-size:28px;opacity:.3}
+.loading-dots::after{content:'...';animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%,20%{content:'.'}40%,60%{content:'..'}80%,100%{content:'...'}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shim{0%{background-position:200%}100%{background-position:-100%}}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fadein{animation:fadein .25s ease}
+
+/* NOTIFICATION BADGE */
+.nb-dot{
+  width:16px;height:16px;border-radius:50%;background:var(--rd);
+  color:#fff;font-size:8px;font-weight:700;display:inline-flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  position:absolute;top:-4px;left:-4px;
+}
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════ HEADER ══════════════════════════ -->
 <div id="hdr">
   <div class="hlogo">
     <div class="hico">⚖️</div>
-    <div><div class="ht1">منصة ePing</div><div class="ht2">إخطارات SPS/TBT — منظمة التجارة العالمية</div></div>
+    <div class="htxt">
+      <div class="h1">منصة ePing — WTO</div>
+      <div class="h2">المرصد القانوني للإخطارات التقنية والصحية</div>
+    </div>
   </div>
+
+  <nav class="hnav">
+    <button class="hnav-btn on" onclick="goPage('dash',this)">📊 لوحة التحكم</button>
+    <button class="hnav-btn" onclick="goPage('det',this)">📋 الإخطارات</button>
+    <button class="hnav-btn" onclick="goPage('search',this)">🔍 بحث متقدم</button>
+    <button class="hnav-btn" onclick="goPage('compare',this)">⚖️ مقارنة</button>
+    <button class="hnav-btn" onclick="goPage('alerts',this)">🔔 تنبيهاتي</button>
+    <button class="hnav-btn" onclick="goPage('export',this)">📤 تصدير</button>
+  </nav>
+
   <div class="hright">
-    <div class="hdot" id="hdot"></div>
-    <span class="hlbl" id="hlbl">جارٍ الاتصال...</span>
+    <div class="hstatus" id="hstatus">
+      <div class="hpulse" id="hdot"></div>
+      <span id="hlbl">جارٍ الاتصال...</span>
+    </div>
     <button class="hbtn" id="rfbtn" onclick="doLoad(true)">↻ تحديث</button>
   </div>
 </div>
-<div id="app">
+
+<!-- ══════════════════════════ MAIN WRAP ══════════════════════════ -->
+<div id="wrap">
+
+  <!-- ══ SIDEBAR ══ -->
   <div id="sb">
-    <div id="svc-bar">
-      <button class="svctb on" onclick="switchSvc('notif',this)">📋 الإخطارات</button>
-      <button class="svctb" onclick="switchSvc('alerts',this)">🔔 تنبيهاتي</button>
-    </div>
-    <!-- لوحة الإخطارات -->
-    <div id="notif-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
-      <div id="stats">
-        <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
-        <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
-        <div class="sc"><div class="n" id="sc-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
-        <div class="sc"><div class="n" id="sc-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
+    <!-- STATS -->
+    <div class="sb-stats">
+      <div class="ssc" id="ssc-t" onclick="filterQuick('all')">
+        <div class="n" id="st-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div>
       </div>
-      <div id="flt">
-        <input class="sinput" id="srch" type="text" placeholder="🔍 بحث في الإخطارات..." oninput="renderList()"/>
-        <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
-          <option value="">🌍 جميع الدول (166 عضو)</option>
-          <option value="C682">🇸🇦 المملكة العربية السعودية</option>
-          <option value="C784">🇦🇪 الإمارات العربية المتحدة</option>
-          <option value="C634">🇶🇦 قطر</option>
-          <option value="C414">🇰🇼 الكويت</option>
-          <option value="C048">🇧🇭 البحرين</option>
-          <option value="C512">🇴🇲 عُمان</option>
-          <option value="C400">🇯🇴 الأردن</option>
-          <option value="C818">🇪🇬 مصر</option>
-          <option value="C504">🇲🇦 المغرب</option>
-          <option value="C788">🇹🇳 تونس</option>
-          <option value="C012">🇩🇿 الجزائر</option>
-          <option value="C840">🇺🇸 الولايات المتحدة الأمريكية</option>
-          <option value="C381">🇪🇺 الاتحاد الأوروبي</option>
-          <option value="C156">🇨🇳 الصين</option>
-          <option value="C356">🇮🇳 الهند</option>
-          <option value="C392">🇯🇵 اليابان</option>
-          <option value="C826">🇬🇧 المملكة المتحدة</option>
-          <option value="C276">🇩🇪 ألمانيا</option>
-          <option value="C250">🇫🇷 فرنسا</option>
-          <option value="C036">🇦🇺 أستراليا</option>
-          <option value="C124">🇨🇦 كندا</option>
-          <option value="C076">🇧🇷 البرازيل</option>
-          <option value="C410">🇰🇷 كوريا الجنوبية</option>
-          <option value="C792">🇹🇷 تركيا</option>
-          <option value="C360">🇮🇩 إندونيسيا</option>
-          <option value="C458">🇲🇾 ماليزيا</option>
-          <option value="C702">🇸🇬 سنغافورة</option>
-          <option value="C704">🇻🇳 فيتنام</option>
-          <option value="C586">🇵🇰 باكستان</option>
-          <option value="C710">🇿🇦 جنوب أفريقيا</option>
-          <option value="C566">🇳🇬 نيجيريا</option>
-          <option value="C752">🇸🇪 السويد</option>
-          <option value="C756">🇨🇭 سويسرا</option>
-          <option value="C484">🇲🇽 المكسيك</option>
-          <option value="C032">🇦🇷 الأرجنتين</option>
-          <option value="C152">🇨🇱 تشيلي</option>
-          <option value="C170">🇨🇴 كولومبيا</option>
-          <option value="C764">🇹🇭 تايلاند</option>
-        </select>
-        <div class="frow">
-          <button class="fb on" onclick="setF('all',this)">الكل</button>
-          <button class="fb" onclick="setF('SPS',this)">SPS</button>
-          <button class="fb" onclick="setF('TBT',this)">TBT</button>
-          <button class="fb" onclick="setF('open',this)">مفتوح</button>
+      <div class="ssc" id="ssc-o" onclick="filterQuick('open')">
+        <div class="n" id="st-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div>
+      </div>
+      <div class="ssc" id="ssc-s" onclick="filterQuick('SPS')">
+        <div class="n" id="st-s" style="color:#34d399">—</div><div class="l">SPS</div>
+      </div>
+      <div class="ssc" id="ssc-b" onclick="filterQuick('TBT')">
+        <div class="n" id="st-b" style="color:#fbbf24">—</div><div class="l">TBT</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="prog-wrap" id="prog-wrap">
+      <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-bar"></div></div>
+    </div>
+
+    <!-- SEARCH / FILTER -->
+    <div class="sb-search">
+      <div class="search-wrap">
+        <span class="search-ico">🔍</span>
+        <input class="sinput" id="srch" type="text" placeholder="بحث سريع..." oninput="renderList()"/>
+      </div>
+      <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
+        <option value="">🌍 جميع الدول</option>
+        <option value="C682">🇸🇦 المملكة العربية السعودية</option>
+        <option value="C784">🇦🇪 الإمارات</option>
+        <option value="C634">🇶🇦 قطر</option>
+        <option value="C414">🇰🇼 الكويت</option>
+        <option value="C048">🇧🇭 البحرين</option>
+        <option value="C512">🇴🇲 عُمان</option>
+        <option value="C400">🇯🇴 الأردن</option>
+        <option value="C818">🇪🇬 مصر</option>
+        <option value="C504">🇲🇦 المغرب</option>
+        <option value="C840">🇺🇸 الولايات المتحدة</option>
+        <option value="C381">🇪🇺 الاتحاد الأوروبي</option>
+        <option value="C156">🇨🇳 الصين</option>
+        <option value="C356">🇮🇳 الهند</option>
+        <option value="C392">🇯🇵 اليابان</option>
+        <option value="C826">🇬🇧 المملكة المتحدة</option>
+        <option value="C276">🇩🇪 ألمانيا</option>
+        <option value="C250">🇫🇷 فرنسا</option>
+        <option value="C036">🇦🇺 أستراليا</option>
+        <option value="C124">🇨🇦 كندا</option>
+        <option value="C076">🇧🇷 البرازيل</option>
+        <option value="C410">🇰🇷 كوريا الجنوبية</option>
+        <option value="C792">🇹🇷 تركيا</option>
+        <option value="C360">🇮🇩 إندونيسيا</option>
+        <option value="C702">🇸🇬 سنغافورة</option>
+        <option value="C704">🇻🇳 فيتنام</option>
+        <option value="C152">🇨🇱 تشيلي</option>
+      </select>
+      <div class="pills">
+        <button class="pill on" onclick="setPill('all',this)">الكل</button>
+        <button class="pill" onclick="setPill('SPS',this)">SPS</button>
+        <button class="pill" onclick="setPill('TBT',this)">TBT</button>
+        <button class="pill" onclick="setPill('open',this)">🟢 مفتوح</button>
+        <button class="pill" onclick="setPill('saudi',this)">🇸🇦 سعودي</button>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div id="lst">
+      <div class="empty-state">
+        <div class="empty-state-icon">⏳</div>
+        <div style="font-size:11px">جارٍ الاتصال...</div>
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pgbar" id="pgbar" style="display:none">
+      <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
+      <span class="pglbl" id="pglbl">1 / 1</span>
+      <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
+    </div>
+  </div>
+
+  <!-- ══ MAIN PANELS ══ -->
+  <div id="main">
+
+    <!-- ██ DASHBOARD ██ -->
+    <div id="p-dash" class="panel show fadein" style="padding:18px">
+
+      <div class="dash-hero">
+        <div class="dash-hero-title">🇸🇦 المرصد الوطني لإخطارات التجارة الدولية</div>
+        <div class="dash-hero-sub">
+          رصد وتحليل إخطارات SPS وTBT الصادرة عن دول الأعضاء في منظمة التجارة العالمية —
+          دعم قرار وزارة التجارة والهيئة العامة للتجارة الخارجية
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <a href="https://eping.wto.org" target="_blank" class="qlink">🌐 ePing الرسمي</a>
+          <a href="https://www.wto.org/english/tratop_e/sps_e/sps_e.htm" target="_blank" class="qlink">📋 لجنة SPS</a>
+          <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="qlink">⚖️ لجنة TBT</a>
+          <a href="https://mc.gov.sa" target="_blank" class="qlink">🏛️ وزارة التجارة</a>
+          <a href="https://www.zatca.gov.sa" target="_blank" class="qlink">💼 الزكاة والجمارك</a>
         </div>
       </div>
-      <div id="lst"><div style="text-align:center;padding:40px 10px;font-size:12px;color:var(--t3)">⏳ جارٍ الاتصال...</div></div>
-      <div class="pgbar" id="pgbar" style="display:none">
-        <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
-        <span class="pglbl" id="pglbl">1/1</span>
-        <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
+
+      <!-- KPI CARDS -->
+      <div class="dash-kpi">
+        <div class="kpi-card" style="--kpi-color:var(--ac)">
+          <div class="kpi-icon">📋</div>
+          <div class="kpi-val" id="kpi-total" style="color:var(--ac)">—</div>
+          <div class="kpi-lbl">إجمالي الإخطارات</div>
+          <div class="kpi-delta" id="kpi-total-d" style="color:var(--t3)">هذه الصفحة</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--gr)">
+          <div class="kpi-icon">🟢</div>
+          <div class="kpi-val" id="kpi-open" style="color:var(--gr)">—</div>
+          <div class="kpi-lbl">مفتوحة للتعليق</div>
+          <div class="kpi-delta" id="kpi-open-d" style="color:var(--gr)">تتطلب متابعة</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--am)">
+          <div class="kpi-icon">🌿</div>
+          <div class="kpi-val" id="kpi-sps" style="color:#34d399">—</div>
+          <div class="kpi-lbl">إخطارات SPS</div>
+          <div class="kpi-delta" id="kpi-sps-d" style="color:var(--t3)">تدابير صحية</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--am)">
+          <div class="kpi-icon">🔧</div>
+          <div class="kpi-val" id="kpi-tbt" style="color:#fbbf24">—</div>
+          <div class="kpi-lbl">إخطارات TBT</div>
+          <div class="kpi-delta" id="kpi-tbt-d" style="color:var(--t3)">عوائق تقنية</div>
+        </div>
       </div>
-    </div>
-    <!-- لوحة التنبيهات -->
-    <div id="alerts-panel">
-      <div style="overflow-y:auto;padding:10px 12px">
-        <div id="alerts-list"></div>
-        <div class="al-form">
-          <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">➕ إضافة تنبيه جديد</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">النوع</span>
-              <select class="sselect" id="al-type" style="margin-bottom:0"><option value="الكل">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option></select>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">التكرار</span>
-              <select class="sselect" id="al-freq" style="margin-bottom:0"><option value="فوري">فوري</option><option value="يومي">يومي</option><option value="أسبوعي">أسبوعي</option><option value="شهري">شهري</option></select>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">الدولة</span>
-              <select class="sselect" id="al-country" style="margin-bottom:0"><option value="جميع الدول">الجميع</option><option value="Saudi Arabia">المملكة العربية السعودية</option><option value="United Arab Emirates">الإمارات</option><option value="United States of America">الولايات المتحدة</option><option value="European Union">الاتحاد الأوروبي</option><option value="China">الصين</option></select>
+
+      <!-- ROW 1 -->
+      <div class="dash-row">
+        <div class="dash-card">
+          <div class="dash-card-title">أكثر الدول إخطاراً <span style="color:var(--t4)">الصفحة الحالية</span></div>
+          <div class="top-members" id="top-members-list">
+            <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">⏳</div></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">توزيع النوع <span style="color:var(--t4)">SPS / TBT</span></div>
+          <div class="donut-wrap" id="donut-wrap">
+            <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100" id="donut-svg">
+              <circle cx="50" cy="50" r="36" fill="none" stroke="var(--b1)" stroke-width="16"/>
+              <circle id="donut-sps" cx="50" cy="50" r="36" fill="none" stroke="#10b981" stroke-width="16"
+                stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
+                transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .8s ease"/>
+              <circle id="donut-tbt" cx="50" cy="50" r="36" fill="none" stroke="#f59e0b" stroke-width="16"
+                stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
+                transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .8s ease"/>
+              <text x="50" y="46" text-anchor="middle" fill="var(--t1)" font-size="12" font-weight="700" id="donut-pct">—</text>
+              <text x="50" y="58" text-anchor="middle" fill="var(--t3)" font-size="7">SPS</text>
+            </svg>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="dash-row">
+        <div class="dash-card">
+          <div class="dash-card-title">آخر الإخطارات المفتوحة <span id="open-count-lbl" style="color:var(--gr)"></span></div>
+          <div class="timeline" id="recent-open-list">
+            <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">⏳</div></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">تقييم المخاطر التجارية 🇸🇦</div>
+          <div class="risk-grid" id="risk-grid">
+            <div class="risk-card high"><div class="risk-ico">⚠️</div><div class="risk-lbl">عالي</div><div class="risk-val" style="color:var(--rd)" id="risk-h">—</div></div>
+            <div class="risk-card med"><div class="risk-ico">🔶</div><div class="risk-lbl">متوسط</div><div class="risk-val" style="color:var(--am)" id="risk-m">—</div></div>
+            <div class="risk-card low"><div class="risk-ico">✅</div><div class="risk-lbl">منخفض</div><div class="risk-val" style="color:var(--gr)" id="risk-l">—</div></div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1);font-size:10px;color:var(--t3);line-height:1.7" id="risk-note">
+            يُحسب التقييم بناءً على: موعد التعليق، قِصَر المهلة، الدول المؤثرة على الصادرات السعودية (EU/US/CN/JP).
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3 - Full width trend -->
+      <div class="dash-card" style="margin-bottom:14px">
+        <div class="dash-card-title">توزيع الإخطارات حسب النوع <span style="color:var(--t4)">المحملة حالياً</span></div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+
+      <!-- LEGAL REFS -->
+      <div class="dash-card">
+        <div class="dash-card-title">المرجعية القانونية الدولية</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
+            <div style="font-size:11px;font-weight:600;color:#34d399;margin-bottom:6px">🌿 اتفاقية SPS</div>
+            <div style="font-size:10px;color:var(--t3);line-height:1.7">
+              • المادة 5: تقييم المخاطر<br>
+              • المادة 7: الشفافية والإخطار<br>
+              • معايير: Codex / OIE / IPPC<br>
+              • 90 يوم للتعليق الاعتراضي
             </div>
           </div>
-          <input class="sinput" id="al-sector" type="text" placeholder="القطاع / الكلمة المفتاحية..." style="margin-bottom:8px"/>
-          <button class="al-addbtn" onclick="addAlert()">➕ إضافة التنبيه</button>
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
+            <div style="font-size:11px;font-weight:600;color:#fbbf24;margin-bottom:6px">🔧 اتفاقية TBT</div>
+            <div style="font-size:10px;color:var(--t3);line-height:1.7">
+              • المادة 2: عدم التمييز<br>
+              • المادة 5: إجراءات التقييم<br>
+              • معايير: ISO / IEC / ITU<br>
+              • 60 يوم للاعتراض الرسمي
+            </div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
+            <div style="font-size:11px;font-weight:600;color:#60a5fa;margin-bottom:6px">⚖️ اتفاقية DSU</div>
+            <div style="font-size:10px;color:var(--t3);line-height:1.7">
+              • آلية فض النزاعات<br>
+              • المشاورات / الهيئات / الاستئناف<br>
+              • المادة 21.5: تنفيذ القرارات
+            </div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
+            <div style="font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:6px">🇸🇦 الإطار السعودي</div>
+            <div style="font-size:10px;color:var(--t3);line-height:1.7">
+              • هيئة الخبراء بمجلس الوزراء<br>
+              • وزارة التجارة — الهيئة العامة<br>
+              • هيئة الزكاة والضريبة والجمارك<br>
+              • هيئة المواصفات SASO
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div id="main">
-    <div id="empty">
-      <div style="font-size:56px">⚖️</div>
-      <div style="font-size:17px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
-      <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار لعرض تفاصيله وتحليله القانوني</div>
+
+    <!-- ██ DETAIL ██ -->
+    <div id="p-det" class="panel" style="padding:18px">
+      <div class="det-empty" id="det-empty">
+        <div class="det-empty-icon">⚖️</div>
+        <div style="font-size:15px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
+        <div style="font-size:11px;max-width:280px;line-height:1.7;color:var(--t3)">
+          اضغط على أي إخطار من القائمة الجانبية لعرض تفاصيله وتحليله القانوني الشامل وفق اتفاقيات WTO
+        </div>
+        <div class="qlinks" style="margin-top:4px;justify-content:center">
+          <a href="https://eping.wto.org" target="_blank" class="qlink">🌐 ePing</a>
+          <a href="https://www.wto.org" target="_blank" class="qlink">🏛️ WTO</a>
+          <a href="https://mc.gov.sa" target="_blank" class="qlink">🇸🇦 وزارة التجارة</a>
+        </div>
+      </div>
+      <div id="det-content" style="display:none"></div>
     </div>
-    <div id="det"></div>
-  </div>
-</div>
+
+    <!-- ██ ADVANCED SEARCH ██ -->
+    <div id="p-search" class="panel fadein">
+      <div class="section-title">🔍 البحث المتقدم <span class="st-sub">— بحث دقيق في قاعدة بيانات WTO</span></div>
+      <div class="adv-search">
+        <div class="adv-grid">
+          <div class="adv-field">
+            <label>الكلمة المفتاحية</label>
+            <input class="sinput" id="adv-kw" type="text" placeholder="مثال: pesticide, food safety..."/>
+          </div>
+          <div class="adv-field">
+            <label>نوع الإخطار</label>
+            <select class="sselect" id="adv-type" style="margin:0">
+              <option value="">الكل</option>
+              <option value="SPS">SPS — تدابير صحية ونباتية</option>
+              <option value="TBT">TBT — عوائق تقنية تجارية</option>
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>الدولة المُخطِرة</label>
+            <select class="sselect" id="adv-country" style="margin:0">
+              <option value="">جميع الدول</option>
+              <option value="C381">🇪🇺 الاتحاد الأوروبي</option>
+              <option value="C840">🇺🇸 الولايات المتحدة</option>
+              <option value="C156">🇨🇳 الصين</option>
+              <option value="C392">🇯🇵 اليابان</option>
+              <option value="C826">🇬🇧 المملكة المتحدة</option>
+              <option value="C036">🇦🇺 أستراليا</option>
+              <option value="C682">🇸🇦 المملكة العربية السعودية</option>
+              <option value="C356">🇮🇳 الهند</option>
+              <option value="C276">🇩🇪 ألمانيا</option>
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>تاريخ من</label>
+            <input class="sinput" id="adv-from" type="date" style="color-scheme:dark"/>
+          </div>
+          <div class="adv-field">
+            <label>تاريخ إلى</label>
+            <input class="sinput" id="adv-to" type="date" style="color-scheme:dark"/>
+          </div>
+          <div class="adv-field">
+            <label>الحالة</label>
+            <select class="sselect" id="adv-status" style="margin:0">
+              <option value="">الكل</option>
+              <option value="open">مفتوح للتعليق</option>
+              <option value="closed">منتهي</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-ai" onclick="runAdvSearch()" style="padding:8px 18px;font-size:12px">🔍 تنفيذ البحث</button>
+          <button class="actb" onclick="clearAdvSearch()">مسح</button>
+          <span id="adv-count" style="font-size:11px;color:var(--t3)"></span>
+        </div>
+      </div>
+      <div id="adv-results"></div>
+    </div>
+
+    <!-- ██ COMPARE ██ -->
+    <div id="p-compare" class="panel fadein">
+      <div class="section-title">⚖️ مقارنة الإخطارات <span class="st-sub">— اختر إخطارين للمقارنة التفصيلية</span></div>
+      <div class="cmp-select-row">
+        <div class="cmp-slot" id="cmp-a" onclick="pickCmpSlot('a')">
+          <div class="cmp-slot-ph">➕ اختر الإخطار الأول<br><span style="font-size:10px;color:var(--t4)">اضغط لفتح القائمة</span></div>
+        </div>
+        <div class="cmp-slot" id="cmp-b" onclick="pickCmpSlot('b')">
+          <div class="cmp-slot-ph">➕ اختر الإخطار الثاني<br><span style="font-size:10px;color:var(--t4)">اضغط لفتح القائمة</span></div>
+        </div>
+      </div>
+      <div id="cmp-table-wrap"></div>
+    </div>
+
+    <!-- ██ ALERTS ██ -->
+    <div id="p-alerts" class="panel fadein">
+      <div class="section-title">🔔 نظام التنبيهات <span class="st-sub">— تلقَّ إشعارات فورية بالإخطارات الجديدة</span></div>
+      <div class="al-grid">
+        <div class="al-card">
+          <div class="al-card-title">التنبيهات النشطة</div>
+          <div id="alerts-list">
+            <div class="al-empty">🔔 لا توجد تنبيهات بعد</div>
+          </div>
+        </div>
+        <div class="al-card">
+          <div class="al-card-title">➕ إضافة تنبيه جديد</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div>
+              <div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase">النوع</div>
+              <select class="sselect" id="al-type" style="margin:0;font-size:11px">
+                <option value="الكل">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase">التكرار</div>
+              <select class="sselect" id="al-freq" style="margin:0;font-size:11px">
+                <option value="فوري">فوري</option><option value="يومي">يومي</option>
+                <option value="أسبوعي">أسبوعي</option><option value="شهري">شهري</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase">الدولة</div>
+              <select class="sselect" id="al-country" style="margin:0;font-size:11px">
+                <option value="جميع الدول">الجميع</option>
+                <option value="EU">الاتحاد الأوروبي</option>
+                <option value="US">الولايات المتحدة</option>
+                <option value="China">الصين</option>
+                <option value="Japan">اليابان</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase">القطاع</div>
+              <input class="sinput" id="al-sector" placeholder="مثال: أغذية، كيميائيات..."/>
+            </div>
+          </div>
+          <button style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(59,130,246,.3);background:transparent;color:var(--ac);cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s" onmouseover="this.style.background='var(--gac)'" onmouseout="this.style.background='transparent'" onclick="addAlert()">➕ إضافة التنبيه</button>
+        </div>
+      </div>
+
+      <!-- ePing Official Alert -->
+      <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:var(--r3);padding:14px;margin-top:4px">
+        <div style="font-size:12px;font-weight:600;color:var(--ac);margin-bottom:8px">🌐 التنبيهات الرسمية عبر ePing</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:10px">
+          منصة ePing الرسمية لمنظمة التجارة العالمية تتيح الاشتراك في تنبيهات فورية مخصصة حسب:<br>
+          القطاع الزراعي / الصناعي · الدولة · النوع SPS/TBT · رمز HS للمنتج
+        </div>
+        <a href="https://eping.wto.org" target="_blank" class="btn-ai" style="display:inline-flex;font-size:11px;padding:7px 16px">🔗 الاشتراك في ePing الرسمي</a>
+      </div>
+    </div>
+
+    <!-- ██ EXPORT ██ -->
+    <div id="p-export" class="panel fadein">
+      <div class="section-title">📤 تصدير البيانات <span class="st-sub">— تحميل ومشاركة بيانات الإخطارات</span></div>
+      <div class="exp-grid" style="margin-bottom:16px">
+        <div class="exp-card" onclick="exportJSON()">
+          <div class="exp-icon">📦</div>
+          <div class="exp-name">JSON</div>
+          <div class="exp-desc">بيانات كاملة قابلة للمعالجة البرمجية</div>
+        </div>
+        <div class="exp-card" onclick="exportCSV()">
+          <div class="exp-icon">📊</div>
+          <div class="exp-name">CSV / Excel</div>
+          <div class="exp-desc">جدول بيانات متوافق مع Excel وGoogle Sheets</div>
+        </div>
+        <div class="exp-card" onclick="copyOpen()">
+          <div class="exp-icon">📋</div>
+          <div class="exp-name">نسخ المفتوحة</div>
+          <div class="exp-desc">نسخ قائمة الإخطارات المفتوحة للتعليق</div>
+        </div>
+        <div class="exp-card" onclick="exportAnalyses()">
+          <div class="exp-icon">🤖</div>
+          <div class="exp-name">التحليلات</div>
+          <div class="exp-desc">تصدير جميع التحليلات القانونية المنجزة</div>
+        </div>
+        <div class="exp-card" onclick="printReport()">
+          <div class="exp-icon">🖨️</div>
+          <div class="exp-name">طباعة تقرير</div>
+          <div class="exp-desc">إنشاء تقرير PDF جاهز للطباعة</div>
+        </div>
+        <div class="exp-card" onclick="copyStats()">
+          <div class="exp-icon">📈</div>
+          <div class="exp-name">الإحصاءات</div>
+          <div class="exp-desc">نسخ ملخص إحصائي مُنسَّق</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="font-size:13px">🔗 المصادر الرسمية والمنصات الدولية</div>
+      <div class="res-links">
+        <a href="https://eping.wto.org" target="_blank" class="rl-card">
+          <div class="rl-ico">🌐</div><div><div class="rl-name">ePing Alert System</div><div class="rl-url">eping.wto.org</div></div>
+        </a>
+        <a href="https://docs.wto.org" target="_blank" class="rl-card">
+          <div class="rl-ico">📄</div><div><div class="rl-name">WTO Documents Online</div><div class="rl-url">docs.wto.org</div></div>
+        </a>
+        <a href="https://www.wto.org/english/tratop_e/sps_e/sps_e.htm" target="_blank" class="rl-card">
+          <div class="rl-ico">🌿</div><div><div class="rl-name">لجنة SPS الرسمية</div><div class="rl-url">wto.org / SPS</div></div>
+        </a>
+        <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="rl-card">
+          <div class="rl-ico">⚙️</div><div><div class="rl-name">لجنة TBT الرسمية</div><div class="rl-url">wto.org / TBT</div></div>
+        </a>
+        <a href="https://www.wto.org/english/tratop_e/dispu_e/dispu_e.htm" target="_blank" class="rl-card">
+          <div class="rl-ico">⚖️</div><div><div class="rl-name">نظام فض النزاعات DSU</div><div class="rl-url">wto.org / Disputes</div></div>
+        </a>
+        <a href="https://saudibizgate.mci.gov.sa" target="_blank" class="rl-card">
+          <div class="rl-ico">🏛️</div><div><div class="rl-name">بوابة الأعمال السعودية</div><div class="rl-url">mci.gov.sa</div></div>
+        </a>
+        <a href="https://www.zatca.gov.sa" target="_blank" class="rl-card">
+          <div class="rl-ico">💼</div><div><div class="rl-name">هيئة الزكاة والجمارك</div><div class="rl-url">zatca.gov.sa</div></div>
+        </a>
+        <a href="https://itc.int" target="_blank" class="rl-card">
+          <div class="rl-ico">🌍</div><div><div class="rl-name">مركز التجارة الدولي ITC</div><div class="rl-url">itc.int</div></div>
+        </a>
+        <a href="https://unctad.org" target="_blank" class="rl-card">
+          <div class="rl-ico">📊</div><div><div class="rl-name">UNCTAD</div><div class="rl-url">unctad.org</div></div>
+        </a>
+        <a href="https://www.codexalimentarius.org" target="_blank" class="rl-card">
+          <div class="rl-ico">🍽️</div><div><div class="rl-name">Codex Alimentarius</div><div class="rl-url">codexalimentarius.org</div></div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /wrap -->
+
+<!-- ══════════════════════════ JS ══════════════════════════ -->
 <script>
-const API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
-const FL={
+var API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
+var FL={
   C682:'🇸🇦',C784:'🇦🇪',C634:'🇶🇦',C414:'🇰🇼',C048:'🇧🇭',C512:'🇴🇲',C400:'🇯🇴',
-  C818:'🇪🇬',C504:'🇲🇦',C788:'🇹🇳',C012:'🇩🇿',C566:'🇳🇬',C404:'🇰🇪',
-  C840:'🇺🇸',C381:'🇪🇺',C156:'🇨🇳',C356:'🇮🇳',C392:'🇯🇵',C826:'🇬🇧',
-  C276:'🇩🇪',C250:'🇫🇷',C036:'🇦🇺',C124:'🇨🇦',C076:'🇧🇷',C410:'🇰🇷',
-  C792:'🇹🇷',C360:'🇮🇩',C458:'🇲🇾',C702:'🇸🇬',C704:'🇻🇳',C586:'🇵🇰',
-  C710:'🇿🇦',C752:'🇸🇪',C756:'🇨🇭',C484:'🇲🇽',C032:'🇦🇷',C152:'🇨🇱',
-  C170:'🇨🇴',C764:'🇹🇭',C108:'🇧🇮',C804:'🇺🇦',C158:'🇹🇼',C554:'🇳🇿',
-  C120:'🇨🇲',C188:'🇨🇷',C524:'🇳🇵',C646:'🇷🇼',C800:'🇺🇬',C834:'🇹🇿'
+  C818:'🇪🇬',C504:'🇲🇦',C788:'🇹🇳',C012:'🇩🇿',C840:'🇺🇸',C381:'🇪🇺',
+  C156:'🇨🇳',C356:'🇮🇳',C392:'🇯🇵',C826:'🇬🇧',C276:'🇩🇪',C250:'🇫🇷',
+  C036:'🇦🇺',C124:'🇨🇦',C076:'🇧🇷',C410:'🇰🇷',C792:'🇹🇷',C360:'🇮🇩',
+  C458:'🇲🇾',C702:'🇸🇬',C704:'🇻🇳',C152:'🇨🇱',C170:'🇨🇴',C764:'🇹🇭',
+  C566:'🇳🇬',C710:'🇿🇦',C756:'🇨🇭',C484:'🇲🇽',C032:'🇦🇷',C158:'🇹🇼',
+  C554:'🇳🇿',C800:'🇺🇬',C646:'🇷🇼',C804:'🇺🇦'
 };
+var MN={C682:'المملكة العربية السعودية',C784:'الإمارات',C634:'قطر',C414:'الكويت',C048:'البحرين',
+  C512:'عُمان',C400:'الأردن',C818:'مصر',C504:'المغرب',C840:'الولايات المتحدة',C381:'الاتحاد الأوروبي',
+  C156:'الصين',C356:'الهند',C392:'اليابان',C826:'المملكة المتحدة',C276:'ألمانيا',C250:'فرنسا',
+  C036:'أستراليا',C124:'كندا',C076:'البرازيل',C410:'كوريا',C792:'تركيا'};
+var HIGH_RISK_MEMBERS=['C381','C840','C156','C392','C826','C036','C124'];
 
-let D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false;
-const TC={};
-var curSvc='notif';
+var D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false,curPage='dash';
+var TC={},ALERTS=[],CMP={a:null,b:null};
 
-function switchSvc(svc,btn){
-  curSvc=svc;
-  document.querySelectorAll('.svctb').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  document.getElementById('notif-panel').style.display='none';
-  document.getElementById('alerts-panel').style.display='none';
-  document.getElementById('det').style.display='none';
-  document.getElementById('empty').style.display='none';
-  if(svc==='notif'){
-    document.getElementById('notif-panel').style.display='flex';
-    document.getElementById('notif-panel').style.flexDirection='column';
-    document.getElementById('notif-panel').style.overflow='hidden';
-    if(selId) document.getElementById('det').style.display='block';
-    else document.getElementById('empty').style.display='flex';
-  } else {
-    document.getElementById('alerts-panel').style.display='flex';
-    document.getElementById('alerts-panel').style.flexDirection='column';
-    document.getElementById('empty').style.display='flex';
-    renderAlerts();
-  }
+// ══ INIT ══
+async function init(){
+  try{await fetch(API+'/');}catch(e){}
+  doLoad();
+  loadAlerts();
 }
 
+// ══ LOAD ══
 async function doLoad(force){
   if(busy)return;
   busy=true;
-  setStatus('loading','جارٍ الجلب من WTO...');
+  setStatus('loading','جارٍ الجلب...');
   document.getElementById('rfbtn').disabled=true;
+  showProg(true,20);
   try{
     var srch=document.getElementById('srch').value;
     var mc=document.getElementById('srch2').value;
     var params=['page='+pg,'pageSize=50'];
     if(flt==='SPS')params.push('domainIds=SPS');
     else if(flt==='TBT')params.push('domainIds=TBT');
+    else if(flt==='saudi'){mc='C682';}
     if(srch)params.push('freeText='+encodeURIComponent(srch));
     if(mc)params.push('countryIds='+encodeURIComponent(mc));
+    showProg(true,50);
     var r=await fetch(API+'/api/wto/search?'+params.join('&'));
+    showProg(true,80);
     if(!r.ok)throw new Error('HTTP '+r.status);
     var d=await r.json();
     if(!d.notifications&&d.error)throw new Error(d.error);
     D=(d.notifications||[]).map(function(n){
       return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});
     });
+    showProg(true,100);
+    setTimeout(function(){showProg(false);},500);
     tpg=d.pages||1;
     var total=d.total||D.length;
-    setStatus('live',total.toLocaleString()+' إخطار | ص '+pg+'/'+tpg);
-    document.getElementById('sc-t').textContent=total.toLocaleString();
-    document.getElementById('sc-o').textContent=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
-    document.getElementById('sc-s').textContent=D.filter(function(n){return n.type==='SPS';}).length;
-    document.getElementById('sc-b').textContent=D.filter(function(n){return n.type==='TBT';}).length;
+    setStatus('live',total.toLocaleString()+' إخطار');
+    // update counts
+    var op=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
+    var sp=D.filter(function(n){return n.type==='SPS';}).length;
+    var tb=D.filter(function(n){return n.type==='TBT';}).length;
+    document.getElementById('st-t').textContent=total.toLocaleString();
+    document.getElementById('st-o').textContent=op;
+    document.getElementById('st-s').textContent=sp;
+    document.getElementById('st-b').textContent=tb;
+    document.getElementById('kpi-total').textContent=total.toLocaleString();
+    document.getElementById('kpi-open').textContent=op;
+    document.getElementById('kpi-sps').textContent=sp;
+    document.getElementById('kpi-tbt').textContent=tb;
+    document.getElementById('kpi-open-d').textContent=op>0?'⚠️ تتطلب مراجعة عاجلة':'لا إخطارات مفتوحة';
+    document.getElementById('kpi-sps-d').textContent=sp>0?Math.round(sp/D.length*100)+'% من الإجمالي':'';
+    document.getElementById('kpi-tbt-d').textContent=tb>0?Math.round(tb/D.length*100)+'% من الإجمالي':'';
     renderList();
+    updateDashboard();
     translateBatch();
   }catch(e){
+    showProg(false);
     setStatus('err','خطأ: '+e.message);
-    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">⚠️ '+e.message+'</div>';
+    document.getElementById('lst').innerHTML='<div class="empty-state"><div class="empty-state-icon">⚠️</div><div style="font-size:11px;color:var(--rd)">'+e.message+'</div></div>';
   }
   busy=false;
   document.getElementById('rfbtn').disabled=false;
 }
 
+// ══ DASHBOARD ══
+function updateDashboard(){
+  updateTopMembers();
+  updateDonut();
+  updateRecentOpen();
+  updateRiskAssessment();
+  updateBarChart();
+}
+
+function updateTopMembers(){
+  var counts={};
+  D.forEach(function(n){
+    var k=n.memberCode||n.member||'?';
+    if(!counts[k])counts[k]={sps:0,tbt:0,name:n.member,code:n.memberCode};
+    counts[k][n.type==='SPS'?'sps':'tbt']++;
+  });
+  var sorted=Object.keys(counts).sort(function(a,b){
+    return (counts[b].sps+counts[b].tbt)-(counts[a].sps+counts[a].tbt);
+  }).slice(0,6);
+  var max=sorted[0]?(counts[sorted[0]].sps+counts[sorted[0]].tbt):1;
+  var html=sorted.map(function(k){
+    var c=counts[k];var tot=c.sps+c.tbt;
+    var spsW=Math.round(c.sps/tot*100);var tbtW=100-spsW;
+    return '<div class="tm-item" onclick="filterByMember(\''+k+'\')" title="فلترة بـ'+c.name+'">'+
+      '<span class="tm-flag">'+(FL[k]||'🌍')+'</span>'+
+      '<span class="tm-name">'+(MN[k]||c.name||k)+'</span>'+
+      '<div class="tm-bar"><div class="tm-bar-sps" style="width:'+spsW+'%"></div><div class="tm-bar-tbt" style="width:'+tbtW+'%"></div></div>'+
+      '<span class="tm-count">'+tot+'</span>'+
+    '</div>';
+  }).join('');
+  document.getElementById('top-members-list').innerHTML=html||'<div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">—</div></div>';
+}
+
+function updateDonut(){
+  var sp=D.filter(function(n){return n.type==='SPS';}).length;
+  var tb=D.filter(function(n){return n.type==='TBT';}).length;
+  var tot=sp+tb;if(!tot)return;
+  var CIRC=226;
+  var spsPct=sp/tot;var tbtPct=tb/tot;
+  var spsLen=spsPct*CIRC;var tbtLen=tbtPct*CIRC;
+  var spsDash=spsLen+' '+(CIRC-spsLen);
+  var tbtDash=tbtLen+' '+(CIRC-tbtLen);
+  var tbtOffset=-(spsLen);
+  document.getElementById('donut-sps').setAttribute('stroke-dasharray',spsDash);
+  document.getElementById('donut-sps').setAttribute('stroke-dashoffset','0');
+  document.getElementById('donut-tbt').setAttribute('stroke-dasharray',tbtDash);
+  document.getElementById('donut-tbt').setAttribute('stroke-dashoffset',tbtOffset);
+  document.getElementById('donut-pct').textContent=Math.round(spsPct*100)+'%';
+  document.getElementById('donut-legend').innerHTML=
+    '<div class="donut-item"><div class="donut-dot" style="background:var(--gr)"></div><div class="donut-name">SPS</div><div class="donut-pct">'+sp+' ('+Math.round(spsPct*100)+'%)</div></div>'+
+    '<div class="donut-item"><div class="donut-dot" style="background:var(--am)"></div><div class="donut-name">TBT</div><div class="donut-pct">'+tb+' ('+Math.round(tbtPct*100)+'%)</div></div>'+
+    '<div class="donut-item"><div class="donut-dot" style="background:var(--t3)"></div><div class="donut-name">المجموع</div><div class="donut-pct">'+tot+'</div></div>';
+}
+
+function updateRecentOpen(){
+  var open=D.filter(function(n){return n.status==='مفتوح للتعليق';}).slice(0,5);
+  document.getElementById('open-count-lbl').textContent=open.length?' ('+open.length+')':"";
+  if(!open.length){
+    document.getElementById('recent-open-list').innerHTML='<div class="empty-state" style="padding:16px"><div class="empty-state-icon" style="font-size:14px">✅</div><div style="font-size:10px">لا إخطارات مفتوحة</div></div>';
+    return;
+  }
+  document.getElementById('recent-open-list').innerHTML=open.map(function(n){
+    var daysLeft='';
+    if(n.commentDeadline){
+      var d=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
+      daysLeft=d>0?'متبقي '+d+' يوم':'انتهى';
+    }
+    return '<div class="tl-item" onclick="goNotif(\''+escId(n.id)+'\')">'+
+      '<div class="tl-dot" style="background:'+(n.type==='SPS'?'var(--gr)':'var(--am)')+'"></div>'+
+      '<div class="tl-body">'+
+        '<div class="tl-title">'+(n.titleAr||n.title||n.symbol)+'</div>'+
+        '<div class="tl-meta">'+
+          '<span>'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+          '<span class="bdg '+(n.type||'').toLowerCase()+'">'+n.type+'</span>'+
+          (daysLeft?'<span style="color:'+(daysLeft.includes('انتهى')?'var(--rd)':'var(--am)')+'">'+daysLeft+'</span>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function updateRiskAssessment(){
+  var high=0,med=0,low=0;
+  D.forEach(function(n){
+    var isHighRisk=HIGH_RISK_MEMBERS.includes(n.memberCode);
+    var isOpen=n.status==='مفتوح للتعليق';
+    var daysLeft=99;
+    if(n.commentDeadline){
+      daysLeft=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
+    }
+    if(isHighRisk&&isOpen&&daysLeft<30)high++;
+    else if(isOpen&&(isHighRisk||daysLeft<60))med++;
+    else low++;
+  });
+  document.getElementById('risk-h').textContent=high;
+  document.getElementById('risk-m').textContent=med;
+  document.getElementById('risk-l').textContent=low;
+}
+
+function updateBarChart(){
+  var cats={};
+  D.forEach(function(n){
+    var prods=n.products||[];
+    if(prods.length){
+      prods.forEach(function(p){
+        var k=p.slice(0,20);
+        if(!cats[k])cats[k]={sps:0,tbt:0};
+        cats[k][n.type==='SPS'?'sps':'tbt']++;
+      });
+    }else{
+      var k='غير محدد';
+      if(!cats[k])cats[k]={sps:0,tbt:0};
+      cats[k][n.type==='SPS'?'sps':'tbt']++;
+    }
+  });
+  var sorted=Object.keys(cats).sort(function(a,b){
+    return (cats[b].sps+cats[b].tbt)-(cats[a].sps+cats[a].tbt);
+  }).slice(0,8);
+  var max=sorted[0]?(cats[sorted[0]].sps+cats[sorted[0]].tbt):1;
+  var html=sorted.map(function(k){
+    var c=cats[k];var tot=c.sps+c.tbt;
+    var w=Math.round(tot/max*100);
+    return '<div class="bar-item">'+
+      '<div class="bar-label">'+k+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:linear-gradient(90deg,'+(c.sps>c.tbt?'var(--gr)':'var(--am)')+',var(--cy))"></div></div>'+
+      '<div class="bar-val">'+tot+'</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('bar-chart').innerHTML=html||'<div style="font-size:11px;color:var(--t4);padding:10px">لا بيانات</div>';
+}
+
+// ══ TRANSLATE ══
 async function translateBatch(){
   var toTr=D.filter(function(n){return !n.titleAr&&!TC[n.symbol];}).slice(0,10);
   if(!toTr.length)return;
@@ -303,313 +1191,506 @@ async function translateBatch(){
     if(!texts.length)return;
     var r=await fetch(API+'/api/translate-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:texts})});
     if(r.ok){
-      var d=await r.json();
-      var tr=d.translations||[];
+      var d=await r.json();var tr=d.translations||[];
       toTr.forEach(function(n,i){if(tr[i]){n.titleAr=tr[i];TC[n.symbol]=tr[i];}});
-      renderList();
-      setTimeout(translateBatch,2000);
+      renderList();updateDashboard();
+      setTimeout(translateBatch,2500);
     }
   }catch(e){}
 }
-
 async function translateOne(n){
   if(!n||n.titleAr||TC[n.symbol])return;
   var src=n.titleEn||n.title||'';if(!src)return;
   try{
     var r=await fetch(API+'/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:src})});
-    if(r.ok){var d=await r.json();if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();var el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}}
+    if(r.ok){
+      var d=await r.json();
+      if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();
+        var el=document.getElementById('det-title-ar');
+        if(el&&selId===n.id)el.textContent=d.ar;
+      }
+    }
   }catch(e){}
 }
 
-function setF(f,b){
-  flt=f;pg=1;selId=null;
-  document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});
+// ══ FILTERS ══
+function setPill(f,b){
+  flt=f;pg=1;
+  document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('on');});
   b.classList.add('on');doLoad();
+}
+function filterQuick(f){
+  flt=f;pg=1;
+  document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('on');});
+  document.querySelector('.pill.on')||document.querySelectorAll('.pill')[0].classList.add('on');
+  if(f==='all')document.querySelectorAll('.pill')[0].classList.add('on');
+  else if(f==='open')document.querySelectorAll('.pill')[3].classList.add('on');
+  else if(f==='SPS')document.querySelectorAll('.pill')[1].classList.add('on');
+  else if(f==='TBT')document.querySelectorAll('.pill')[2].classList.add('on');
+  doLoad();
+}
+function filterByMember(mc){
+  document.getElementById('srch2').value=mc;
+  pg=1;doLoad();
+  goPage('det',document.querySelectorAll('.hnav-btn')[1]);
 }
 function chpg(delta){
   pg=Math.max(1,Math.min(tpg,pg+delta));
   selId=null;
-  document.getElementById('det').style.display='none';
-  document.getElementById('empty').style.display='flex';
+  document.getElementById('det-empty').style.display='flex';
+  document.getElementById('det-content').style.display='none';
   document.getElementById('lst').scrollTop=0;
   doLoad();
 }
 
+// ══ RENDER LIST ══
 function renderList(){
-  var q=document.getElementById('srch').value.toLowerCase();
+  var q=(document.getElementById('srch').value||'').toLowerCase();
   var fil=D;
   if(q)fil=fil.filter(function(n){
-    return (n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q)||(n.member||'').toLowerCase().includes(q);
+    return (n.titleAr||n.title||'').toLowerCase().includes(q)||
+           (n.symbol||'').toLowerCase().includes(q)||
+           (n.member||'').toLowerCase().includes(q);
   });
+  if(flt==='open')fil=fil.filter(function(n){return n.status==='مفتوح للتعليق';});
   var el=document.getElementById('lst');
-  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';document.getElementById('pgbar').style.display='none';return;}
+  if(!fil.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div style="font-size:11px">لا توجد نتائج</div></div>';
+    document.getElementById('pgbar').style.display='none';return;
+  }
   el.innerHTML=fil.map(function(n){
-    var sid=n.id.replace(/'/g,"\\'").replace(/,/g,'_');
-    var isOpen=n.status==='مفتوح للتعليق';
-    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+sid+'\')">'+
-      '<div class="nt"><span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span><span class="ndate">'+(n.date||'')+'</span></div>'+
-      '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3)">'+(n.title||n.symbol||'—')+'</span>')+'</div>'+
-      '<div class="nbot"><span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
-      '<div class="nr">'+
-        (n.loading||n.docLoading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
-        ((n.analysis||n.docAnalysis)&&!n.loading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
-        '<div class="ndot" style="background:'+(isOpen?'var(--gr)':'var(--rd)')+'"></div>'+
-        '<span style="font-size:10px;color:'+(isOpen?'var(--gr)':'var(--rd)')+'">'+
-        (isOpen?'مفتوح':'منتهي')+'</span>'+
-      '</div></div></div>';
+    var sid=escId(n.id);var isOpen=n.status==='مفتوح للتعليق';
+    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+sid+'\')" title="'+( n.titleEn||n.symbol||'')+'">'+
+      '<div class="nc-row1">'+
+        '<div style="display:flex;gap:4px">'+
+          '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
+          (isOpen?'<span class="bdg open">مفتوح</span>':'<span class="bdg closed">منتهي</span>')+
+        '</div>'+
+        '<span class="ndate">'+(n.date||'')+'</span>'+
+      '</div>'+
+      '<div class="nc-row2">'+(n.titleAr?n.titleAr:'<span style="color:var(--t4)">'+(n.title||n.symbol||'—')+'</span>')+'</div>'+
+      '<div class="nc-row3">'+
+        '<span class="nc-mem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+        '<div class="nc-meta">'+
+          (n.loading?'<span class="ana-load">يُحلَّل...</span>':'')+
+          ((n.analysis||n.docAnalysis)&&!n.loading?'<span class="ana-done">✓ محلَّل</span>':'')+
+        '</div>'+
+      '</div>'+
+    '</div>';
   }).join('');
   var pb=document.getElementById('pgbar');
-  if(tpg>1){pb.style.display='flex';document.getElementById('pglbl').textContent=pg+'/'+tpg;document.getElementById('pp').disabled=pg<=1;document.getElementById('pn').disabled=pg>=tpg;}
-  else pb.style.display='none';
+  if(tpg>1){
+    pb.style.display='flex';
+    document.getElementById('pglbl').textContent=pg+' / '+tpg;
+    document.getElementById('pp').disabled=pg<=1;
+    document.getElementById('pn').disabled=pg>=tpg;
+  }else pb.style.display='none';
 }
 
-function selN(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
+// ══ SELECT & NAVIGATE ══
+function escId(id){return (id||'').replace(/'/g,"\\'").replace(/,/g,'_');}
+function selN(sid){
+  var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n)return;
-  selId=n.id;tab='full';renderList();renderDet();
+  selId=n.id;tab='full';
+  renderList();
+  renderDet(n);
   if(!n.titleAr)translateOne(n);
+  // auto-switch to detail panel
+  var btn=document.querySelectorAll('.hnav-btn')[1];
+  goPage('det',btn);
+}
+function goNotif(sid){
+  var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
+  if(!n)return;
+  selId=n.id;tab='full';
+  renderList();renderDet(n);
+  goPage('det',document.querySelectorAll('.hnav-btn')[1]);
+}
+
+// ══ RENDER DETAIL ══
+function renderDet(n){
+  document.getElementById('det-empty').style.display='none';
+  var det=document.getElementById('det-content');
+  det.style.display='block';
+  var open=n.status==='مفتوح للتعليق';
+  var titleAr=n.titleAr||TC[n.symbol]||'';
+  var titleEn=n.titleEn||n.title||n.symbol||'';
+  var hasPdf=(n.docs||[]).some(function(d){return (d.url||'').split('\n')[0].trim().startsWith('http');});
+  var docsHtml=buildDocs(n);
+  var nid=escId(n.id);
+  var prods=(n.products||[]).length?
+    '<div class="ptags"><span style="font-size:9px;color:var(--t4);margin-left:5px">المنتجات</span>'+
+    n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
+  var kws=(n.keywords||[]).length?
+    '<div class="ptags" style="margin-top:5px"><span style="font-size:9px;color:var(--t4);margin-left:5px">كلمات مفتاحية</span>'+
+    n.keywords.map(function(k){return '<span class="kwtag">'+k+'</span>';}).join('')+'</div>':'';
+  // days left
+  var daysHtml='';
+  if(n.commentDeadline&&open){
+    var d=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
+    var dColor=d<15?'var(--rd)':d<30?'var(--am)':'var(--gr)';
+    daysHtml='<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);margin-top:8px">'+
+      '<span style="font-size:12px">⏰</span>'+
+      '<span style="font-size:11px;color:'+dColor+';font-weight:600">'+(d>0?'متبقي '+d+' يوماً للتعليق':'انتهت مهلة التعليق')+'</span>'+
+    '</div>';
+  }
+
+  // Risk level for this specific notification
+  var riskLevel='منخفض';var riskColor='var(--gr)';var riskSegs=1;
+  if(HIGH_RISK_MEMBERS.includes(n.memberCode)&&open){
+    if(n.commentDeadline){
+      var d2=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
+      if(d2<30){riskLevel='عالٍ جداً';riskColor='var(--rd)';riskSegs=5;}
+      else if(d2<60){riskLevel='عالٍ';riskColor='var(--rd)';riskSegs=4;}
+      else{riskLevel='متوسط';riskColor='var(--am)';riskSegs=3;}
+    }else{riskLevel='متوسط';riskColor='var(--am)';riskSegs=3;}
+  } else if(open){riskLevel='متوسط';riskColor='var(--am)';riskSegs=2;}
+
+  var segsHtml='';
+  for(var i=0;i<5;i++){
+    var c=i<2?'c-gr':i<4?'c-am':'c-rd';
+    segsHtml+='<div class="risk-seg '+c+(i<riskSegs?' fill':'')+'"></div>';
+  }
+
+  det.innerHTML='<div class="fadein">'+
+    '<div class="dc">'+
+      '<div class="dc-hd">معلومات الإخطار</div>'+
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">'+
+        '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
+        (open?'<span class="bdg open">مفتوح للتعليق</span>':'<span class="bdg closed">منتهي</span>')+
+        (n.notifType?'<span class="bdg info">'+n.notifType+'</span>':'')+
+      '</div>'+
+      '<div class="dtit" id="det-title-ar">'+(titleAr||'<span style="color:var(--am);font-size:11px;font-weight:400">⏳ جارٍ الترجمة...</span>')+'</div>'+
+      '<div class="deng">'+titleEn+'</div>'+
+      daysHtml+
+      '<div class="meta4">'+
+        '<div><div class="m4-lbl">رقم الوثيقة</div><div class="m4-val">'+(n.symbol||'—')+'</div></div>'+
+        '<div><div class="m4-lbl">الدولة المُخطِرة</div><div class="m4-val">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'—')+'</div></div>'+
+        '<div><div class="m4-lbl">تاريخ الإخطار</div><div class="m4-val">'+(n.date||'—')+'</div></div>'+
+        '<div><div class="m4-lbl">موعد التعليق</div><div class="m4-val" style="color:'+(n.commentDeadline?open?'var(--gr)':'var(--t3)':'var(--t4)')+';">'+(n.commentDeadline||'—')+'</div></div>'+
+      '</div>'+
+      prods+kws+
+      '<div class="qlinks">'+
+        (n.epingLink?'<a href="'+n.epingLink+'" target="_blank" class="qlink">🔗 عرض على ePing</a>':'')+
+        '<a href="https://www.wto.org/english/tratop_e/'+(n.type==='SPS'?'sps_e':'tbt_e')+'/'+( n.type==='SPS'?'sps_e':'tbt_e')+'.htm" target="_blank" class="qlink">📋 لجنة '+n.type+'</a>'+
+        '<a href="https://mc.gov.sa" target="_blank" class="qlink">🇸🇦 وزارة التجارة</a>'+
+      '</div>'+
+    '</div>'+
+
+    // RISK ASSESSMENT
+    '<div class="risk-analysis">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+        '<div style="font-size:11px;font-weight:600;color:var(--pu)">🎯 تقييم المخاطر التجارية السعودية</div>'+
+        '<span style="font-size:13px;font-weight:700;color:'+riskColor+'">'+riskLevel+'</span>'+
+      '</div>'+
+      '<div class="risk-meter">'+segsHtml+'</div>'+
+      '<div style="font-size:10px;color:var(--t3);margin-top:4px;line-height:1.6">'+
+        'الدولة المُخطِرة: '+(HIGH_RISK_MEMBERS.includes(n.memberCode)?'<span style="color:var(--rd)">من الشركاء التجاريين الرئيسيين للمملكة</span>':'من الشركاء الثانويين')+
+        (n.commentDeadline&&open?' · موعد التعليق: '+n.commentDeadline:'')+
+      '</div>'+
+    '</div>'+
+
+    (docsHtml?
+      '<div class="dc">'+
+        '<div class="dc-hd">المستندات الرسمية</div>'+docsHtml+
+      '</div>':'')+ 
+
+    // AI Analyze button
+    (!n.analysis?
+      '<div class="btn-ctr">'+
+        '<button class="btn-ai" onclick="analyzeN(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
+          (n.loading?'<span class="loading-dots">⏳ يُحلَّل</span>':'🤖 تحليل قانوني شامل')+
+        '</button>'+
+        '<div class="btn-hint">تحليل وفق SPS / TBT / DSU مع التوصيات للمملكة العربية السعودية</div>'+
+      '</div>':'')+
+    (n.loading?'<div class="dc"><div class="shim" style="width:82%"></div><div class="shim"></div><div class="shim" style="width:60%"></div></div>':'')+
+
+    // Analysis result
+    (n.analysis?
+      '<div class="dc">'+
+        '<div class="dc-hd">التحليل القانوني</div>'+
+        '<div class="atabs">'+
+          '<button class="atab '+(tab==='sum'?'on':'')+'" onclick="swT(\'sum\',this)">📋 الملخص</button>'+
+          '<button class="atab '+(tab==='leg'?'on':'')+'" onclick="swT(\'leg\',this)">⚖️ التحليل</button>'+
+          '<button class="atab '+(tab==='rec'?'on':'')+'" onclick="swT(\'rec\',this)">💡 التوصيات</button>'+
+          '<button class="atab '+(tab==='full'?'on':'')+'" onclick="swT(\'full\',this)">📄 الكامل</button>'+
+        '</div>'+
+        '<div class="abox" id="abox">'+getTab(n)+'</div>'+
+        '<div class="act-row">'+
+          '<button class="actb" onclick="cpA()">📋 نسخ</button>'+
+          '<button class="actb bl" onclick="analyzeN(\''+nid+'\')">🔄 إعادة</button>'+
+          '<button class="actb" onclick="addToCompare(\''+nid+'\')">⚖️ مقارنة</button>'+
+        '</div>'+
+      '</div>':'')+
+
+    // Doc analysis
+    (hasPdf?
+      '<div class="dc" style="border-color:rgba(16,185,129,.2)">'+
+        '<div class="dc-hd" style="color:var(--gr)">تحليل المستند الرسمي</div>'+
+        (!n.docAnalysis&&!n.docLoading?
+          '<div class="btn-ctr" style="margin:0">'+
+            '<button class="btn-ai green" onclick="analyzeDoc(\''+nid+'\')">📄 قراءة وتحليل المستند PDF</button>'+
+            '<div class="btn-hint">استخراج وتحليل محتوى الوثيقة الرسمية قانونياً</div>'+
+          '</div>':'')+
+        (n.docLoading?
+          '<div style="text-align:center;padding:10px;font-size:11px;color:var(--am)"><span class="loading-dots">⏳ جارٍ قراءة المستند</span></div>'+
+          '<div class="shim" style="width:80%"></div><div class="shim" style="width:58%"></div>':'')+
+        (n.docAnalysis?
+          '<div class="abox" style="border-color:rgba(16,185,129,.2)">'+
+            n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+
+          '</div>'+
+          '<div class="act-row">'+
+            '<button class="actb" onclick="cpDoc()">📋 نسخ</button>'+
+            '<button class="actb gn" onclick="analyzeDoc(\''+nid+'\')">🔄 إعادة</button>'+
+          '</div>':'')+
+      '</div>':'')+
+  '</div>';
 }
 
 function buildDocs(n){
   var html='';
   (n.docs||[]).forEach(function(d){
-    // نعالج كل الروابط (قد تكون متعددة مفصولة بسطر جديد أو فاصلة)
-    var rawUrl=d.url||'';
+    var raw=(d.url||'').replace(/\r\n/g,'\n');
     var urls=[];
-    rawUrl.replace(/\r\n/g,'\n').split('\n').forEach(function(line){
-      line.split(',').forEach(function(part){
-        part=part.trim();
-        if(part.startsWith('http')) urls.push(part);
-      });
-    });
-    if(!urls.length) return;
+    raw.split('\n').forEach(function(l){l.split(',').forEach(function(p){p=p.trim();if(p.startsWith('http'))urls.push(p);});});
+    if(!urls.length)return;
     urls.forEach(function(url,i){
-      var label=d.name||(urls.length===1?'مستند رسمي':'مستند رسمي ('+(i+1)+')');
-      html+='<div class="doc-row" style="border-color:#22c55e40">'+
-        '<span class="doc-n" style="color:#4ade80">📄 '+label+'</span>'+
-        '<a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a>'+
-      '</div>';
+      var label=d.name||(urls.length===1?'مستند رسمي WTO':'مستند رسمي ('+(i+1)+')');
+      html+='<div class="doc-row"><div class="doc-n">📄 '+label+'</div><a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a></div>';
     });
   });
   return html;
 }
 
-function renderDet(){
-  var n=D.find(function(x){return x.id===selId;});
-  if(!n)return;
-  document.getElementById('empty').style.display='none';
-  var det=document.getElementById('det');
-  det.style.display='block';
-  var open=n.status==='مفتوح للتعليق';
-  var titleAr=n.titleAr||TC[n.symbol]||'';
-  var titleEn=n.titleEn||n.title||n.symbol||'';
-  var hasPdf=(n.docs||[]).some(function(d){var u=(d.url||'').split('\n')[0].trim();return u.startsWith('http');});
-  var docsHtml=buildDocs(n);
-  var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
-  var kws=(n.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">كلمات مفتاحية:</span>'+n.keywords.map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
-  var nid=n.id.replace(/'/g,"\\'").replace(/,/g,'_');
-
-  det.innerHTML=
-    '<div class="dc">'+
-      '<div class="dbd">'+
-        '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
-        '<span class="sbdg" style="'+(open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(n.status||'')+'</span>'+
-        (n.notifType?'<span class="sbdg" style="background:#1a1a2a;color:#8899bb;border:1px solid #2a3d5a">'+n.notifType+'</span>':'')+
-      '</div>'+
-      '<div class="dtit" id="title-ar">'+(titleAr||'<span style="color:var(--am);font-size:12px;font-weight:400">⏳ جارٍ الترجمة...</span>')+'</div>'+
-      '<div class="dtiten">'+titleEn+'</div>'+
-      '<div class="mg">'+
-        '<div><div class="ml">رقم الوثيقة</div><div class="mv">'+(n.symbol||'')+'</div></div>'+
-        '<div><div class="ml">الدولة</div><div class="mv">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</div></div>'+
-        '<div><div class="ml">تاريخ الإخطار</div><div class="mv">'+(n.date||'—')+'</div></div>'+
-        '<div><div class="ml">موعد التعليق</div><div class="mv">'+(n.commentDeadline||'—')+'</div></div>'+
-      '</div>'+prods+kws+
-      (n.epingLink?'<div style="margin-top:10px"><a href="'+n.epingLink+'" target="_blank" class="actb" style="text-decoration:none;display:inline-block">🔗 عرض على ePing</a></div>':'')+
-    '</div>'+
-    (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+'</div>':'')+
-    (!n.analysis?
-      '<div class="aw">'+
-        '<button class="abtn" onclick="analyzeN(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
-          (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل الإخطار')+
-        '</button>'+
-        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO — SPS / TBT / DSU</div>'+
-      '</div>':'')+
-    (n.loading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
-    (n.analysis?
-      '<div>'+
-        '<div class="tabs">'+
-          '<button class="tb '+(tab==='sum'?'on':'')+'" onclick="swT(\'sum\',this)">📋 الملخص</button>'+
-          '<button class="tb '+(tab==='leg'?'on':'')+'" onclick="swT(\'leg\',this)">⚖️ التحليل</button>'+
-          '<button class="tb '+(tab==='rec'?'on':'')+'" onclick="swT(\'rec\',this)">💡 التوصيات</button>'+
-          '<button class="tb '+(tab==='full'?'on':'')+'" onclick="swT(\'full\',this)">📄 الكامل</button>'+
-        '</div>'+
-        '<div class="abox" id="abox">'+getTab(n)+'</div>'+
-        '<div class="acts">'+
-          '<button class="actb" onclick="cpA()">📋 نسخ</button>'+
-          '<button class="actb bl" onclick="analyzeN(\''+nid+'\')">🔄 إعادة</button>'+
-        '</div>'+
-      '</div>':'')+
-    (hasPdf?
-      '<div class="dc" style="border-color:#06564660;margin-top:4px">'+
-        '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي</div>'+
-        (!n.docAnalysis&&!n.docLoading?
-          '<div class="aw" style="margin:0">'+
-            '<button class="abtn gr" onclick="analyzeDoc(\''+nid+'\')">📄 تحليل المستند</button>'+
-            '<div class="ahint">تحليل محتوى المستند قانونياً وفق WTO</div>'+
-          '</div>':'')+
-        (n.docLoading?'<div style="text-align:center;padding:10px;font-size:12px;color:var(--am)">⏳ جارٍ تحليل المستند...</div><div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
-        (n.docAnalysis?
-          '<div class="abox" style="border-color:#06564660">'+n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
-          '<div class="acts">'+
-            '<button class="actb" onclick="cpDoc()">📋 نسخ</button>'+
-            '<button class="actb grn" onclick="analyzeDoc(\''+nid+'\')">🔄 إعادة</button>'+
-          '</div>':'')+
-      '</div>':'');
-}
-
+// ══ ANALYSIS ══
 function getTab(n){
   if(!n.analysis)return'';
-  var t=tab==='sum'?(n.sum||n.analysis.slice(0,600)):tab==='leg'?(n.leg||n.analysis.slice(600,1300)):tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
+  var t;
+  if(tab==='sum')t=n.sum||n.analysis.slice(0,600);
+  else if(tab==='leg')t=n.leg||n.analysis.slice(600,1300);
+  else if(tab==='rec')t=n.rec||n.analysis.slice(1300);
+  else t=n.analysis;
   return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
-function swT(t,b){tab=t;document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var box=document.getElementById('abox');var n=D.find(function(x){return x.id===selId;});if(box&&n)box.innerHTML=getTab(n);}
-function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis)navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}
-function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis)navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}
+function swT(t,b){
+  tab=t;
+  document.querySelectorAll('.atab').forEach(function(x){x.classList.remove('on');});
+  b.classList.add('on');
+  var box=document.getElementById('abox');
+  var n=D.find(function(x){return x.id===selId;});
+  if(box&&n)box.innerHTML=getTab(n);
+}
+function cpA(){
+  var n=D.find(function(x){return x.id===selId;});
+  if(n&&n.analysis)navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){
+    var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);
+  });
+}
+function cpDoc(){
+  var n=D.find(function(x){return x.id===selId;});
+  if(n&&n.docAnalysis)navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){
+    var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);
+  });
+}
 
-async function analyzeN(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
+async function analyzeN(sid){
+  var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n||n.loading)return;
-  n.loading=true;n.analysis=null;renderList();renderDet();
+  n.loading=true;n.analysis=null;renderList();renderDet(n);
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}}
+      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,
+        commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})
+    });
+    if(r.ok){var d=await r.json();if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet(n);return;}}
   }catch(e){}
-  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'.\nموعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(n.type==='SPS'?'SPS المادة 5':'TBT المادة 2')+'\n• المعايير: '+(n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT')+' في WTO';
-  parseAn(n,t);n.loading=false;tab='full';renderList();renderDet();
+  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'.\nموعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• الأساس القانوني: اتفاقية '+(n.type==='SPS'?'SPS — المادة 5 (تقييم المخاطر) والمادة 7 (الشفافية)':'TBT — المادة 2 (عدم التمييز) والمادة 5 (إجراءات تقييم المطابقة)')+'\n• معايير المرجعية: '+(n.type==='SPS'?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• الأثر على التجارة السعودية: يتوقع تأثير على القطاعات: '+(n.products||[]).join('، ')+'\n• حقوق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية عبر ePing قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر التجاري على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT')+' في WTO وفق إجراءات التسوية الودية\n5. مراجعة توافق المعايير السعودية مع الاتفاقية المعنية';
+  parseAn(n,t);n.loading=false;tab='full';renderList();renderDet(n);
 }
-
 function parseAn(n,txt){
-  var s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
-  var l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,})/i);
+  var s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,}|\n===)/i);
+  var l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,}|\n===)/i);
   var rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
-  n.analysis=txt;n.sum=s?s[1].trim():txt.slice(0,600);n.leg=l?l[1].trim():txt.slice(600,1300);n.rec=rc?rc[1].trim():txt.slice(1300);
+  n.analysis=txt;
+  n.sum=s?s[1].trim():txt.slice(0,600);
+  n.leg=l?l[1].trim():txt.slice(600,1300);
+  n.rec=rc?rc[1].trim():txt.slice(1300);
 }
 
-async function analyzeDoc(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
+async function analyzeDoc(sid){
+  var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n||n.docLoading)return;
-
-  // استخراج كل الروابط المتاحة من جميع المستندات
   var allUrls=[];
   (n.docs||[]).forEach(function(d){
     var raw=(d.url||'').replace(/\r\n/g,'\n');
-    raw.split('\n').forEach(function(l){
-      l.split(',').forEach(function(p){
-        p=p.trim();
-        if(p.startsWith('http')) allUrls.push(p);
-      });
-    });
+    raw.split('\n').forEach(function(l){l.split(',').forEach(function(p){p=p.trim();if(p.startsWith('http'))allUrls.push(p);});});
   });
-  if(!allUrls.length){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
-
-  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
-
-  var docText='';
-  var usedUrl='';
-
-  // المتصفح يحاول تحميل PDF مباشرة من كل رابط
+  if(!allUrls.length){alert('لا يوجد مستند متاح');return;}
+  n.docLoading=true;n.docAnalysis=null;renderList();renderDet(n);
+  var docText='',usedUrl='';
   for(var i=0;i<Math.min(allUrls.length,3);i++){
-    var url=allUrls[i];
     try{
-      var resp=await fetch(url,{mode:'cors',credentials:'omit'});
+      var resp=await fetch(allUrls[i],{mode:'cors',credentials:'omit'});
       if(resp.ok){
-        var buf=await resp.arrayBuffer();
-        var bytes=new Uint8Array(buf);
-        var raw='';
-        for(var j=0;j<Math.min(bytes.length,200000);j++){
-          raw+=String.fromCharCode(bytes[j]);
-        }
+        var buf=await resp.arrayBuffer();var bytes=new Uint8Array(buf);var raw='';
+        for(var j=0;j<Math.min(bytes.length,200000);j++)raw+=String.fromCharCode(bytes[j]);
         var matches=raw.match(/[\x20-\x7E]{12,}/g)||[];
-        var filtered=matches.filter(function(c){
-          return c.split(' ').length>1&&!c.startsWith('/')&&!c.startsWith('stream');
-        });
+        var filtered=matches.filter(function(c){return c.split(' ').length>1&&!c.startsWith('/')&&!c.startsWith('stream');});
         docText=filtered.join(' ').slice(0,6000);
-        if(docText.length>100){usedUrl=url;break;}
+        if(docText.length>100){usedUrl=allUrls[i];break;}
       }
-    }catch(corsErr){
-      console.log('CORS blocked:',url);
-    }
+    }catch(e){}
   }
-
-  // إرسال النص (أو بيانات الإخطار) للخادم للتحليل
   try{
-    var r=await fetch(API+'/api/analyze-doc',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        symbol:n.symbol,
-        member:n.member,
-        type:n.type,
-        title:n.titleEn||n.title||'',
-        pdf_url:usedUrl||allUrls[0],
-        pdf_text:docText,
-        products:n.products||[],
-        keywords:n.keywords||[],
-        objectives:n.objectives||[],
-        commentDeadline:n.commentDeadline||'',
-        notifType:n.notifType||''
-      })
-    });
-    if(r.ok){
-      var d=await r.json();
-      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
-    }
-  }catch(e){console.log('analyzeDoc err:',e);}
-  n.docAnalysis='تعذّر التحليل.';n.docLoading=false;renderList();renderDet();
-}
-  if(!pdfDoc){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
-  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
-  try{
-    // نرسل كل بيانات الإخطار للخادم ليحلله حتى لو لم يتمكن من جلب PDF
     var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        symbol:n.symbol,
-        member:n.member,
-        type:n.type,
-        title:n.titleEn||n.title||'',
-        pdf_url:pdfUrl,
-        products:n.products||[],
-        keywords:n.keywords||[],
-        objectives:n.objectives||[],
-        commentDeadline:n.commentDeadline||'',
-        notifType:n.notifType||''
-      })});
-    if(r.ok){
-      var d=await r.json();
-      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
-      if(d.error){n.docAnalysis='خطأ: '+d.error;n.docLoading=false;renderList();renderDet();return;}
-    }
-  }catch(e){console.log('analyzeDoc err:',e);}
-  n.docAnalysis='تعذّر الاتصال بالخادم.';
-  n.docLoading=false;renderList();renderDet();
+      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title||'',
+        pdf_url:usedUrl||allUrls[0],pdf_text:docText,products:n.products||[],
+        keywords:n.keywords||[],commentDeadline:n.commentDeadline||'',notifType:n.notifType||''})
+    });
+    if(r.ok){var d=await r.json();if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet(n);return;}}
+  }catch(e){}
+  n.docAnalysis='تعذّر تحليل المستند.';n.docLoading=false;renderList();renderDet(n);
 }
 
-function setStatus(st,msg){document.getElementById('hlbl').textContent=msg;document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');}
+// ══ COMPARE ══
+function addToCompare(sid){
+  var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
+  if(!n)return;
+  if(!CMP.a){CMP.a=n;}else if(!CMP.b){CMP.b=n;}else{CMP.a=CMP.b;CMP.b=n;}
+  goPage('compare',document.querySelectorAll('.hnav-btn')[3]);
+  renderCompare();
+}
+function pickCmpSlot(slot){
+  if(!D.length){alert('يرجى تحميل الإخطارات أولاً');return;}
+  var list=D.slice(0,20).map(function(n){return (n.titleAr||n.title||n.symbol)+' ('+n.symbol+'|'+n.member+')';}).join('\n');
+  var chosen=prompt('اكتب رقم الإخطار (مثال: G/SPS/...):\n\n'+list.slice(0,500));
+  if(!chosen)return;
+  var n=D.find(function(x){return x.symbol===chosen.trim()||x.id===chosen.trim();});
+  if(!n&&D.length){n=D[0];}
+  if(n){CMP[slot]=n;renderCompare();}
+}
+function renderCompare(){
+  var wa=document.getElementById('cmp-a');var wb=document.getElementById('cmp-b');
+  if(CMP.a){
+    wa.className='cmp-slot filled';
+    wa.innerHTML='<div class="bdg '+(CMP.a.type||'').toLowerCase()+'" style="margin-bottom:5px">'+(CMP.a.type||'—')+'</div>'+
+      '<div style="font-size:11px;font-weight:600;color:#b8cce8;margin-bottom:4px">'+(CMP.a.titleAr||CMP.a.title||CMP.a.symbol)+'</div>'+
+      '<div style="font-size:10px;color:var(--t3)">'+(FL[CMP.a.memberCode]||'🌍')+' '+CMP.a.member+' · '+CMP.a.date+'</div>'+
+      '<button onclick="CMP.a=null;renderCompare()" style="margin-top:8px;background:transparent;border:1px solid var(--b2);color:var(--t3);border-radius:5px;padding:2px 8px;cursor:pointer;font-size:10px">✕ تغيير</button>';
+  }else{
+    wa.className='cmp-slot';wa.innerHTML='<div class="cmp-slot-ph">➕ الإخطار الأول<br><span style="font-size:10px;color:var(--t4)">اضغط أو اختر من القائمة</span></div>';
+  }
+  if(CMP.b){
+    wb.className='cmp-slot filled';
+    wb.innerHTML='<div class="bdg '+(CMP.b.type||'').toLowerCase()+'" style="margin-bottom:5px">'+(CMP.b.type||'—')+'</div>'+
+      '<div style="font-size:11px;font-weight:600;color:#b8cce8;margin-bottom:4px">'+(CMP.b.titleAr||CMP.b.title||CMP.b.symbol)+'</div>'+
+      '<div style="font-size:10px;color:var(--t3)">'+(FL[CMP.b.memberCode]||'🌍')+' '+CMP.b.member+' · '+CMP.b.date+'</div>'+
+      '<button onclick="CMP.b=null;renderCompare()" style="margin-top:8px;background:transparent;border:1px solid var(--b2);color:var(--t3);border-radius:5px;padding:2px 8px;cursor:pointer;font-size:10px">✕ تغيير</button>';
+  }else{
+    wb.className='cmp-slot';wb.innerHTML='<div class="cmp-slot-ph">➕ الإخطار الثاني<br><span style="font-size:10px;color:var(--t4)">اضغط أو اختر من القائمة</span></div>';
+  }
+  var wrap=document.getElementById('cmp-table-wrap');
+  if(!CMP.a||!CMP.b){wrap.innerHTML='';return;}
+  var A=CMP.a,B=CMP.b;
+  var rows=[
+    ['العنوان بالعربية',A.titleAr||'—',B.titleAr||'—'],
+    ['رقم الوثيقة',A.symbol||'—',B.symbol||'—'],
+    ['نوع الإخطار',A.type||'—',B.type||'—'],
+    ['الدولة المُخطِرة',(FL[A.memberCode]||'🌍')+' '+(A.member||'—'),(FL[B.memberCode]||'🌍')+' '+(B.member||'—')],
+    ['تاريخ الإخطار',A.date||'—',B.date||'—'],
+    ['الحالة',A.status||'—',B.status||'—'],
+    ['موعد التعليق',A.commentDeadline||'—',B.commentDeadline||'—'],
+    ['المنتجات',(A.products||[]).join('، ')||'—',(B.products||[]).join('، ')||'—'],
+    ['التحليل المتاح',A.analysis?'✅ محلَّل':'لم يُحلَّل بعد',B.analysis?'✅ محلَّل':'لم يُحلَّل بعد'],
+  ];
+  wrap.innerHTML='<div class="dc" style="margin-top:0">'+
+    '<div class="dc-hd">جدول المقارنة التفصيلية</div>'+
+    '<table class="cmp-table">'+
+      '<thead><tr>'+
+        '<th style="width:140px">العنصر</th>'+
+        '<th>'+(A.titleAr||A.symbol||'الإخطار الأول').slice(0,30)+'</th>'+
+        '<th>'+(B.titleAr||B.symbol||'الإخطار الثاني').slice(0,30)+'</th>'+
+      '</tr></thead>'+
+      '<tbody>'+
+        rows.map(function(r){
+          var diff=r[1]!==r[2];
+          return '<tr class="'+(diff?'cmp-diff':'')+'">'+
+            '<td style="font-weight:600;color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.3px">'+r[0]+'</td>'+
+            '<td>'+r[1]+'</td>'+
+            '<td>'+r[2]+'</td>'+
+          '</tr>';
+        }).join('')+
+      '</tbody>'+
+    '</table>'+
+    (A.analysis&&B.analysis?
+      '<div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1);font-size:10px;color:var(--t3)">'+
+        '💡 كلا الإخطارين تم تحليلهما — يمكنك الرجوع لكل إخطار على حدة لقراءة تحليله القانوني الكامل.'+
+      '</div>':'')+ 
+  '</div>';
+}
 
-/* ══ التنبيهات ══ */
-var ALERTS=[];
+// ══ ADVANCED SEARCH ══
+function runAdvSearch(){
+  var kw=(document.getElementById('adv-kw').value||'').toLowerCase();
+  var type=document.getElementById('adv-type').value;
+  var country=document.getElementById('adv-country').value;
+  var from=document.getElementById('adv-from').value;
+  var to=document.getElementById('adv-to').value;
+  var status=document.getElementById('adv-status').value;
+  var res=D.filter(function(n){
+    if(kw&&!(n.title||'').toLowerCase().includes(kw)&&!(n.titleAr||'').toLowerCase().includes(kw)&&!(n.symbol||'').toLowerCase().includes(kw))return false;
+    if(type&&n.type!==type)return false;
+    if(country&&n.memberCode!==country)return false;
+    if(from&&n.date<from)return false;
+    if(to&&n.date>to)return false;
+    if(status==='open'&&n.status!=='مفتوح للتعليق')return false;
+    if(status==='closed'&&n.status==='مفتوح للتعليق')return false;
+    return true;
+  });
+  document.getElementById('adv-count').textContent='نتائج: '+res.length+' إخطار';
+  var el=document.getElementById('adv-results');
+  if(!res.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div style="font-size:11px">لا توجد نتائج مطابقة</div></div>';
+    return;
+  }
+  el.innerHTML='<div style="font-size:11px;color:var(--t3);margin-bottom:8px">عُثر على '+res.length+' إخطار مطابق:</div>'+
+    res.map(function(n){
+      var nid=escId(n.id);var isOpen=n.status==='مفتوح للتعليق';
+      return '<div class="res-card" onclick="goNotif(\''+nid+'\')">'+
+        '<div class="res-header">'+
+          '<div style="display:flex;gap:4px;flex-shrink:0;flex-direction:column">'+
+            '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
+            (isOpen?'<span class="bdg open">مفتوح</span>':'<span class="bdg closed">منتهي</span>')+
+          '</div>'+
+          '<div class="res-title">'+(n.titleAr||n.title||n.symbol)+'</div>'+
+        '</div>'+
+        '<div class="res-body">'+(n.title||n.symbol)+'</div>'+
+        '<div class="res-footer">'+
+          '<span style="font-size:10px;color:var(--t3)">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+          '<span style="font-size:10px;color:var(--t4)">'+(n.date||'')+'</span>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+}
+function clearAdvSearch(){
+  ['adv-kw','adv-from','adv-to'].forEach(function(id){document.getElementById(id).value='';});
+  ['adv-type','adv-country','adv-status'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('adv-results').innerHTML='';
+  document.getElementById('adv-count').textContent='';
+}
+
+// ══ ALERTS ══
 async function loadAlerts(){
   try{var r=await fetch(API+'/api/alerts');if(r.ok){var d=await r.json();ALERTS=d.alerts||[];renderAlerts();}}catch(e){renderAlerts();}
 }
 function renderAlerts(){
-  var el=document.getElementById('alerts-list');
-  if(!ALERTS.length){el.innerHTML='<div class="al-empty">🔔 لا توجد تنبيهات نشطة<br><span style="font-size:11px;color:var(--t3)">أضف تنبيهاً جديداً أدناه</span></div>';return;}
+  var el=document.getElementById('alerts-list');if(!el)return;
+  if(!ALERTS.length){el.innerHTML='<div class="al-empty">🔔 لا توجد تنبيهات بعد</div>';return;}
   el.innerHTML=ALERTS.map(function(a){
     return '<div class="al-row">'+
       '<label class="tgl"><input type="checkbox" '+(a.active?'checked':'')+' onchange="toggleAlert('+a.id+',this)"/><span class="tslider"></span></label>'+
-      '<div class="al-info"><div class="al-name">'+(a.type||'الكل')+' — '+(a.sector||'جميع القطاعات')+'</div>'+
-      '<div class="al-desc">'+(a.frequency||'فوري')+' · '+(a.country||'جميع الدول')+'</div></div>'+
+      '<div class="al-info"><div class="al-name">'+(a.type||'الكل')+' · '+(a.sector||'جميع القطاعات')+'</div><div class="al-desc">'+(a.frequency||'فوري')+' · '+(a.country||'جميع الدول')+'</div></div>'+
       '<button class="al-del" onclick="deleteAlert('+a.id+')">✕</button>'+
     '</div>';
   }).join('');
@@ -627,12 +1708,79 @@ async function deleteAlert(id){
   ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();
 }
 
-async function wakeAndLoad(){
-  try{await fetch(API+'/');}catch(e){}
-  doLoad();
-  loadAlerts();
+// ══ EXPORT ══
+function exportJSON(){
+  var b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-wto-notifications.json';a.click();
 }
-wakeAndLoad();
+function exportCSV(){
+  var rows=['\uFEFF'+['رقم الوثيقة','الدولة','النوع','العنوان العربي','العنوان الإنجليزي','الحالة','التاريخ','موعد التعليق','المنتجات','الكلمات المفتاحية'].join(',')];
+  D.forEach(function(n){
+    rows.push([
+      '"'+(n.symbol||'')+'"','"'+(n.member||'')+'"','"'+(n.type||'')+'"',
+      '"'+((n.titleAr||'').replace(/"/g,"'"))+'"','"'+((n.title||'').replace(/"/g,"'"))+'"',
+      '"'+(n.status||'')+'"','"'+(n.date||'')+'"','"'+(n.commentDeadline||'')+'"',
+      '"'+((n.products||[]).join('; '))+'"','"'+((n.keywords||[]).join('; '))+'"'
+    ].join(','));
+  });
+  var b=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-wto-notifications.csv';a.click();
+}
+function copyOpen(){
+  var open=D.filter(function(n){return n.status==='مفتوح للتعليق';});
+  var txt='إخطارات WTO المفتوحة للتعليق\n'+'='.repeat(40)+'\n\n'+
+    open.map(function(n,i){
+      return (i+1)+'. '+n.symbol+'\n   الدولة: '+(n.member||'—')+'\n   النوع: '+(n.type||'—')+'\n   العنوان: '+(n.titleAr||n.title||'—')+'\n   موعد التعليق: '+(n.commentDeadline||'—')+'\n';
+    }).join('\n');
+  navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ تم نسخ '+open.length+' إخطار مفتوح');});
+}
+function exportAnalyses(){
+  var analysed=D.filter(function(n){return n.analysis;});
+  if(!analysed.length){alert('لا توجد تحليلات منجزة بعد');return;}
+  var txt=analysed.map(function(n){
+    return '# '+n.symbol+' — '+(n.member||'')+'\n## '+(n.titleAr||n.title||'')+'\n\n'+n.analysis+'\n\n'+'—'.repeat(50)+'\n\n';
+  }).join('');
+  var b=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-analyses.txt';a.click();
+}
+function copyStats(){
+  var sp=D.filter(function(n){return n.type==='SPS';}).length;
+  var tb=D.filter(function(n){return n.type==='TBT';}).length;
+  var op=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
+  var txt='📊 إحصاءات منصة ePing — WTO\n'+'='.repeat(35)+'\n'+
+    '• إجمالي الإخطارات: '+D.length+'\n• مفتوحة للتعليق: '+op+'\n• إخطارات SPS: '+sp+'\n• إخطارات TBT: '+tb+'\n• تاريخ التقرير: '+new Date().toLocaleDateString('ar-SA');
+  navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ تم نسخ الإحصاءات');});
+}
+function printReport(){
+  window.print();
+}
+
+// ══ NAV ══
+function goPage(page,btn){
+  curPage=page;
+  document.querySelectorAll('.hnav-btn').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('show');});
+  var el=document.getElementById('p-'+page);
+  if(el){el.classList.add('show');el.classList.add('fadein');setTimeout(function(){el.classList.remove('fadein');},300);}
+}
+
+// ══ STATUS / PROGRESS ══
+function setStatus(st,msg){
+  document.getElementById('hlbl').textContent=msg;
+  var dot=document.getElementById('hdot');var pill=document.getElementById('hstatus');
+  dot.className='hpulse'+(st==='live'?' on':st==='err'?' err':'');
+  pill.className='hstatus'+(st==='live'?' live':st==='err'?' err':'');
+}
+function showProg(v,pct){
+  var w=document.getElementById('prog-wrap');
+  w.className='prog-wrap'+(v?' show':'');
+  if(v&&pct!==undefined)document.getElementById('prog-bar').style.width=pct+'%';
+  if(!v)setTimeout(function(){document.getElementById('prog-bar').style.width='0%';},500);
+}
+
+// ══ START ══
+init();
 </script>
 </body>
 </html>
