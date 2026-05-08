@@ -23,10 +23,6 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .hbtn:hover{border-color:var(--ac);color:var(--t1)}.hbtn:disabled{opacity:.5;cursor:not-allowed}
 #app{display:flex;height:calc(100vh - 58px)}
 #sb{width:360px;min-width:360px;border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
-#svc-bar{display:flex;gap:2px;background:#060c18;border-bottom:1px solid var(--b1);padding:0 12px;flex-shrink:0}
-.svctb{padding:10px 16px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-family:inherit;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
-.svctb.on{color:var(--t1);border-bottom-color:var(--ac)}
-.svctb:hover:not(.on){color:var(--t1)}
 #stats{display:flex;gap:7px;padding:10px 12px;border-bottom:1px solid var(--b1);flex-shrink:0}
 .sc{flex:1;background:var(--bg2);border:1px solid var(--b1);border-radius:9px;padding:8px 7px;text-align:center}
 .sc .n{font-size:18px;font-weight:700}.sc .l{font-size:10px;color:var(--t2);margin-top:2px}
@@ -42,7 +38,8 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .pgbtn{padding:4px 12px;border-radius:6px;border:1px solid var(--b1);background:transparent;color:var(--t2);cursor:pointer;font-size:11px;font-family:inherit}
 .pgbtn:disabled{opacity:.4;cursor:not-allowed}.pglbl{font-size:11px;color:var(--t2)}
 .nc{background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:12px;cursor:pointer;margin-bottom:6px;transition:all .15s}
-.nc:hover{border-color:var(--b2);background:var(--bg3)}.nc.sel{border-color:var(--ac);background:var(--bg3)}
+.nc:hover{border-color:var(--b2);background:var(--bg3)}
+.nc.sel{border-color:var(--ac);background:var(--bg3)}
 .nt{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .sps{background:#0d3320;color:#4ade80;border:1px solid #22c55e35}
@@ -54,7 +51,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 #empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);text-align:center;gap:8px}
 #det{display:none}
 .dc{background:var(--bg2);border:1px solid var(--b1);border-radius:13px;padding:18px;margin-bottom:12px}
-.dbd{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.dbd{display:flex;gap:6px;margin-bottom:10px}
 .sbdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600}
 .dtit{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:4px}
 .dtiten{font-size:11px;color:var(--t2);margin-bottom:4px;line-height:1.5}
@@ -63,7 +60,8 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .ptag{padding:3px 11px;background:#1a2a45;border-radius:20px;font-size:11px;color:var(--t2)}
 .doc-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border:1px solid var(--b1);border-radius:9px;margin-bottom:5px}
-.doc-n{font-size:12px;color:#c8d0e8}.doc-a{font-size:11px;color:var(--ac);text-decoration:none}.doc-a:hover{text-decoration:underline}
+.doc-n{font-size:12px;color:#c8d0e8}.doc-a{font-size:11px;color:var(--ac);text-decoration:none}
+.doc-a:hover{text-decoration:underline}
 .aw{text-align:center;margin:6px 0}
 .abtn{padding:10px 22px;border-radius:10px;border:none;background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px #2563eb35;transition:all .2s}
 .abtn:hover{transform:translateY(-1px)}.abtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
@@ -80,23 +78,6 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 .shim{height:14px;border-radius:5px;background:linear-gradient(90deg,#1a2a45 25%,#1e3550 50%,#1a2a45 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:10px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
-#alerts-panel{display:none;flex-direction:column;flex:1;overflow-y:auto}
-.al-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:10px;margin-bottom:7px}
-.al-info{flex:1;padding-left:8px}
-.al-name{font-size:12px;font-weight:600;color:var(--t1)}.al-desc{font-size:11px;color:var(--t2);margin-top:2px}
-.al-del{padding:4px 8px;border-radius:6px;border:1px solid #ef444435;background:transparent;color:#f87171;cursor:pointer;font-size:11px}
-.tgl{position:relative;width:38px;height:20px;flex-shrink:0}
-.tgl input{opacity:0;width:0;height:0}
-.tslider{position:absolute;cursor:pointer;inset:0;background:var(--b2);border-radius:10px;transition:.25s}
-.tslider:before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
-.tgl input:checked+.tslider{background:var(--ac)}
-.tgl input:checked+.tslider:before{transform:translateX(18px)}
-.al-form{margin:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-radius:11px;padding:14px}
-.al-form-title{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px}
-.al-lbl{font-size:11px;color:var(--t3)}
-.al-addbtn{width:100%;padding:8px;border-radius:8px;border:1px solid var(--ac);background:transparent;color:var(--ac);cursor:pointer;font-size:12px;font-family:inherit;margin-top:4px}
-.al-addbtn:hover{background:#1a2a45}
-.al-empty{text-align:center;padding:30px;font-size:12px;color:var(--t3)}
 </style>
 </head>
 <body>
@@ -113,186 +94,77 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 </div>
 <div id="app">
   <div id="sb">
-    <div id="svc-bar">
-      <button class="svctb on" onclick="switchSvc('notif',this)">📋 الإخطارات</button>
-      <button class="svctb" onclick="switchSvc('alerts',this)">🔔 تنبيهاتي</button>
+    <div id="stats">
+      <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
+      <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
+      <div class="sc"><div class="n" id="sc-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
+      <div class="sc"><div class="n" id="sc-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
     </div>
-
-    <!-- لوحة الإخطارات -->
-    <div id="notif-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
-      <div id="stats">
-        <div class="sc"><div class="n" id="sc-t" style="color:var(--ac)">—</div><div class="l">إجمالي</div></div>
-        <div class="sc"><div class="n" id="sc-o" style="color:var(--gr)">—</div><div class="l">مفتوح</div></div>
-        <div class="sc"><div class="n" id="sc-s" style="color:#4ade80">—</div><div class="l">SPS</div></div>
-        <div class="sc"><div class="n" id="sc-b" style="color:#facc15">—</div><div class="l">TBT</div></div>
-      </div>
-      <div id="flt">
-        <input class="sinput" id="srch" type="text" placeholder="🔍 بحث في الإخطارات..." oninput="renderList()"/>
-        <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
-          <option value="">🌍 جميع الدول</option>
-          <option value="C682">🇸🇦 المملكة العربية السعودية</option>
-          <option value="C784">🇦🇪 الإمارات العربية المتحدة</option>
-          <option value="C634">🇶🇦 قطر</option>
-          <option value="C414">🇰🇼 الكويت</option>
-          <option value="C048">🇧🇭 البحرين</option>
-          <option value="C512">🇴🇲 عُمان</option>
-          <option value="C400">🇯🇴 الأردن</option>
-          <option value="C840">🇺🇸 الولايات المتحدة الأمريكية</option>
-          <option value="C381">🇪🇺 الاتحاد الأوروبي</option>
-          <option value="C156">🇨🇳 الصين</option>
-          <option value="C356">🇮🇳 الهند</option>
-          <option value="C392">🇯🇵 اليابان</option>
-          <option value="C826">🇬🇧 المملكة المتحدة</option>
-          <option value="C276">🇩🇪 ألمانيا</option>
-          <option value="C250">🇫🇷 فرنسا</option>
-          <option value="C036">🇦🇺 أستراليا</option>
-          <option value="C124">🇨🇦 كندا</option>
-          <option value="C076">🇧🇷 البرازيل</option>
-          <option value="C410">🇰🇷 كوريا الجنوبية</option>
-          <option value="C792">🇹🇷 تركيا</option>
-          <option value="C360">🇮🇩 إندونيسيا</option>
-          <option value="C458">🇲🇾 ماليزيا</option>
-          <option value="C702">🇸🇬 سنغافورة</option>
-          <option value="C704">🇻🇳 فيتنام</option>
-          <option value="C586">🇵🇰 باكستان</option>
-          <option value="C710">🇿🇦 جنوب أفريقيا</option>
-          <option value="C818">🇪🇬 مصر</option>
-          <option value="C504">🇲🇦 المغرب</option>
-          <option value="C788">🇹🇳 تونس</option>
-          <option value="C012">🇩🇿 الجزائر</option>
-          <option value="C566">🇳🇬 نيجيريا</option>
-          <option value="C404">🇰🇪 كينيا</option>
-          <option value="C752">🇸🇪 السويد</option>
-          <option value="C756">🇨🇭 سويسرا</option>
-          <option value="C484">🇲🇽 المكسيك</option>
-          <option value="C032">🇦🇷 الأرجنتين</option>
-          <option value="C152">🇨🇱 تشيلي</option>
-          <option value="C170">🇨🇴 كولومبيا</option>
-          <option value="C764">🇹🇭 تايلاند</option>
-        </select>
-        <div class="frow">
-          <button class="fb on" onclick="setF('all',this)">الكل</button>
-          <button class="fb" onclick="setF('SPS',this)">SPS</button>
-          <button class="fb" onclick="setF('TBT',this)">TBT</button>
-          <button class="fb" onclick="setF('open',this)">مفتوح</button>
-        </div>
-      </div>
-      <div id="lst"><div style="text-align:center;padding:40px;font-size:12px;color:var(--t3)">⏳ جارٍ الاتصال بـ WTO...</div></div>
-      <div class="pgbar" id="pgbar" style="display:none">
-        <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
-        <span class="pglbl" id="pglbl">1/1</span>
-        <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
+    <div id="flt">
+      <input class="sinput" id="srch" type="text" placeholder="🔍 بحث في الإخطارات..." oninput="renderList()"/>
+      <select class="sselect" id="srch2" onchange="pg=1;doLoad()">
+        <option value="">🌍 جميع الدول (166 عضو)</option>
+        <option value="Afghanistan">🇦🇫 أفغانستان</option><option value="Albania">🇦🇱 ألبانيا</option><option value="Angola">🇦🇴 أنغولا</option><option value="Argentina">🇦🇷 الأرجنتين</option><option value="Armenia">🇦🇲 أرمينيا</option><option value="Australia">🇦🇺 أستراليا</option><option value="Bahrain">🇧🇭 البحرين</option><option value="Bangladesh">🇧🇩 بنغلاديش</option><option value="Barbados">🇧🇧 بربادوس</option><option value="Belgium">🇧🇪 بلجيكا</option><option value="Belize">🇧🇿 بليز</option><option value="Benin">🇧🇯 بنين</option><option value="Bolivia">🇧🇴 بوليفيا</option><option value="Botswana">🇧🇼 بوتسوانا</option><option value="Brazil">🇧🇷 البرازيل</option><option value="Brunei">🇧🇳 بروناي</option><option value="Bulgaria">🇧🇬 بلغاريا</option><option value="Burkina Faso">🇧🇫 بوركينا فاسو</option><option value="Burundi">🇧🇮 بوروندي</option><option value="Cambodia">🇰🇭 كمبوديا</option><option value="Cameroon">🇨🇲 الكاميرون</option><option value="Canada">🇨🇦 كندا</option><option value="Chad">🇹🇩 تشاد</option><option value="Chile">🇨🇱 تشيلي</option><option value="China">🇨🇳 الصين</option><option value="Colombia">🇨🇴 كولومبيا</option><option value="Congo">🇨🇬 الكونغو</option><option value="Costa Rica">🇨🇷 كوستاريكا</option><option value="Cote d'Ivoire">🇨🇮 كوت ديفوار</option><option value="Croatia">🇭🇷 كرواتيا</option><option value="Cuba">🇨🇺 كوبا</option><option value="Cyprus">🇨🇾 قبرص</option><option value="Czech Republic">🇨🇿 التشيك</option><option value="Denmark">🇩🇰 الدنمارك</option><option value="Djibouti">🇩🇯 جيبوتي</option><option value="Dominican Republic">🇩🇴 الدومينيكان</option><option value="Ecuador">🇪🇨 الإكوادور</option><option value="Egypt">🇪🇬 مصر</option><option value="El Salvador">🇸🇻 السلفادور</option><option value="Estonia">🇪🇪 إستونيا</option><option value="European Union">🇪🇺 الاتحاد الأوروبي</option><option value="Fiji">🇫🇯 فيجي</option><option value="Finland">🇫🇮 فنلندا</option><option value="France">🇫🇷 فرنسا</option><option value="Gabon">🇬🇦 الغابون</option><option value="Gambia">🇬🇲 غامبيا</option><option value="Georgia">🇬🇪 جورجيا</option><option value="Germany">🇩🇪 ألمانيا</option><option value="Ghana">🇬🇭 غانا</option><option value="Greece">🇬🇷 اليونان</option><option value="Guatemala">🇬🇹 غواتيمالا</option><option value="Guinea">🇬🇳 غينيا</option><option value="Guyana">🇬🇾 غيانا</option><option value="Haiti">🇭🇹 هايتي</option><option value="Honduras">🇭🇳 هندوراس</option><option value="Hong Kong">🇭🇰 هونغ كونغ</option><option value="Hungary">🇭🇺 المجر</option><option value="Iceland">🇮🇸 آيسلندا</option><option value="India">🇮🇳 الهند</option><option value="Indonesia">🇮🇩 إندونيسيا</option><option value="Ireland">🇮🇪 أيرلندا</option><option value="Israel">🇮🇱 إسرائيل</option><option value="Italy">🇮🇹 إيطاليا</option><option value="Jamaica">🇯🇲 جامايكا</option><option value="Japan">🇯🇵 اليابان</option><option value="Jordan">🇯🇴 الأردن</option><option value="Kazakhstan">🇰🇿 كازاخستان</option><option value="Kenya">🇰🇪 كينيا</option><option value="Korea">🇰🇷 كوريا الجنوبية</option><option value="Kuwait">🇰🇼 الكويت</option><option value="Kyrgyz Republic">🇰🇬 قيرغيزستان</option><option value="Lao PDR">🇱🇦 لاوس</option><option value="Latvia">🇱🇻 لاتفيا</option><option value="Lesotho">🇱🇸 ليسوتو</option><option value="Liberia">🇱🇷 ليبيريا</option><option value="Lithuania">🇱🇹 ليتوانيا</option><option value="Luxembourg">🇱🇺 لوكسمبورغ</option><option value="Madagascar">🇲🇬 مدغشقر</option><option value="Malawi">🇲🇼 مالاوي</option><option value="Malaysia">🇲🇾 ماليزيا</option><option value="Maldives">🇲🇻 المالديف</option><option value="Mali">🇲🇱 مالي</option><option value="Malta">🇲🇹 مالطا</option><option value="Mauritania">🇲🇷 موريتانيا</option><option value="Mauritius">🇲🇺 موريشيوس</option><option value="Mexico">🇲🇽 المكسيك</option><option value="Moldova">🇲🇩 مولدوفا</option><option value="Mongolia">🇲🇳 منغوليا</option><option value="Montenegro">🇲🇪 الجبل الأسود</option><option value="Morocco">🇲🇦 المغرب</option><option value="Mozambique">🇲🇿 موزمبيق</option><option value="Myanmar">🇲🇲 ميانمار</option><option value="Namibia">🇳🇦 ناميبيا</option><option value="Nepal">🇳🇵 نيبال</option><option value="Netherlands">🇳🇱 هولندا</option><option value="New Zealand">🇳🇿 نيوزيلندا</option><option value="Nicaragua">🇳🇮 نيكاراغوا</option><option value="Niger">🇳🇪 النيجر</option><option value="Nigeria">🇳🇬 نيجيريا</option><option value="Norway">🇳🇴 النرويج</option><option value="Oman">🇴🇲 عُمان</option><option value="Pakistan">🇵🇰 باكستان</option><option value="Panama">🇵🇦 بنما</option><option value="Paraguay">🇵🇾 باراغواي</option><option value="Peru">🇵🇪 بيرو</option><option value="Philippines">🇵🇭 الفلبين</option><option value="Poland">🇵🇱 بولندا</option><option value="Portugal">🇵🇹 البرتغال</option><option value="Qatar">🇶🇦 قطر</option><option value="Romania">🇷🇴 رومانيا</option><option value="Russian Federation">🇷🇺 روسيا</option><option value="Rwanda">🇷🇼 رواندا</option><option value="Saudi Arabia">🇸🇦 المملكة العربية السعودية</option><option value="Senegal">🇸🇳 السنغال</option><option value="Sierra Leone">🇸🇱 سيراليون</option><option value="Singapore">🇸🇬 سنغافورة</option><option value="Slovak Republic">🇸🇰 سلوفاكيا</option><option value="Slovenia">🇸🇮 سلوفينيا</option><option value="South Africa">🇿🇦 جنوب أفريقيا</option><option value="Spain">🇪🇸 إسبانيا</option><option value="Sri Lanka">🇱🇰 سريلانكا</option><option value="Sweden">🇸🇪 السويد</option><option value="Switzerland">🇨🇭 سويسرا</option><option value="Chinese Taipei">🇹🇼 تايبيه الصينية</option><option value="Tanzania">🇹🇿 تنزانيا</option><option value="Thailand">🇹🇭 تايلاند</option><option value="Togo">🇹🇬 توغو</option><option value="Trinidad and Tobago">🇹🇹 ترينيداد وتوباغو</option><option value="Tunisia">🇹🇳 تونس</option><option value="Turkey">🇹🇷 تركيا</option><option value="Uganda">🇺🇬 أوغندا</option><option value="Ukraine">🇺🇦 أوكرانيا</option><option value="United Arab Emirates">🇦🇪 الإمارات العربية المتحدة</option><option value="United Kingdom">🇬🇧 المملكة المتحدة</option><option value="United States of America">🇺🇸 الولايات المتحدة الأمريكية</option><option value="Uruguay">🇺🇾 أوروغواي</option><option value="Viet Nam">🇻🇳 فيتنام</option><option value="Yemen">🇾🇪 اليمن</option><option value="Zambia">🇿🇲 زامبيا</option><option value="Zimbabwe">🇿🇼 زيمبابوي</option>
+      </select>
+      <div class="frow">
+        <button class="fb on" onclick="setF('all',this)">الكل</button>
+        <button class="fb" onclick="setF('SPS',this)">SPS</button>
+        <button class="fb" onclick="setF('TBT',this)">TBT</button>
+        <button class="fb" onclick="setF('open',this)">مفتوح</button>
       </div>
     </div>
-
-    <!-- لوحة التنبيهات -->
-    <div id="alerts-panel">
-      <div style="overflow-y:auto;padding:10px 12px">
-        <div id="alerts-list"></div>
-        <div class="al-form">
-          <div class="al-form-title">➕ إضافة تنبيه جديد</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">النوع</span>
-              <select class="sselect" id="al-type" style="margin-bottom:0"><option value="الكل">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option></select>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">التكرار</span>
-              <select class="sselect" id="al-freq" style="margin-bottom:0"><option value="فوري">فوري</option><option value="يومي">يومي</option><option value="أسبوعي">أسبوعي</option><option value="شهري">شهري</option></select>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <span class="al-lbl">الدولة</span>
-              <select class="sselect" id="al-country" style="margin-bottom:0"><option value="جميع الدول">الجميع</option><option value="Saudi Arabia">المملكة العربية السعودية</option><option value="United Arab Emirates">الإمارات</option><option value="United States of America">الولايات المتحدة</option><option value="European Union">الاتحاد الأوروبي</option><option value="China">الصين</option></select>
-            </div>
-          </div>
-          <input class="sinput" id="al-sector" type="text" placeholder="القطاع / الكلمة المفتاحية..." style="margin-bottom:8px"/>
-          <button class="al-addbtn" onclick="addAlert()">➕ إضافة التنبيه</button>
-        </div>
-      </div>
+    <div id="lst"><div style="text-align:center;padding:40px 10px;font-size:12px;color:var(--t3)">⏳ جارٍ الاتصال...</div></div>
+    <div class="pgbar" id="pgbar" style="display:none">
+      <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
+      <span class="pglbl" id="pglbl">1/1</span>
+      <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
     </div>
   </div>
-
   <div id="main">
     <div id="empty">
       <div style="font-size:56px">⚖️</div>
       <div style="font-size:17px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
-      <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار لعرض تفاصيله وتحليله القانوني</div>
+      <div style="font-size:13px;max-width:260px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار لعرض تفاصيله وتحليله</div>
     </div>
     <div id="det"></div>
   </div>
 </div>
-
 <script>
-const API = "https://lmns-lqnwny-ltjr-ldwly.onrender.com";
-const FL = {
-  C682:'🇸🇦',C784:'🇦🇪',C634:'🇶🇦',C414:'🇰🇼',C048:'🇧🇭',C512:'🇴🇲',C400:'🇯🇴',
-  C840:'🇺🇸',C381:'🇪🇺',C156:'🇨🇳',C356:'🇮🇳',C392:'🇯🇵',C826:'🇬🇧',
-  C276:'🇩🇪',C250:'🇫🇷',C036:'🇦🇺',C124:'🇨🇦',C076:'🇧🇷',C410:'🇰🇷',
-  C792:'🇹🇷',C360:'🇮🇩',C458:'🇲🇾',C702:'🇸🇬',C704:'🇻🇳',C586:'🇵🇰',
-  C710:'🇿🇦',C818:'🇪🇬',C504:'🇲🇦',C788:'🇹🇳',C012:'🇩🇿',C566:'🇳🇬',
-  C404:'🇰🇪',C752:'🇸🇪',C756:'🇨🇭',C484:'🇲🇽',C032:'🇦🇷',C152:'🇨🇱',
-  C170:'🇨🇴',C764:'🇹🇭',C108:'🇧🇮',C804:'🇺🇦',C158:'🇹🇼',C554:'🇳🇿',
-  C646:'🇷🇼',C800:'🇺🇬',C834:'🇹🇿',C120:'🇨🇲',C188:'🇨🇷',C524:'🇳🇵'
-};
-
-let D=[], ND=[], selId=null, flt='all', tab='full', pg=1, tpg=1, busy=false;
+const API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
+const FL={USA:'🇺🇸',EU:'🇪🇺',JPN:'🇯🇵',AUS:'🇦🇺',CHN:'🇨🇳',BRA:'🇧🇷',CAN:'🇨🇦',IND:'🇮🇳',KOR:'🇰🇷',SAU:'🇸🇦',ARE:'🇦🇪',GBR:'🇬🇧',MEX:'🇲🇽',IDN:'🇮🇩',ZAF:'🇿🇦',NZL:'🇳🇿',ARG:'🇦🇷',EGY:'🇪🇬',TUR:'🇹🇷',NGA:'🇳🇬',CHL:'🇨🇱',VNM:'🇻🇳',NOR:'🇳🇴',THA:'🇹🇭',CHE:'🇨🇭',COL:'🇨🇴',C152:'🇨🇱'};
+let D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false;
 const TC={};
-var curSvc='notif';
-
-function switchSvc(svc,btn){
-  curSvc=svc;
-  document.querySelectorAll('.svctb').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  document.getElementById('notif-panel').style.display='none';
-  document.getElementById('alerts-panel').style.display='none';
-  document.getElementById('det').style.display='none';
-  document.getElementById('empty').style.display='none';
-  if(svc==='notif'){
-    document.getElementById('notif-panel').style.display='flex';
-    document.getElementById('notif-panel').style.flexDirection='column';
-    document.getElementById('notif-panel').style.overflow='hidden';
-    if(selId) document.getElementById('det').style.display='block';
-    else document.getElementById('empty').style.display='flex';
-  } else {
-    document.getElementById('alerts-panel').style.display='flex';
-    document.getElementById('alerts-panel').style.flexDirection='column';
-    document.getElementById('empty').style.display='flex';
-    renderAlerts();
-  }
-}
 
 async function doLoad(force){
   if(busy)return;
   busy=true;
-  setStatus('loading','جارٍ الجلب من WTO...');
+  setStatus('loading','جارٍ الجلب...');
   document.getElementById('rfbtn').disabled=true;
   try{
     var srch=document.getElementById('srch').value;
     var mc=document.getElementById('srch2').value;
-    var params=['page='+pg,'pageSize=50'];
-    if(flt==='SPS') params.push('domainIds=SPS');
-    else if(flt==='TBT') params.push('domainIds=TBT');
-    if(srch) params.push('freeText='+encodeURIComponent(srch));
-    if(mc)   params.push('countryIds='+encodeURIComponent(mc));
-    var r=await fetch(API+'/api/wto/search?'+params.join('&'));
-    if(!r.ok) throw new Error('HTTP '+r.status);
+    var params=['page='+pg,'rows=50'];
+    if(flt==='SPS')params.push('type=SPS');
+    else if(flt==='TBT')params.push('type=TBT');
+    else if(flt==='open')params.push('status=open');
+    if(srch)params.push('keyword='+encodeURIComponent(srch));
+    if(mc)params.push('member='+encodeURIComponent(mc));
+    if(force)params.push('refresh=1');
+    var r=await fetch(API+'/api/notifications?'+params.join('&'));
+    if(!r.ok)throw new Error(r.status);
     var d=await r.json();
-    if(!d.notifications && d.error) throw new Error(d.error);
-    ND=D=(d.notifications||[]).map(function(n){
-      return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});
-    });
+    D=(d.notifications||[]).map(function(n){return Object.assign({},n,{titleAr:TC[n.symbol]||'',analysis:null,loading:false,docAnalysis:null,docLoading:false});});
     tpg=d.pages||1;
-    var total=d.total||D.length;
-    setStatus('live',total.toLocaleString()+' إخطار | ص '+pg+'/'+tpg);
-    document.getElementById('sc-t').textContent=total.toLocaleString();
+    setStatus('live',d.total+' إشعار');
+    document.getElementById('sc-t').textContent=d.total||D.length;
     document.getElementById('sc-o').textContent=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;
     document.getElementById('sc-s').textContent=D.filter(function(n){return n.type==='SPS';}).length;
     document.getElementById('sc-b').textContent=D.filter(function(n){return n.type==='TBT';}).length;
     renderList();
     translateBatch();
   }catch(e){
-    setStatus('err','خطأ: '+e.message);
-    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">⚠️ '+e.message+'</div>';
+    setStatus('err','خطأ في الاتصال');
+    document.getElementById('lst').innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--rd)">تعذّر الاتصال بالخادم</div>';
   }
   busy=false;
   document.getElementById('rfbtn').disabled=false;
@@ -300,10 +172,10 @@ async function doLoad(force){
 
 async function translateBatch(){
   var toTr=D.filter(function(n){return !n.titleAr&&!TC[n.symbol];}).slice(0,10);
-  if(!toTr.length) return;
+  if(!toTr.length||!API)return;
   try{
     var texts=toTr.map(function(n){return n.titleEn||n.title||'';}).filter(Boolean);
-    if(!texts.length) return;
+    if(!texts.length)return;
     var r=await fetch(API+'/api/translate-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:texts})});
     if(r.ok){
       var d=await r.json();
@@ -316,117 +188,81 @@ async function translateBatch(){
 }
 
 async function translateOne(n){
-  if(!n||n.titleAr||TC[n.symbol]) return;
+  if(!n||n.titleAr||TC[n.symbol])return;
   var src=n.titleEn||n.title||'';
-  if(!src) return;
+  if(!src||!API)return;
   try{
     var r=await fetch(API+'/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:src})});
-    if(r.ok){var d=await r.json();if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();var el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}}
+    if(r.ok){
+      var d=await r.json();
+      if(d.ar){n.titleAr=d.ar;TC[n.symbol]=d.ar;renderList();var el=document.getElementById('title-ar');if(el&&selId===n.id)el.textContent=d.ar;}
+    }
   }catch(e){}
 }
 
-function setF(f,b){
-  flt=f;pg=1;selId=null;
-  document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});
-  b.classList.add('on');
-  doLoad();
-}
-function chpg(delta){
-  pg=Math.max(1,Math.min(tpg,pg+delta));
-  selId=null;
-  document.getElementById('det').style.display='none';
-  document.getElementById('empty').style.display='flex';
-  document.getElementById('lst').scrollTop=0;
-  doLoad();
-}
+function setF(f,b){flt=f;pg=1;document.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');doLoad();}
+function chpg(delta){pg=Math.max(1,Math.min(tpg,pg+delta));doLoad();}
 
 function renderList(){
   var q=document.getElementById('srch').value.toLowerCase();
   var fil=D;
-  if(q) fil=fil.filter(function(n){
-    return (n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q)||(n.member||'').toLowerCase().includes(q);
-  });
+  if(q)fil=fil.filter(function(n){return (n.titleAr||n.title||'').toLowerCase().includes(q)||(n.symbol||'').toLowerCase().includes(q);});
   var el=document.getElementById('lst');
-  if(!fil.length){
-    el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';
-    document.getElementById('pgbar').style.display='none';
-    return;
-  }
+  if(!fil.length){el.innerHTML='<div style="text-align:center;padding:30px;font-size:12px;color:var(--t3)">لا توجد نتائج</div>';return;}
   el.innerHTML=fil.map(function(n){
-    var isOpen=n.status==='مفتوح للتعليق';
-    var sid=n.id.replace(/'/g,"\\'").replace(/,/g,'_');
-    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+sid+'\')">'+
-      '<div class="nt">'+
-        '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
-        '<span class="ndate">'+(n.date||'')+'</span>'+
-      '</div>'+
-      '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3)">'+(n.title||n.symbol||'—')+'</span>')+'</div>'+
-      '<div class="nbot">'+
-        '<span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
-        '<div class="nr">'+
-          (n.loading||n.docLoading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
-          ((n.analysis||n.docAnalysis)&&!n.loading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
-          '<div class="ndot" style="background:'+(isOpen?'var(--gr)':'var(--rd)')+'"></div>'+
-          '<span style="font-size:10px;color:'+(isOpen?'var(--gr)':'var(--rd)')+'">'+
-          (isOpen?'مفتوح':'منتهي')+'</span>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+    return '<div class="nc '+(n.id===selId?'sel':'')+'" onclick="selN(\''+n.id+'\')">'+
+      '<div class="nt"><span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span><span class="ndate">'+(n.date||'')+'</span></div>'+
+      '<div class="ntit">'+(n.titleAr||'<span style="color:var(--t3)">'+( n.title||n.symbol||'—')+'</span>')+'</div>'+
+      '<div class="nbot"><span class="nmem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
+      '<div class="nr">'+
+      (n.loading||n.docLoading?'<span style="font-size:10px;color:var(--am)">يُحلَّل...</span>':'')+
+      ((n.analysis||n.docAnalysis)&&!n.loading&&!n.docLoading?'<span style="font-size:10px;color:var(--gr)">✓</span>':'')+
+      '<div class="ndot" style="background:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'"></div>'+
+      '<span style="font-size:10px;color:'+(n.status==='مفتوح للتعليق'?'var(--gr)':'var(--rd)')+'">'+
+      (n.status==='مفتوح للتعليق'?'مفتوح':'منتهي')+'</span></div></div></div>';
   }).join('');
   var pb=document.getElementById('pgbar');
-  if(tpg>1){
-    pb.style.display='flex';
-    document.getElementById('pglbl').textContent=pg+'/'+tpg;
-    document.getElementById('pp').disabled=pg<=1;
-    document.getElementById('pn').disabled=pg>=tpg;
-  } else { pb.style.display='none'; }
+  if(tpg>1){pb.style.display='flex';document.getElementById('pglbl').textContent=pg+'/'+tpg;document.getElementById('pp').disabled=pg<=1;document.getElementById('pn').disabled=pg>=tpg;}
+  else pb.style.display='none';
 }
 
 function selN(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
-  if(!n) return;
-  selId=n.id; tab='full'; renderList(); renderDet();
-  if(!n.titleAr) translateOne(n);
+  selId=id;tab='full';renderList();renderDet();
+  var n=D.find(function(x){return x.id===id;});
+  if(n&&!n.titleAr)translateOne(n);
 }
 
 function buildDocs(n){
   var html='';
-  (n.docs||[]).forEach(function(d){
-    var url=(d.url||'').split('\n')[0].trim();
-    if(!url||!url.startsWith('http')) return;
-    html+='<div class="doc-row" style="border-color:#22c55e40">'+
-      '<span class="doc-n" style="color:#4ade80">📄 '+(d.name||'مرفق')+'</span>'+
-      '<a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a>'+
-    '</div>';
+  var docs=n.docs||[];
+  docs.forEach(function(d){
+    var url=(d.url||'').trim();
+    if(!url)return;
+    if(url.includes('members.wto.org')){
+      html+='<div class="doc-row" style="border-color:#22c55e40"><span class="doc-n" style="color:#4ade80">📄 '+(d.name||'تحميل PDF الرسمي')+'</span><a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a></div>';
+    }
   });
   return html;
 }
 
 function renderDet(){
   var n=D.find(function(x){return x.id===selId;});
-  if(!n) return;
+  if(!n)return;
   document.getElementById('empty').style.display='none';
   var det=document.getElementById('det');
   det.style.display='block';
   var open=n.status==='مفتوح للتعليق';
   var titleAr=n.titleAr||TC[n.symbol]||'';
   var titleEn=n.titleEn||n.title||n.symbol||'';
-  // hasPdf: أي مستند يحتوي url صالح — ليس فقط members.wto.org
-  var hasPdf=(n.docs||[]).some(function(d){
-    var url=(d.url||'').split('\n')[0].trim();
-    return url.startsWith('http');
-  });
+  var hasPdf=(n.docs||[]).some(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
   var docsHtml=buildDocs(n);
   var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
-  var kws=(n.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">الكلمات المفتاحية:</span>'+n.keywords.map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
-  var nid=n.id.replace(/'/g,"\\'").replace(/,/g,'_');
 
   det.innerHTML=
     '<div class="dc">'+
       '<div class="dbd">'+
         '<span class="bdg '+(n.type||'').toLowerCase()+'">'+(n.type||'—')+'</span>'+
-        '<span class="sbdg" style="'+(open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+  (n.status||'')+'</span>'+
-        (n.notifType?'<span class="sbdg" style="background:#1a1a2a;color:#8899bb;border:1px solid #2a3d5a">'+n.notifType+'</span>':'')+
+        '<span class="sbdg" style="'+(open?'background:#0d3320;color:#4ade80;border:1px solid #22c55e40':'background:#1a0d0d;color:#f87171;border:1px solid #ef444440')+'">'+(n.status||'')+'</span>'+
       '</div>'+
       '<div class="dtit" id="title-ar">'+(titleAr||'<span style="color:var(--am);font-size:12px;font-weight:400">⏳ جارٍ الترجمة...</span>')+'</div>'+
       '<div class="dtiten">'+titleEn+'</div>'+
@@ -435,18 +271,16 @@ function renderDet(){
         '<div><div class="ml">الدولة</div><div class="mv">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</div></div>'+
         '<div><div class="ml">تاريخ الإخطار</div><div class="mv">'+(n.date||'—')+'</div></div>'+
         '<div><div class="ml">موعد التعليق</div><div class="mv">'+(n.commentDeadline||'—')+'</div></div>'+
-      '</div>'+prods+kws+
-      (n.epingLink?'<div style="margin-top:10px"><a href="'+n.epingLink+'" target="_blank" class="actb" style="text-decoration:none;display:inline-block">🔗 عرض على ePing</a></div>':'')+
+      '</div>'+prods+
     '</div>'+
     (docsHtml?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px">📄 المستندات الرسمية</div>'+docsHtml+'</div>':'')+
-    (n.docAnalysis?'<div class="dc"><div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#60a5fa">📄 تحليل المستند</div><div class="abox">'+n.docAnalysis.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div></div>':'')+
     (!n.analysis?
       '<div class="aw">'+
-        '<button class="abtn" onclick="analyzeN(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
+        '<button class="abtn" onclick="analyzeN(\''+n.id+'\')" '+(n.loading?'disabled':'')+'>'+
           (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل الإخطار')+
         '</button>'+
-        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO — SPS / TBT / DSU</div>'+
-      '</div>':'')+
+        '<div class="ahint">تحليل شامل وفق اتفاقيات WTO</div>'+
+      '</div>':'')+ 
     (n.loading?'<div class="dc"><div class="shim" style="width:85%"></div><div class="shim"></div><div class="shim" style="width:70%"></div></div>':'')+
     (n.analysis?
       '<div>'+
@@ -459,7 +293,7 @@ function renderDet(){
         '<div class="abox" id="abox">'+getTab(n)+'</div>'+
         '<div class="acts">'+
           '<button class="actb" onclick="cpA()">📋 نسخ</button>'+
-          '<button class="actb bl" onclick="analyzeN(\''+nid+'\')">🔄 إعادة</button>'+
+          '<button class="actb bl" onclick="analyzeN(\''+n.id+'\')">🔄 إعادة</button>'+
         '</div>'+
       '</div>':'')+
     (hasPdf?
@@ -467,38 +301,40 @@ function renderDet(){
         '<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#4ade80">📄 تحليل المستند الرسمي</div>'+
         (!n.docAnalysis&&!n.docLoading?
           '<div class="aw" style="margin:0">'+
-            '<button class="abtn gr" onclick="analyzeDoc(\''+nid+'\')">🤖 تحليل المستند</button>'+
-            '<div class="ahint">يقرأ محتوى المستند ويحلله قانونياً وفق WTO</div>'+
+            '<button class="abtn gr" onclick="analyzeDoc(\''+n.id+'\')">📄 تحليل المستند</button>'+
+            '<div class="ahint">تحليل محتوى المستند قانونياً وفق WTO</div>'+
           '</div>':'')+
         (n.docLoading?'<div class="shim" style="width:85%"></div><div class="shim" style="width:70%"></div>':'')+
         (n.docAnalysis?
           '<div class="abox" style="border-color:#06564660">'+n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
           '<div class="acts">'+
             '<button class="actb" onclick="cpDoc()">📋 نسخ</button>'+
-            '<button class="actb grn" onclick="analyzeDoc(\''+nid+'\')">🔄 إعادة</button>'+
+            '<button class="actb grn" onclick="analyzeDoc(\''+n.id+'\')">🔄 إعادة</button>'+
           '</div>':'')+
       '</div>':'');
 }
 
 function getTab(n){
-  if(!n.analysis) return '';
+  if(!n.analysis)return'';
   var t=tab==='sum'?(n.sum||n.analysis.slice(0,600)):tab==='leg'?(n.leg||n.analysis.slice(600,1300)):tab==='rec'?(n.rec||n.analysis.slice(1300)):n.analysis;
   return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 function swT(t,b){tab=t;document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var box=document.getElementById('abox');var n=D.find(function(x){return x.id===selId;});if(box&&n)box.innerHTML=getTab(n);}
-function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis)navigator.clipboard&&navigator.clipboard.writeText(n.analysis);}
-function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis)navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis);}
+function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis){navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
+function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis){navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}}
 
 async function analyzeN(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
-  if(!n||n.loading) return;
+  var n=D.find(function(x){return x.id===id;});
+  if(!n||n.loading)return;
   n.loading=true;n.analysis=null;renderList();renderDet();
   try{
-    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}}
+    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet();return;}
+    }
   }catch(e){}
-  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'.\nموعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(n.type==='SPS'?'SPS المادة 5':'TBT المادة 2')+'\n• المعايير: '+(n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT')+' في WTO';
+  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إشعار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. الموعد النهائي: '+n.commentDeadline+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(n.type==='SPS'?'SPS المادة 5':'TBT المادة 2')+'\n• المعايير: '+(n.type==='SPS'?'Codex / OIE / IPPC':'ISO / IEC')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n\n=== التوصيات ===\n1. تقديم تعليقات قبل '+n.commentDeadline+'\n2. تقييم الأثر على الصادرات\n3. التنسيق مع وزارة التجارة\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT');
   parseAn(n,t);n.loading=false;tab='full';renderList();renderDet();
 }
 
@@ -510,76 +346,25 @@ function parseAn(n,txt){
 }
 
 async function analyzeDoc(id){
-  var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
-  if(!n||n.docLoading) return;
-  var pdfDoc=(n.docs||[]).find(function(d){
-    var url=(d.url||'').split('\n')[0].trim();
-    return url.startsWith('http');
-  });
-  if(!pdfDoc){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
+  var n=D.find(function(x){return x.id===id;});
+  if(!n||n.docLoading)return;
+  var pdfDoc=(n.docs||[]).find(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  if(!pdfDoc){alert('لا يوجد PDF متاح لهذا الإشعار');return;}
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
-  var pdfUrl=pdfDoc.url.split('\n')[0].trim();
-  var docText='';
   try{
-    // المتصفح يحمّل PDF مباشرة (يتجاوز حجب الخادم)
-    var resp=await fetch(pdfUrl);
-    if(resp.ok){
-      var buf=await resp.arrayBuffer();
-      var raw=new TextDecoder('latin1').decode(new Uint8Array(buf));
-      var chunks=raw.match(/[\x20-\x7E]{15,}/g)||[];
-      docText=chunks.join(' ').slice(0,6000);
+    var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title,pdf_url:pdfDoc.url})});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
     }
-  }catch(corsErr){
-    // CORS محجوب - الخادم سيحلل بدون نص
-  }
-  try{
-    var ar=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({url:pdfUrl,text:docText,symbol:n.symbol,title:n.titleEn||n.title,type:n.type,context:'notification'})});
-    if(ar.ok){var ad=await ar.json();n.docAnalysis=ad.analysis||ad.error||'تعذّر التحليل';n.docLoading=false;renderList();renderDet();return;}
-  }catch(e){}
-  n.docAnalysis='تعذّر تحليل المستند.';n.docLoading=false;renderList();renderDet();
+  }catch(e){console.log('analyzeDoc err:',e);}
+  n.docAnalysis='تعذّر قراءة المستند.';
+  n.docLoading=false;renderList();renderDet();
 }
 
-function setStatus(st,msg){
-  document.getElementById('hlbl').textContent=msg;
-  document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');
-}
+function setStatus(st,msg){document.getElementById('hlbl').textContent=msg;document.getElementById('hdot').className='hdot'+(st==='live'?' live':'');}
 
-var ALERTS=[];
-async function loadAlerts(){
-  try{var r=await fetch(API+'/api/alerts');if(r.ok){var d=await r.json();ALERTS=d.alerts||[];renderAlerts();}}catch(e){renderAlerts();}
-}
-function renderAlerts(){
-  var el=document.getElementById('alerts-list');
-  if(!ALERTS.length){el.innerHTML='<div class="al-empty">🔔 لا توجد تنبيهات نشطة<br><span style="font-size:11px;color:var(--t3)">أضف تنبيهاً جديداً أدناه</span></div>';return;}
-  el.innerHTML=ALERTS.map(function(a){
-    return '<div class="al-row">'+
-      '<label class="tgl"><input type="checkbox" '+(a.active?'checked':'')+' onchange="toggleAlert('+a.id+',this)"/><span class="tslider"></span></label>'+
-      '<div class="al-info"><div class="al-name">'+(a.type||'الكل')+' — '+(a.sector||'جميع القطاعات')+'</div>'+
-      '<div class="al-desc">'+(a.frequency||'فوري')+' · '+(a.country||'جميع الدول')+'</div></div>'+
-      '<button class="al-del" onclick="deleteAlert('+a.id+')">✕</button>'+
-    '</div>';
-  }).join('');
-}
-async function addAlert(){
-  var body={type:document.getElementById('al-type').value,sector:document.getElementById('al-sector').value,country:document.getElementById('al-country').value,frequency:document.getElementById('al-freq').value};
-  try{var r=await fetch(API+'/api/alerts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.ok){var d=await r.json();ALERTS.push(d.alert);renderAlerts();document.getElementById('al-sector').value='';}}catch(e){alert('تعذّر الإضافة');}
-}
-async function toggleAlert(id,cb){
-  try{await fetch(API+'/api/alerts/'+id,{method:'PUT'});}catch(e){cb.checked=!cb.checked;}
-  var a=ALERTS.find(function(x){return x.id===id;});if(a)a.active=cb.checked;
-}
-async function deleteAlert(id){
-  try{await fetch(API+'/api/alerts/'+id,{method:'DELETE'});}catch(e){}
-  ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();
-}
-
-async function wakeAndLoad(){
-  try{await fetch(API+'/');}catch(e){}
-  doLoad();
-  loadAlerts();
-}
-wakeAndLoad();
+doLoad();
 </script>
 </body>
 </html>
