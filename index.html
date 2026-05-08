@@ -395,7 +395,7 @@ function buildDocs(n){
     var url=(d.url||'').split('\n')[0].trim();
     if(!url||!url.startsWith('http')) return;
     html+='<div class="doc-row" style="border-color:#22c55e40">'+
-      '<span class="doc-n" style="color:#4ade80">📄 '+(d.name||'PDF رسمي')+'</span>'+
+      '<span class="doc-n" style="color:#4ade80">📄 '+(d.name||'مرفق')+'</span>'+
       '<a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a>'+
     '</div>';
   });
@@ -411,7 +411,11 @@ function renderDet(){
   var open=n.status==='مفتوح للتعليق';
   var titleAr=n.titleAr||TC[n.symbol]||'';
   var titleEn=n.titleEn||n.title||n.symbol||'';
-  var hasPdf=(n.docs||[]).some(function(d){return (d.url||'').includes('members.wto.org');});
+  // hasPdf: أي مستند يحتوي url صالح — ليس فقط members.wto.org
+  var hasPdf=(n.docs||[]).some(function(d){
+    var url=(d.url||'').split('\n')[0].trim();
+    return url.startsWith('http');
+  });
   var docsHtml=buildDocs(n);
   var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
   var kws=(n.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">الكلمات المفتاحية:</span>'+n.keywords.map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
@@ -439,7 +443,7 @@ function renderDet(){
     (!n.analysis?
       '<div class="aw">'+
         '<button class="abtn" onclick="analyzeN(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
-          (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل قانوني بالذكاء الاصطناعي')+
+          (n.loading?'⏳ جارٍ التحليل...':'🤖 تحليل الإخطار')+
         '</button>'+
         '<div class="ahint">تحليل شامل وفق اتفاقيات WTO — SPS / TBT / DSU</div>'+
       '</div>':'')+
@@ -508,8 +512,12 @@ function parseAn(n,txt){
 async function analyzeDoc(id){
   var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
   if(!n||n.docLoading) return;
-  var pdfDoc=(n.docs||[]).find(function(d){return (d.url||'').split('\n')[0].trim().includes('members.wto.org');});
-  if(!pdfDoc){alert('لا يوجد PDF متاح لهذا الإخطار');return;}
+  // أخذ أول مستند يحتوي URL صالح
+  var pdfDoc=(n.docs||[]).find(function(d){
+    var url=(d.url||'').split('\n')[0].trim();
+    return url.startsWith('http');
+  });
+  if(!pdfDoc){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
   try{
     var pdfUrl=pdfDoc.url.split('\n')[0].trim();
