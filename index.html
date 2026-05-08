@@ -373,12 +373,23 @@ function selN(id){
 function buildDocs(n){
   var html='';
   (n.docs||[]).forEach(function(d){
-    var url=(d.url||'').split('\n')[0].trim();
-    if(!url||!url.startsWith('http'))return;
-    html+='<div class="doc-row" style="border-color:#22c55e40">'+
-      '<span class="doc-n" style="color:#4ade80">📄 '+(d.name||'مستند رسمي')+'</span>'+
-      '<a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a>'+
-    '</div>';
+    // نعالج كل الروابط (قد تكون متعددة مفصولة بسطر جديد أو فاصلة)
+    var rawUrl=d.url||'';
+    var urls=[];
+    rawUrl.replace(/\r\n/g,'\n').split('\n').forEach(function(line){
+      line.split(',').forEach(function(part){
+        part=part.trim();
+        if(part.startsWith('http')) urls.push(part);
+      });
+    });
+    if(!urls.length) return;
+    urls.forEach(function(url,i){
+      var label=d.name||(urls.length===1?'مستند رسمي':'مستند رسمي ('+(i+1)+')');
+      html+='<div class="doc-row" style="border-color:#22c55e40">'+
+        '<span class="doc-n" style="color:#4ade80">📄 '+label+'</span>'+
+        '<a class="doc-a" href="'+url+'" target="_blank">تحميل ↗</a>'+
+      '</div>';
+    });
   });
   return html;
 }
@@ -392,7 +403,7 @@ function renderDet(){
   var open=n.status==='مفتوح للتعليق';
   var titleAr=n.titleAr||TC[n.symbol]||'';
   var titleEn=n.titleEn||n.title||n.symbol||'';
-  var hasPdf=(n.docs||[]).some(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
+  var hasPdf=(n.docs||[]).some(function(d){var u=(d.url||'').split('\n')[0].trim();return u.startsWith('http');});
   var docsHtml=buildDocs(n);
   var prods=(n.products||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">المنتجات:</span>'+n.products.map(function(p){return '<span class="ptag">'+p+'</span>';}).join('')+'</div>':'';
   var kws=(n.keywords||[]).length?'<div class="ptags"><span style="font-size:11px;color:var(--t2);margin-left:5px">كلمات مفتاحية:</span>'+n.keywords.map(function(k){return '<span class="ptag">'+k+'</span>';}).join('')+'</div>':'';
@@ -488,15 +499,99 @@ function parseAn(n,txt){
 async function analyzeDoc(id){
   var n=D.find(function(x){return x.id===id||x.id.replace(/,/g,'_')===id;});
   if(!n||n.docLoading)return;
-  var pdfDoc=(n.docs||[]).find(function(d){return d.type==='pdf'||(d.url||'').includes('members.wto.org');});
-  if(!pdfDoc){alert('لا يوجد PDF متاح لهذا الإخطار');return;}
+
+  // استخراج كل الروابط المتاحة من جميع المستندات
+  var allUrls=[];
+  (n.docs||[]).forEach(function(d){
+    var raw=(d.url||'').replace(/\r\n/g,'\n');
+    raw.split('\n').forEach(function(l){
+      l.split(',').forEach(function(p){
+        p=p.trim();
+        if(p.startsWith('http')) allUrls.push(p);
+      });
+    });
+  });
+  if(!allUrls.length){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
+
+  n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
+
+  var docText='';
+  var usedUrl='';
+
+  // المتصفح يحاول تحميل PDF مباشرة من كل رابط
+  for(var i=0;i<Math.min(allUrls.length,3);i++){
+    var url=allUrls[i];
+    try{
+      var resp=await fetch(url,{mode:'cors',credentials:'omit'});
+      if(resp.ok){
+        var buf=await resp.arrayBuffer();
+        var bytes=new Uint8Array(buf);
+        var raw='';
+        for(var j=0;j<Math.min(bytes.length,200000);j++){
+          raw+=String.fromCharCode(bytes[j]);
+        }
+        var matches=raw.match(/[\x20-\x7E]{12,}/g)||[];
+        var filtered=matches.filter(function(c){
+          return c.split(' ').length>1&&!c.startsWith('/')&&!c.startsWith('stream');
+        });
+        docText=filtered.join(' ').slice(0,6000);
+        if(docText.length>100){usedUrl=url;break;}
+      }
+    }catch(corsErr){
+      console.log('CORS blocked:',url);
+    }
+  }
+
+  // إرسال النص (أو بيانات الإخطار) للخادم للتحليل
+  try{
+    var r=await fetch(API+'/api/analyze-doc',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        symbol:n.symbol,
+        member:n.member,
+        type:n.type,
+        title:n.titleEn||n.title||'',
+        pdf_url:usedUrl||allUrls[0],
+        pdf_text:docText,
+        products:n.products||[],
+        keywords:n.keywords||[],
+        objectives:n.objectives||[],
+        commentDeadline:n.commentDeadline||'',
+        notifType:n.notifType||''
+      })
+    });
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
+    }
+  }catch(e){console.log('analyzeDoc err:',e);}
+  n.docAnalysis='تعذّر التحليل.';n.docLoading=false;renderList();renderDet();
+}
+  if(!pdfDoc){alert('لا يوجد مستند متاح لهذا الإخطار');return;}
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet();
   try{
+    // نرسل كل بيانات الإخطار للخادم ليحلله حتى لو لم يتمكن من جلب PDF
     var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title,pdf_url:pdfDoc.url})});
-    if(r.ok){var d=await r.json();if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}}
+      body:JSON.stringify({
+        symbol:n.symbol,
+        member:n.member,
+        type:n.type,
+        title:n.titleEn||n.title||'',
+        pdf_url:pdfUrl,
+        products:n.products||[],
+        keywords:n.keywords||[],
+        objectives:n.objectives||[],
+        commentDeadline:n.commentDeadline||'',
+        notifType:n.notifType||''
+      })});
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet();return;}
+      if(d.error){n.docAnalysis='خطأ: '+d.error;n.docLoading=false;renderList();renderDet();return;}
+    }
   }catch(e){console.log('analyzeDoc err:',e);}
-  n.docAnalysis='تعذّر قراءة المستند.';
+  n.docAnalysis='تعذّر الاتصال بالخادم.';
   n.docLoading=false;renderList();renderDet();
 }
 
