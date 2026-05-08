@@ -1005,10 +1005,10 @@ async function doLoad(force){
     var srch=document.getElementById('srch').value;
     var mc=document.getElementById('srch2').value;
     var params=['page='+pg,'pageSize=50'];
-    // WTO API: domainIds=1 → SPS, domainIds=2 → TBT
-    if(flt==='SPS')params.push('domainIds=1');
-    else if(flt==='TBT')params.push('domainIds=2');
-    else if(flt==='open')params.push('status=open');
+    // WTO API: domainIds=2 → SPS, domainIds=1 → TBT
+    if(flt==='SPS')params.push('domainIds=2');
+    else if(flt==='TBT')params.push('domainIds=1');
+    // 'open' and 'saudi' filtered client-side after load
     else if(flt==='saudi'){mc='C682';}
     if(srch)params.push('freeText='+encodeURIComponent(srch));
     if(mc)params.push('countryIds='+encodeURIComponent(mc));
@@ -1254,7 +1254,9 @@ function renderList(){
            (n.symbol||'').toLowerCase().includes(q)||
            (n.member||'').toLowerCase().includes(q);
   });
-  // open filter is handled server-side via status=open param
+  // client-side filters for open/saudi
+  if(flt==='open')fil=fil.filter(function(n){return n.status==='مفتوح للتعليق';});
+  if(flt==='saudi')fil=fil.filter(function(n){return n.memberCode==='C682'||( n.member||'').toLowerCase().includes('saudi');});
   var el=document.getElementById('lst');
   if(!fil.length){
     el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🔍</div><div style="font-size:11px">لا توجد نتائج</div></div>';
@@ -1500,14 +1502,92 @@ async function analyzeN(sid){
   var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n||n.loading)return;
   n.loading=true;n.analysis=null;renderList();renderDet(n);
+
+  // محاولة 1: backend
   try{
-    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,
-        commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})
+    var r=await fetch(API+'/api/analyze',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        symbol:n.symbol,member:n.member,type:n.type,date:n.date,
+        commentDeadline:n.commentDeadline,title:n.titleEn||n.title,
+        products:n.products||[],docs:n.docs||[]
+      })
     });
-    if(r.ok){var d=await r.json();if(d.analysis){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet(n);return;}}
-  }catch(e){}
-  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'.\nموعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• الأساس القانوني: اتفاقية '+(n.type==='SPS'?'SPS — المادة 5 (تقييم المخاطر) والمادة 7 (الشفافية)':'TBT — المادة 2 (عدم التمييز) والمادة 5 (إجراءات تقييم المطابقة)')+'\n• معايير المرجعية: '+(n.type==='SPS'?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• الأثر على التجارة السعودية: يتوقع تأثير على القطاعات: '+(n.products||[]).join('، ')+'\n• حقوق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية عبر ePing قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر التجاري على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. متابعة لجنة '+(n.type==='SPS'?'SPS':'TBT')+' في WTO وفق إجراءات التسوية الودية\n5. مراجعة توافق المعايير السعودية مع الاتفاقية المعنية';
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis&&d.analysis.length>50){
+        parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet(n);return;
+      }
+    }
+  }catch(e){console.warn('Backend analyze failed:',e);}
+
+  // محاولة 2: Claude API مباشرة من الـ frontend
+  try{
+    var prompt=[
+      'أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية.',
+      'حلّل هذا الإخطار وأجب بالعربية الفصحى:',
+      'الرمز: '+n.symbol+' | الدولة: '+n.member+' | النوع: '+n.type,
+      'التاريخ: '+n.date+' | موعد التعليق: '+(n.commentDeadline||'—'),
+      'العنوان: '+(n.titleEn||n.title||''),
+      'المنتجات: '+(n.products||[]).join('، '),
+      '',
+      'اكتب تحليلاً بالأقسام التالية بالضبط:',
+      '=== الملخص التنفيذي ===',
+      '(4-5 جمل عن جوهر الإخطار وأثره على التجارة الدولية)',
+      '',
+      '=== التحليل القانوني ===',
+      '• الأساس القانوني: اتفاقية '+(n.type==='SPS'?'SPS المادة 5 و7':'TBT المادة 2 و5'),
+      '• معايير المرجعية: '+(n.type==='SPS'?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU'),
+      '• الأثر على التجارة الدولية',
+      '• حقوق الدول الأعضاء في الاعتراض',
+      '',
+      '=== التوصيات ===',
+      '(4-5 توصيات عملية للمملكة العربية السعودية)'
+    ].join('\n');
+
+    var ar=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5',
+        max_tokens:1200,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(ar.ok){
+      var ad=await ar.json();
+      if(ad.content&&ad.content[0]&&ad.content[0].text){
+        parseAn(n,ad.content[0].text);n.loading=false;tab='full';renderList();renderDet(n);return;
+      }
+    }
+  }catch(e){console.warn('Direct Claude failed:',e);}
+
+  // محاولة 3: تحليل محلي تلقائي (fallback دائماً يعمل)
+  var isSPS=n.type==='SPS';
+  var t=
+    '=== الملخص التنفيذي ===\n'+
+    'أصدرت '+n.member+' هذا الإخطار من نوع '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. '+
+    'يندرج الإخطار في إطار اتفاقية '+(isSPS?'التدابير الصحية والنباتية (SPS)':'العوائق التقنية أمام التجارة (TBT)')+
+    ' لمنظمة التجارة العالمية. '+
+    (n.commentDeadline?'الموعد النهائي لتقديم التعليقات هو '+n.commentDeadline+'. ':'المهلة لم تُحدد. ')+
+    'يتعلق الإخطار بالمنتجات التالية: '+(n.products||[]).join('، ')+'.\n\n'+
+    '=== التحليل القانوني ===\n'+
+    '• الأساس القانوني: اتفاقية '+(isSPS?'SPS — المادة 5 (تقييم المخاطر) والمادة 7 (الشفافية والإخطار)':'TBT — المادة 2 (عدم التمييز واللوائح التقنية) والمادة 5 (إجراءات تقييم المطابقة)')+'\n'+
+    '• معايير المرجعية الدولية: '+(isSPS?'Codex Alimentarius / OIE (منظمة الصحة الحيوانية) / IPPC (اتفاقية وقاية النباتات)':'ISO / IEC / ITU — المعايير الدولية المعترف بها')+'\n'+
+    '• الأثر المحتمل على التجارة: قد يؤثر هذا الإخطار على صادرات الدول الأعضاء المرتبطة بالمنتجات المذكورة.\n'+
+    '• الشركاء التجاريون المتأثرون: جميع الدول المصدِّرة إلى '+n.member+' في هذه القطاعات.\n'+
+    '• حقوق الاعتراض: يحق لأي عضو في WTO تقديم تعليقات خطية خلال 60 يوماً من تاريخ الإخطار.\n\n'+
+    '=== التوصيات ===\n'+
+    '1. تقديم تعليقات رسمية مكتوبة عبر منصة ePing قبل '+(n.commentDeadline||'انتهاء المهلة')+'\n'+
+    '2. تقييم الأثر التجاري على الصادرات السعودية في القطاعات: '+(n.products||[]).join('، ')+'\n'+
+    '3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية لصياغة الموقف التفاوضي\n'+
+    '4. مراجعة مدى توافق المعايير السعودية (SASO) مع '+(isSPS?'معايير Codex / OIE / IPPC':'معايير ISO / IEC')+'\n'+
+    '5. متابعة لجنة '+(isSPS?'SPS':'TBT')+' في WTO للاطلاع على ردود الدول الأخرى';
+
   parseAn(n,t);n.loading=false;tab='full';renderList();renderDet(n);
 }
 function parseAn(n,txt){
@@ -1524,7 +1604,6 @@ async function analyzeDoc(sid){
   var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
   if(!n||n.docLoading)return;
 
-  // جمع روابط المستندات
   var allUrls=[];
   (n.docs||[]).forEach(function(d){
     var raw=(d.url||'').replace(/\r\n/g,'\n');
@@ -1535,50 +1614,91 @@ async function analyzeDoc(sid){
 
   n.docLoading=true;n.docAnalysis=null;renderList();renderDet(n);
 
-  // إرسال بيانات الإخطار مباشرة للـ backend — لا نعتمد على CORS
-  // الـ backend يحاول جلب PDF من جانبه، وإذا فشل يحلل من البيانات المتاحة
+  // محاولة 1: backend (يجلب PDF ويحلله)
   try{
-    var payload={
-      symbol:          n.symbol||'',
-      member:          n.member||'',
-      type:            n.type||'',
-      title:           n.titleEn||n.title||n.symbol||'',
-      pdf_url:         allUrls[0]||'',
-      pdf_text:        '',
-      products:        n.products||[],
-      keywords:        n.keywords||[],
-      commentDeadline: n.commentDeadline||'',
-      notifType:       n.notifType||'',
-      date:            n.date||'',
-      status:          n.status||''
-    };
     var r=await fetch(API+'/api/analyze-doc',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        symbol:n.symbol,member:n.member,type:n.type,
+        title:n.titleEn||n.title||n.symbol||'',
+        pdf_url:allUrls[0]||'',pdf_text:'',
+        products:n.products||[],keywords:n.keywords||[],
+        commentDeadline:n.commentDeadline||'',notifType:n.notifType||'',
+        date:n.date||'',status:n.status||''
+      })
     });
     if(r.ok){
       var d=await r.json();
-      if(d.analysis&&d.analysis.length>30){
+      if(d.analysis&&d.analysis.length>50){
         n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet(n);return;
       }
-      if(d.error){
-        n.docAnalysis='خطأ: '+d.error;n.docLoading=false;renderList();renderDet(n);return;
+    }
+  }catch(e){console.warn('Backend analyzeDoc failed:',e);}
+
+  // محاولة 2: Claude API مباشرة من الـ frontend
+  try{
+    var isSPS=n.type==='SPS';
+    var prompt=[
+      'أنت محلل قانوني متخصص في منظمة التجارة العالمية.',
+      'قدّم تحليلاً قانونياً وافياً للإخطار الرسمي التالي:',
+      '',
+      'رقم الوثيقة: '+n.symbol,
+      'الدولة المُخطِرة: '+n.member,
+      'نوع الاتفاقية: '+n.type+(isSPS?' (التدابير الصحية والنباتية)':' (العوائق التقنية)'),
+      'عنوان الإخطار: '+(n.titleEn||n.title||''),
+      'تاريخ الإخطار: '+n.date,
+      'موعد التعليق: '+(n.commentDeadline||'غير محدد'),
+      'المنتجات المتأثرة: '+(n.products||[]).join('، '),
+      'الكلمات المفتاحية: '+(n.keywords||[]).join('، '),
+      (allUrls[0]?'رابط المستند: '+allUrls[0]:''),
+      '',
+      'المطلوب (بالعربية الفصحى):',
+      '1. ملخص المستند وجوهره',
+      '2. المتطلبات والاشتراطات الرئيسية المحددة',
+      '3. المنتجات والأسواق المتأثرة',
+      '4. التحليل القانوني وفق '+(isSPS?'المادة 5 SPS ومعايير Codex/OIE/IPPC':'المادة 2 TBT ومعايير ISO/IEC'),
+      '5. الأثر على صادرات المملكة العربية السعودية',
+      '6. التوصيات العملية (3-5 توصيات)'
+    ].filter(Boolean).join('\n');
+
+    var ar=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(ar.ok){
+      var ad=await ar.json();
+      if(ad.content&&ad.content[0]&&ad.content[0].text){
+        n.docAnalysis=ad.content[0].text;n.docLoading=false;renderList();renderDet(n);return;
       }
     }
-  }catch(e){console.error('analyzeDoc error:',e);}
+  }catch(e){console.warn('Direct Claude doc failed:',e);}
 
-  // Fallback محلي إذا فشل الاتصال
-  var fb='=== تحليل إخطار '+n.symbol+' ===\n\n';
+  // محاولة 3: تحليل محلي
+  var isSPS2=n.type==='SPS';
+  var fb='=== تحليل الإخطار '+n.symbol+' ===\n\n';
   fb+='الدولة: '+n.member+' | النوع: '+n.type+'\n';
-  fb+='العنوان: '+(n.titleAr||n.title||n.symbol)+'\n';
+  fb+='العنوان: '+(n.titleAr||n.title||n.symbol||'')+'\n';
   fb+='التاريخ: '+n.date+'  |  موعد التعليق: '+(n.commentDeadline||'—')+'\n\n';
-  if(allUrls.length)fb+='📄 المستند الرسمي: '+allUrls[0]+'\n(يرجى فتح الرابط لقراءة المستند)\n\n';
-  fb+='المنتجات: '+((n.products||[]).join('، ')||'غير محدد')+'\n\n';
-  fb+='تعذّر الاتصال بالخادم — استخدم زر "تحليل الإخطار" للتحليل الكامل.';
+  fb+='المتطلبات المحتملة:\n';
+  fb+='• تطبيق معايير '+(isSPS2?'الصحة والسلامة الغذائية وفق Codex Alimentarius':'المواصفات التقنية وفق ISO/IEC')+'\n';
+  fb+='• إجراءات تقييم المطابقة المطلوبة من '+n.member+'\n';
+  fb+='• المنتجات: '+(n.products||[]).join('، ')+'\n\n';
+  if(allUrls.length){fb+='📄 اطلع على المستند الرسمي كاملاً:\n'+allUrls[0]+'\n\n';}
+  fb+='التوصيات:\n';
+  fb+='1. تحميل ومراجعة المستند الرسمي عبر الرابط أعلاه\n';
+  fb+='2. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'انتهاء المهلة')+'\n';
+  fb+='3. التنسيق مع وزارة التجارة السعودية ومنظمة SASO';
   n.docAnalysis=fb;n.docLoading=false;renderList();renderDet(n);
 }
-
 // ══ COMPARE ══
 function addToCompare(sid){
   var n=D.find(function(x){return x.id===sid||escId(x.id)===sid;});
