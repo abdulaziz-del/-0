@@ -581,252 +581,7 @@ button{font-family:inherit}
         <button class="pill" onclick="setPill('SPS',this)">SPS</button>
         <button class="pill" onclick="setPill('TBT',this)">TBT</button>
         <button class="pill" onclick="setPill('open',this)">🟢 مفتوح</button>
-        <button class="pill" onclick="setPill('saudi',this)">🇸🇦 سعودي</button>
-      </div>
-    </div>
-
-    <!-- LIST -->
-    <div id="lst">
-      <div class="empty-state">
-        <div class="empty-state-icon">⏳</div>
-        <div style="font-size:11px">جارٍ الاتصال...</div>
-      </div>
-    </div>
-
-    <!-- PAGINATION -->
-    <div class="pgbar" id="pgbar" style="display:none">
-      <button class="pgbtn" id="pp" onclick="chpg(-1)">→ السابق</button>
-      <span class="pglbl" id="pglbl">1 / 1</span>
-      <button class="pgbtn" id="pn" onclick="chpg(1)">التالي ←</button>
-    </div>
-  </div>
-
-  <!-- ══ MAIN PANELS ══ -->
-  <div id="main">
-
-    <!-- ██ DASHBOARD ██ -->
-    <div id="p-dash" class="panel show fadein" style="padding:18px">
-
-      <div class="dash-hero">
-        <div class="dash-hero-title">🇸🇦 المرصد الوطني لإخطارات التجارة الدولية</div>
-        <div class="dash-hero-sub">
-          رصد وتحليل إخطارات SPS وTBT الصادرة عن دول الأعضاء في منظمة التجارة العالمية —
-          دعم قرار وزارة التجارة والهيئة العامة للتجارة الخارجية
-        </div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <a href="https://eping.wto.org" target="_blank" class="qlink">🌐 ePing الرسمي</a>
-          <a href="https://www.wto.org/english/tratop_e/sps_e/sps_e.htm" target="_blank" class="qlink">📋 لجنة SPS</a>
-          <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="qlink">⚖️ لجنة TBT</a>
-          <a href="https://mc.gov.sa" target="_blank" class="qlink">🏛️ وزارة التجارة</a>
-          <a href="https://www.zatca.gov.sa" target="_blank" class="qlink">💼 الزكاة والجمارك</a>
-        </div>
-      </div>
-
-      <!-- KPI CARDS -->
-      <div class="dash-kpi">
-        <div class="kpi-card" style="--kpi-color:var(--ac)">
-          <div class="kpi-icon">📋</div>
-          <div class="kpi-val" id="kpi-total" style="color:var(--ac)">—</div>
-          <div class="kpi-lbl">إجمالي الإخطارات</div>
-          <div class="kpi-delta" id="kpi-total-d" style="color:var(--t3)">هذه الصفحة</div>
-        </div>
-        <div class="kpi-card" style="--kpi-color:var(--gr)">
-          <div class="kpi-icon">🟢</div>
-          <div class="kpi-val" id="kpi-open" style="color:var(--gr)">—</div>
-          <div class="kpi-lbl">مفتوحة للتعليق</div>
-          <div class="kpi-delta" id="kpi-open-d" style="color:var(--gr)">تتطلب متابعة</div>
-        </div>
-        <div class="kpi-card" style="--kpi-color:var(--am)">
-          <div class="kpi-icon">🌿</div>
-          <div class="kpi-val" id="kpi-sps" style="color:#34d399">—</div>
-          <div class="kpi-lbl">إخطارات SPS</div>
-          <div class="kpi-delta" id="kpi-sps-d" style="color:var(--t3)">تدابير صحية</div>
-        </div>
-        <div class="kpi-card" style="--kpi-color:var(--am)">
-          <div class="kpi-icon">🔧</div>
-          <div class="kpi-val" id="kpi-tbt" style="color:#fbbf24">—</div>
-          <div class="kpi-lbl">إخطارات TBT</div>
-          <div class="kpi-delta" id="kpi-tbt-d" style="color:var(--t3)">عوائق تقنية</div>
-        </div>
-      </div>
-
-      <!-- ROW 1 -->
-      <div class="dash-row">
-        <div class="dash-card">
-          <div class="dash-card-title">أكثر الدول إخطاراً <span style="color:var(--t4)">الصفحة الحالية</span></div>
-          <div class="top-members" id="top-members-list">
-            <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">⏳</div></div>
-          </div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-title">توزيع النوع <span style="color:var(--t4)">SPS / TBT</span></div>
-          <div class="donut-wrap" id="donut-wrap">
-            <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100" id="donut-svg">
-              <circle cx="50" cy="50" r="36" fill="none" stroke="var(--b1)" stroke-width="16"/>
-              <circle id="donut-sps" cx="50" cy="50" r="36" fill="none" stroke="#10b981" stroke-width="16"
-                stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
-                transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .8s ease"/>
-              <circle id="donut-tbt" cx="50" cy="50" r="36" fill="none" stroke="#f59e0b" stroke-width="16"
-                stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
-                transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .8s ease"/>
-              <text x="50" y="46" text-anchor="middle" fill="var(--t1)" font-size="12" font-weight="700" id="donut-pct">—</text>
-              <text x="50" y="58" text-anchor="middle" fill="var(--t3)" font-size="7">SPS</text>
-            </svg>
-            <div class="donut-legend" id="donut-legend"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ROW 2 -->
-      <div class="dash-row">
-        <div class="dash-card">
-          <div class="dash-card-title">آخر الإخطارات المفتوحة <span id="open-count-lbl" style="color:var(--gr)"></span></div>
-          <div class="timeline" id="recent-open-list">
-            <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">⏳</div></div>
-          </div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-title">تقييم المخاطر التجارية 🇸🇦</div>
-          <div class="risk-grid" id="risk-grid">
-            <div class="risk-card high"><div class="risk-ico">⚠️</div><div class="risk-lbl">عالي</div><div class="risk-val" style="color:var(--rd)" id="risk-h">—</div></div>
-            <div class="risk-card med"><div class="risk-ico">🔶</div><div class="risk-lbl">متوسط</div><div class="risk-val" style="color:var(--am)" id="risk-m">—</div></div>
-            <div class="risk-card low"><div class="risk-ico">✅</div><div class="risk-lbl">منخفض</div><div class="risk-val" style="color:var(--gr)" id="risk-l">—</div></div>
-          </div>
-          <div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1);font-size:10px;color:var(--t3);line-height:1.7" id="risk-note">
-            يُحسب التقييم بناءً على: موعد التعليق، قِصَر المهلة، الدول المؤثرة على الصادرات السعودية (EU/US/CN/JP).
-          </div>
-        </div>
-      </div>
-
-      <!-- ROW 3 - Full width trend -->
-      <div class="dash-card" style="margin-bottom:14px">
-        <div class="dash-card-title">توزيع الإخطارات حسب النوع <span style="color:var(--t4)">المحملة حالياً</span></div>
-        <div class="bar-chart" id="bar-chart"></div>
-      </div>
-
-      <!-- LEGAL REFS -->
-      <div class="dash-card">
-        <div class="dash-card-title">المرجعية القانونية الدولية</div>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
-            <div style="font-size:11px;font-weight:600;color:#34d399;margin-bottom:6px">🌿 اتفاقية SPS</div>
-            <div style="font-size:10px;color:var(--t3);line-height:1.7">
-              • المادة 5: تقييم المخاطر<br>
-              • المادة 7: الشفافية والإخطار<br>
-              • معايير: Codex / OIE / IPPC<br>
-              • 90 يوم للتعليق الاعتراضي
-            </div>
-          </div>
-          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
-            <div style="font-size:11px;font-weight:600;color:#fbbf24;margin-bottom:6px">🔧 اتفاقية TBT</div>
-            <div style="font-size:10px;color:var(--t3);line-height:1.7">
-              • المادة 2: عدم التمييز<br>
-              • المادة 5: إجراءات التقييم<br>
-              • معايير: ISO / IEC / ITU<br>
-              • 60 يوم للاعتراض الرسمي
-            </div>
-          </div>
-          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
-            <div style="font-size:11px;font-weight:600;color:#60a5fa;margin-bottom:6px">⚖️ اتفاقية DSU</div>
-            <div style="font-size:10px;color:var(--t3);line-height:1.7">
-              • آلية فض النزاعات<br>
-              • المشاورات / الهيئات / الاستئناف<br>
-              • المادة 21.5: تنفيذ القرارات
-            </div>
-          </div>
-          <div style="padding:10px;background:var(--bg3);border-radius:var(--r1);border:1px solid var(--b1)">
-            <div style="font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:6px">🇸🇦 الإطار السعودي</div>
-            <div style="font-size:10px;color:var(--t3);line-height:1.7">
-              • هيئة الخبراء بمجلس الوزراء<br>
-              • وزارة التجارة — الهيئة العامة<br>
-              • هيئة الزكاة والضريبة والجمارك<br>
-              • هيئة المواصفات SASO
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ██ DETAIL ██ -->
-    <div id="p-det" class="panel" style="padding:18px">
-      <div class="det-empty" id="det-empty">
-        <div class="det-empty-icon">⚖️</div>
-        <div style="font-size:15px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
-        <div style="font-size:11px;max-width:280px;line-height:1.7;color:var(--t3)">
-          اضغط على أي إخطار من القائمة الجانبية لعرض تفاصيله وتحليله القانوني الشامل وفق اتفاقيات WTO
-        </div>
-        <div class="qlinks" style="margin-top:4px;justify-content:center">
-          <a href="https://eping.wto.org" target="_blank" class="qlink">🌐 ePing</a>
-          <a href="https://www.wto.org" target="_blank" class="qlink">🏛️ WTO</a>
-          <a href="https://mc.gov.sa" target="_blank" class="qlink">🇸🇦 وزارة التجارة</a>
-        </div>
-      </div>
-      <div id="det-content" style="display:none"></div>
-    </div>
-
-    <!-- ██ ADVANCED SEARCH ██ -->
-    <div id="p-search" class="panel fadein">
-      <div class="section-title">🔍 البحث المتقدم <span class="st-sub">— بحث دقيق في قاعدة بيانات WTO</span></div>
-      <div class="adv-search">
-        <div class="adv-grid">
-          <div class="adv-field">
-            <label>الكلمة المفتاحية</label>
-            <input class="sinput" id="adv-kw" type="text" placeholder="مثال: pesticide, food safety..."/>
-          </div>
-          <div class="adv-field">
-            <label>نوع الإخطار</label>
-            <select class="sselect" id="adv-type" style="margin:0">
-              <option value="">الكل</option>
-              <option value="SPS">SPS — تدابير صحية ونباتية</option>
-              <option value="TBT">TBT — عوائق تقنية تجارية</option>
-            </select>
-          </div>
-          <div class="adv-field">
-            <label>الدولة المُخطِرة</label>
-            <select class="sselect" id="adv-country" style="margin:0">
-              <option value="">جميع الدول</option>
-              <option value="C381">🇪🇺 الاتحاد الأوروبي</option>
-              <option value="C840">🇺🇸 الولايات المتحدة</option>
-              <option value="C156">🇨🇳 الصين</option>
-              <option value="C392">🇯🇵 اليابان</option>
-              <option value="C826">🇬🇧 المملكة المتحدة</option>
-              <option value="C036">🇦🇺 أستراليا</option>
-              <option value="C682">🇸🇦 المملكة العربية السعودية</option>
-              <option value="C356">🇮🇳 الهند</option>
-              <option value="C276">🇩🇪 ألمانيا</option>
-            </select>
-          </div>
-          <div class="adv-field">
-            <label>تاريخ من</label>
-            <input class="sinput" id="adv-from" type="date" style="color-scheme:dark"/>
-          </div>
-          <div class="adv-field">
-            <label>تاريخ إلى</label>
-            <input class="sinput" id="adv-to" type="date" style="color-scheme:dark"/>
-          </div>
-          <div class="adv-field">
-            <label>الحالة</label>
-            <select class="sselect" id="adv-status" style="margin:0">
-              <option value="">الكل</option>
-              <option value="open">مفتوح للتعليق</option>
-              <option value="closed">منتهي</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-ai" onclick="runAdvSearch()" style="padding:8px 18px;font-size:12px">🔍 تنفيذ البحث</button>
-          <button class="actb" onclick="clearAdvSearch()">مسح</button>
-          <span id="adv-count" style="font-size:11px;color:var(--t3)"></span>
-        </div>
-      </div>
-      <div id="adv-results"></div>
-    </div>
-
-    <!-- ██ COMPARE ██ -->
-    <div id="p-compare" class="panel fadein">
-      <div class="section-title">⚖️ مقارنة الإخطارات <span class="st-sub">— اختر إخطارين للمقارنة التفصيلية</span></div>
-      <div class="cmp-select-row">
-        <div class="cmp-slot" id="cmp-a" onclick="pickCmpSlot('a')">
+        <button class="pill" onclick="setPill('saudi'📊 المنهجية: أثر تجاري (40ن) + حساسية القطاع (35ن) + ضيق المهلة (25ن) | المصادر: ZATCA · هيئة الإحصاء · ITC Trade Map'a')">
           <div class="cmp-slot-ph">➕ اختر الإخطار الأول<br><span style="font-size:10px;color:var(--t4)">اضغط لفتح القائمة</span></div>
         </div>
         <div class="cmp-slot" id="cmp-b" onclick="pickCmpSlot('b')">
@@ -982,7 +737,189 @@ var MN={C682:'المملكة العربية السعودية',C784:'الإمار
   C512:'عُمان',C400:'الأردن',C818:'مصر',C504:'المغرب',C840:'الولايات المتحدة',C381:'الاتحاد الأوروبي',
   C156:'الصين',C356:'الهند',C392:'اليابان',C826:'المملكة المتحدة',C276:'ألمانيا',C250:'فرنسا',
   C036:'أستراليا',C124:'كندا',C076:'البرازيل',C410:'كوريا',C792:'تركيا'};
-var HIGH_RISK_MEMBERS=['C381','C840','C156','C392','C826','C036','C124'];
+
+// ══════════════════════════════════════════════════════════════
+// قاعدة بيانات الشركاء التجاريين للمملكة العربية السعودية
+// المصادر:
+//  1. الهيئة العامة للإحصاء — النشرة السنوية للتجارة الخارجية 2023
+//  2. هيئة الزكاة والضريبة والجمارك (ZATCA) — إحصاءات الاستيراد/التصدير
+//  3. منظمة التجارة الدولية ITC — Trade Map (trademap.org)
+//  4. اتفاقية منظمة التجارة العالمية — مراجعة السياسة التجارية للمملكة
+// ══════════════════════════════════════════════════════════════
+
+// الشركاء التجاريون مع درجة التأثير التجاري
+// trade_share: حصة الدولة من إجمالي تجارة المملكة (%)
+// export_sensitivity: أهمية الدولة كسوق للصادرات السعودية غير النفطية
+// import_sensitivity: حجم الواردات السعودية منها
+// sectors: القطاعات الحساسة في التبادل مع هذه الدولة
+var TRADE_PARTNERS = {
+  // ── الشريك الأول: الصين ────────────────────────────────────
+  'C156': {
+    name:'الصين', flag:'🇨🇳',
+    trade_share: 18.2,        // 18.2% من إجمالي التجارة — المرتبة الأولى
+    export_sensitivity: 5,    // 1–5 (أعلى = أكثر تأثيراً)
+    import_sensitivity: 5,
+    sectors: ['بتروكيماويات','بلاستيك','أسمدة','حديد وصلب','أغذية'],
+    source: 'ZATCA 2023 / ITC Trade Map'
+  },
+  // ── الشريك الثاني: الهند ───────────────────────────────────
+  'C356': {
+    name:'الهند', flag:'🇮🇳',
+    trade_share: 11.4,
+    export_sensitivity: 5,    // سوق رئيسي لصادرات الوقود والبتروكيماويات
+    import_sensitivity: 4,
+    sectors: ['بتروكيماويات','أغذية','مواد بناء','نسيج'],
+    source: 'ZATCA 2023'
+  },
+  // ── الشريك الثالث: اليابان ─────────────────────────────────
+  'C392': {
+    name:'اليابان', flag:'🇯🇵',
+    trade_share: 8.7,
+    export_sensitivity: 5,
+    import_sensitivity: 3,
+    sectors: ['بتروكيماويات','كيماويات','سيارات','آلات'],
+    source: 'ZATCA 2023'
+  },
+  // ── الشريك الرابع: كوريا الجنوبية ─────────────────────────
+  'C410': {
+    name:'كوريا الجنوبية', flag:'🇰🇷',
+    trade_share: 7.1,
+    export_sensitivity: 4,
+    import_sensitivity: 4,
+    sectors: ['بتروكيماويات','إلكترونيات','سيارات','صلب'],
+    source: 'ZATCA 2023 / ITC'
+  },
+  // ── الشريك الخامس: الاتحاد الأوروبي ──────────────────────
+  'C381': {
+    name:'الاتحاد الأوروبي', flag:'🇪🇺',
+    trade_share: 9.8,
+    export_sensitivity: 3,    // أقل نسبياً للصادرات غير النفطية
+    import_sensitivity: 5,    // الأعلى في الواردات السعودية (آلات/أغذية/دواء)
+    sectors: ['أغذية','دواء','آلات','كيماويات','مركبات'],
+    source: 'هيئة الإحصاء / WTO TPR 2022'
+  },
+  // ── الشريك السادس: الولايات المتحدة ──────────────────────
+  'C840': {
+    name:'الولايات المتحدة', flag:'🇺🇸',
+    trade_share: 7.3,
+    export_sensitivity: 3,
+    import_sensitivity: 5,
+    sectors: ['دواء','أغذية مصنّعة','آلات','كيماويات','طيران'],
+    source: 'ZATCA 2023'
+  },
+  // ── الشريك السابع: المملكة المتحدة ───────────────────────
+  'C826': {
+    name:'المملكة المتحدة', flag:'🇬🇧',
+    trade_share: 3.1,
+    export_sensitivity: 2,
+    import_sensitivity: 3,
+    sectors: ['دواء','أغذية','خدمات مالية'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك الثامن: سنغافورة ───────────────────────────────
+  'C702': {
+    name:'سنغافورة', flag:'🇸🇬',
+    trade_share: 2.8,
+    export_sensitivity: 3,
+    import_sensitivity: 2,
+    sectors: ['بتروكيماويات','أغذية','إلكترونيات'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك التاسع: أستراليا ────────────────────────────────
+  'C036': {
+    name:'أستراليا', flag:'🇦🇺',
+    trade_share: 2.2,
+    export_sensitivity: 2,
+    import_sensitivity: 3,
+    sectors: ['أغذية','حبوب','منتجات حيوانية','معادن'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك العاشر: ألمانيا ────────────────────────────────
+  'C276': {
+    name:'ألمانيا', flag:'🇩🇪',
+    trade_share: 2.6,
+    export_sensitivity: 2,
+    import_sensitivity: 4,
+    sectors: ['آلات','سيارات','كيماويات','دواء'],
+    source: 'هيئة الإحصاء 2023'
+  },
+  // ── الشريك الحادي عشر: فرنسا ─────────────────────────────
+  'C250': {
+    name:'فرنسا', flag:'🇫🇷',
+    trade_share: 1.8,
+    export_sensitivity: 1,
+    import_sensitivity: 3,
+    sectors: ['أغذية','دواء','طيران','فاخر'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك الثاني عشر: تركيا ─────────────────────────────
+  'C792': {
+    name:'تركيا', flag:'🇹🇷',
+    trade_share: 2.4,
+    export_sensitivity: 2,
+    import_sensitivity: 3,
+    sectors: ['أغذية','نسيج','حديد','بلاستيك'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك الثالث عشر: إندونيسيا ─────────────────────────
+  'C360': {
+    name:'إندونيسيا', flag:'🇮🇩',
+    trade_share: 1.6,
+    export_sensitivity: 2,
+    import_sensitivity: 2,
+    sectors: ['أغذية','بتروكيماويات','نسيج'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك الرابع عشر: ماليزيا ──────────────────────────
+  'C458': {
+    name:'ماليزيا', flag:'🇲🇾',
+    trade_share: 1.4,
+    export_sensitivity: 2,
+    import_sensitivity: 2,
+    sectors: ['زيت نخيل','إلكترونيات','بتروكيماويات'],
+    source: 'ITC Trade Map 2023'
+  },
+  // ── الشريك الخامس عشر: كندا ──────────────────────────────
+  'C124': {
+    name:'كندا', flag:'🇨🇦',
+    trade_share: 1.1,
+    export_sensitivity: 1,
+    import_sensitivity: 2,
+    sectors: ['حبوب','دواء','آلات'],
+    source: 'ITC Trade Map 2023'
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// خريطة حساسية القطاعات السعودية للإخطارات الدولية
+// مبنية على: حجم صادرات المملكة في كل قطاع + درجة الاعتماد عليه
+// المصدر: الهيئة العامة للإحصاء — نشرة الصادرات غير النفطية 2023
+// ══════════════════════════════════════════════════════════════
+var SECTOR_SENSITIVITY = {
+  // قطاعات حساسية عالية جداً (5) — صادرات غير نفطية كبيرة
+  'بتروكيماويات':5,'petrochemical':5,'plastics':5,'بلاستيك':5,
+  'fertilizer':5,'أسمدة':5,'fertilizers':5,
+  'chemical':5,'كيماويات':5,'chemicals':5,
+
+  // قطاعات حساسية عالية (4) — تصدير ناشئ أو واردات حيوية
+  'food':4,'أغذية':4,'foodstuff':4,'غذاء':4,'food safety':4,
+  'pharmaceutical':4,'دواء':4,'pharmaceuticals':4,'medicine':4,
+  'steel':4,'حديد':4,'iron':4,'صلب':4,'metals':4,'معادن':4,
+  'feed':4,'علف':4,'animal feed':4,
+
+  // قطاعات حساسية متوسطة (3)
+  'pesticide':3,'مبيدات':3,'pesticides':3,
+  'cosmetics':3,'مستحضرات':3,'cosmetic':3,
+  'textile':3,'نسيج':3,'clothing':3,'ملابس':3,
+  'equipment':3,'آلات':3,'machinery':3,
+  'vehicle':3,'مركبات':3,'automobile':3,
+
+  // قطاعات حساسية منخفضة (2)
+  'electronics':2,'إلكترونيات':2,
+  'construction':2,'بناء':2,
+  'wood':2,'خشب':2,'timber':2,
+  'paper':2,'ورق':2
+};
 
 var D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false,curPage='dash';
 var TC={},ALERTS=[],CMP={a:null,b:null};
@@ -1065,27 +1002,40 @@ function updateDashboard(){
 function updateTopMembers(){
   var counts={};
   D.forEach(function(n){
-    var k=n.memberCode||n.member||'?';
-    if(!counts[k])counts[k]={sps:0,tbt:0,name:n.member,code:n.memberCode};
+    var k=n.memberCode||'?';
+    if(!counts[k])counts[k]={sps:0,tbt:0,name:n.member,code:k,score:0};
     counts[k][n.type==='SPS'?'sps':'tbt']++;
+    counts[k].score=Math.max(counts[k].score,calcRiskScore(n));
   });
   var sorted=Object.keys(counts).sort(function(a,b){
     return (counts[b].sps+counts[b].tbt)-(counts[a].sps+counts[a].tbt);
-  }).slice(0,6);
-  var max=sorted[0]?(counts[sorted[0]].sps+counts[sorted[0]].tbt):1;
+  }).slice(0,7);
+  if(!sorted.length){
+    document.getElementById('top-members-list').innerHTML='<div class="empty-state" style="padding:20px"><div style="font-size:16px;opacity:.3">—</div></div>';
+    return;
+  }
   var html=sorted.map(function(k){
     var c=counts[k];var tot=c.sps+c.tbt;
     var spsW=Math.round(c.sps/tot*100);var tbtW=100-spsW;
-    return '<div class="tm-item" onclick="filterByMember(\''+k+'\')" title="فلترة بـ'+c.name+'">'+
+    var partner=TRADE_PARTNERS[k];
+    var rsk=getRiskLabel(c.score);
+    var tradeBadge=partner?'<span style="font-size:8px;color:var(--t4)">'+Math.round(partner.trade_share)+'%</span>':'';
+    return '<div class="tm-item" onclick="filterByMember(''+k+'')" title="فلترة: '+(c.name||k)+'">'+
       '<span class="tm-flag">'+(FL[k]||'🌍')+'</span>'+
-      '<span class="tm-name">'+(MN[k]||c.name||k)+'</span>'+
-      '<div class="tm-bar"><div class="tm-bar-sps" style="width:'+spsW+'%"></div><div class="tm-bar-tbt" style="width:'+tbtW+'%"></div></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:10px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(MN[k]||c.name||k)+'</div>'+
+        '<div class="tm-bar" style="margin-top:3px">'+
+          '<div class="tm-bar-sps" style="width:'+spsW+'%"></div>'+
+          '<div class="tm-bar-tbt" style="width:'+tbtW+'%"></div>'+
+        '</div>'+
+      '</div>'+
+      tradeBadge+
+      '<div style="width:6px;height:6px;border-radius:50%;background:'+rsk.color+';flex-shrink:0;margin:0 2px"></div>'+
       '<span class="tm-count">'+tot+'</span>'+
     '</div>';
   }).join('');
-  document.getElementById('top-members-list').innerHTML=html||'<div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:16px">—</div></div>';
+  document.getElementById('top-members-list').innerHTML=html;
 }
-
 function updateDonut(){
   var sp=D.filter(function(n){return n.type==='SPS';}).length;
   var tb=D.filter(function(n){return n.type==='TBT';}).length;
@@ -1134,22 +1084,107 @@ function updateRecentOpen(){
   }).join('');
 }
 
+// ══════════════════════════════════════════════════════════
+// دالة حساب مؤشر المخاطر التجارية — المنهجية الثلاثية
+// المحور الأول:  الأثر التجاري   (trade_share + export/import_sensitivity)
+// المحور الثاني: حساسية القطاع   (SECTOR_SENSITIVITY map)
+// المحور الثالث: ضيق المهلة      (أيام متبقية للتعليق)
+// النتيجة: 0–100 نقطة → عالٍ ≥65 | متوسط ≥35 | منخفض <35
+// ══════════════════════════════════════════════════════════
+function calcRiskScore(n){
+  var score = 0;
+
+  // ── المحور الأول: الأثر التجاري (0–40 نقطة) ──────────────
+  var partner = TRADE_PARTNERS[n.memberCode];
+  if(partner){
+    // حصة الدولة من تجارة المملكة (0–15 نقطة)
+    var tradeScore = Math.min(15, Math.round(partner.trade_share * 0.7));
+    // حساسية الصادرات السعودية (0–15 نقطة)
+    var exportScore = partner.export_sensitivity * 3;
+    // حساسية الواردات (0–10 نقطة)
+    var importScore = partner.import_sensitivity * 2;
+    score += tradeScore + exportScore + importScore;
+  }else{
+    // دول غير مدرجة → أثر تجاري منخفض
+    score += 5;
+  }
+
+  // ── المحور الثاني: حساسية قطاع المنتجات (0–35 نقطة) ─────
+  var maxSectorScore = 0;
+  var prods = (n.products||[]).concat(n.keywords||[]);
+  if(prods.length){
+    prods.forEach(function(p){
+      var pl = (p||'').toLowerCase();
+      // بحث مباشر في خريطة القطاعات
+      var sScore = SECTOR_SENSITIVITY[p] || SECTOR_SENSITIVITY[pl] || 0;
+      // بحث جزئي في المفاتيح
+      if(!sScore){
+        Object.keys(SECTOR_SENSITIVITY).forEach(function(k){
+          if(pl.includes(k.toLowerCase())||k.toLowerCase().includes(pl)){
+            sScore = Math.max(sScore, SECTOR_SENSITIVITY[k]);
+          }
+        });
+      }
+      maxSectorScore = Math.max(maxSectorScore, sScore);
+    });
+    score += maxSectorScore * 7;   // 1–5 × 7 = 7–35 نقطة
+  }else{
+    score += 10; // قطاع غير محدد → تقدير متوسط
+  }
+
+  // ── المحور الثالث: ضيق المهلة (0–25 نقطة) ───────────────
+  var isOpen = n.status === 'مفتوح للتعليق';
+  if(isOpen && n.commentDeadline){
+    var daysLeft = Math.ceil((new Date(n.commentDeadline) - new Date()) / 86400000);
+    if(daysLeft <= 0)       score += 25;  // انتهت المهلة — فائت
+    else if(daysLeft <= 14) score += 25;  // أقل من أسبوعين — عاجل جداً
+    else if(daysLeft <= 30) score += 20;  // أقل من شهر — عاجل
+    else if(daysLeft <= 60) score += 12;  // أقل من شهرين — متابعة
+    else                    score += 5;   // أكثر من شهرين — مبكر
+  } else if(!isOpen){
+    // منتهي — لا فائدة من التعليق لكن قد يكون سابقة
+    score = Math.round(score * 0.3);
+  }
+
+  return Math.min(100, score);
+}
+
+function getRiskLabel(score){
+  if(score >= 75) return {label:'بالغ الخطورة', color:'var(--rd)',  segs:5, cls:'high'};
+  if(score >= 55) return {label:'عالٍ',          color:'var(--rd)',  segs:4, cls:'high'};
+  if(score >= 38) return {label:'متوسط',         color:'var(--am)', segs:3, cls:'med'};
+  if(score >= 20) return {label:'منخفض',         color:'var(--gr)', segs:2, cls:'low'};
+  return               {label:'ضئيل',            color:'var(--t3)', segs:1, cls:'low'};
+}
+
 function updateRiskAssessment(){
-  var high=0,med=0,low=0;
+  var high=0, med=0, low=0;
   D.forEach(function(n){
-    var isHighRisk=HIGH_RISK_MEMBERS.includes(n.memberCode);
-    var isOpen=n.status==='مفتوح للتعليق';
-    var daysLeft=99;
-    if(n.commentDeadline){
-      daysLeft=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
-    }
-    if(isHighRisk&&isOpen&&daysLeft<30)high++;
-    else if(isOpen&&(isHighRisk||daysLeft<60))med++;
-    else low++;
+    var score = calcRiskScore(n);
+    if(score >= 55)      high++;
+    else if(score >= 38) med++;
+    else                 low++;
   });
-  document.getElementById('risk-h').textContent=high;
-  document.getElementById('risk-m').textContent=med;
-  document.getElementById('risk-l').textContent=low;
+  document.getElementById('risk-h').textContent = high;
+  document.getElementById('risk-m').textContent = med;
+  document.getElementById('risk-l').textContent = low;
+
+  // تحديث النص التوضيحي في لوحة التحكم
+  var noteEl = document.getElementById('risk-note');
+  if(noteEl){
+    var topRisk = D.filter(function(n){return calcRiskScore(n)>=55;})
+                   .sort(function(a,b){return calcRiskScore(b)-calcRiskScore(a);})
+                   .slice(0,2);
+    var noteHtml = '📊 المنهجية: أثر تجاري (40 نقطة) + حساسية القطاع (35 نقطة) + ضيق المهلة (25 نقطة) = 100 نقطة<br>';
+    noteHtml += '📁 المصادر: ZATCA 2023 · هيئة الإحصاء · ITC Trade Map · WTO TPR<br>';
+    if(topRisk.length){
+      noteHtml += '⚠️ أعلى مخاطرة: ';
+      noteHtml += topRisk.map(function(n){
+        return '<strong>'+(n.titleAr||n.symbol)+'</strong> ('+(calcRiskScore(n))+' نقطة)';
+      }).join(' — ');
+    }
+    noteEl.innerHTML = noteHtml;
+  }
 }
 
 function updateBarChart(){
@@ -1340,21 +1375,37 @@ function renderDet(n){
     '</div>';
   }
 
-  // Risk level for this specific notification
-  var riskLevel='منخفض';var riskColor='var(--gr)';var riskSegs=1;
-  if(HIGH_RISK_MEMBERS.includes(n.memberCode)&&open){
-    if(n.commentDeadline){
-      var d2=Math.ceil((new Date(n.commentDeadline)-new Date())/(86400000));
-      if(d2<30){riskLevel='عالٍ جداً';riskColor='var(--rd)';riskSegs=5;}
-      else if(d2<60){riskLevel='عالٍ';riskColor='var(--rd)';riskSegs=4;}
-      else{riskLevel='متوسط';riskColor='var(--am)';riskSegs=3;}
-    }else{riskLevel='متوسط';riskColor='var(--am)';riskSegs=3;}
-  } else if(open){riskLevel='متوسط';riskColor='var(--am)';riskSegs=2;}
+  // ── تقييم المخاطر بالمنهجية الثلاثية ──────────────────────
+  var riskScore  = calcRiskScore(n);
+  var riskInfo   = getRiskLabel(riskScore);
+  var riskLevel  = riskInfo.label;
+  var riskColor  = riskInfo.color;
+  var riskSegs   = riskInfo.segs;
+  var partner    = TRADE_PARTNERS[n.memberCode];
+
+  // تفصيل النقاط للشرح
+  var tradeScore = 0, sectorScore = 0, deadlineScore = 0;
+  if(partner){
+    tradeScore = Math.min(40, Math.round(partner.trade_share*0.7) + partner.export_sensitivity*3 + partner.import_sensitivity*2);
+  }else{ tradeScore = 5; }
+  var prods2=(n.products||[]).concat(n.keywords||[]);
+  var maxS=0;
+  prods2.forEach(function(p){
+    var pl=(p||'').toLowerCase();
+    var s=SECTOR_SENSITIVITY[p]||SECTOR_SENSITIVITY[pl]||0;
+    if(!s){Object.keys(SECTOR_SENSITIVITY).forEach(function(k){if(pl.includes(k.toLowerCase())||k.toLowerCase().includes(pl))s=Math.max(s,SECTOR_SENSITIVITY[k]);});}
+    maxS=Math.max(maxS,s);
+  });
+  sectorScore = prods2.length ? Math.min(35, maxS*7) : 10;
+  if(open&&n.commentDeadline){
+    var dl=Math.ceil((new Date(n.commentDeadline)-new Date())/86400000);
+    deadlineScore=dl<=0?25:dl<=14?25:dl<=30?20:dl<=60?12:5;
+  }
 
   var segsHtml='';
   for(var i=0;i<5;i++){
-    var c=i<2?'c-gr':i<4?'c-am':'c-rd';
-    segsHtml+='<div class="risk-seg '+c+(i<riskSegs?' fill':'')+'"></div>';
+    var sc=i<2?'c-gr':i<4?'c-am':'c-rd';
+    segsHtml+='<div class="risk-seg '+sc+(i<riskSegs?' fill':'')+'"></div>';
   }
 
   det.innerHTML='<div class="fadein">'+
@@ -1382,16 +1433,62 @@ function renderDet(n){
       '</div>'+
     '</div>'+
 
-    // RISK ASSESSMENT
+    // ── بطاقة تقييم المخاطر التفصيلية ──────────────────────────
     '<div class="risk-analysis">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
-        '<div style="font-size:11px;font-weight:600;color:var(--pu)">🎯 تقييم المخاطر التجارية السعودية</div>'+
-        '<span style="font-size:13px;font-weight:700;color:'+riskColor+'">'+riskLevel+'</span>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+        '<div style="font-size:11px;font-weight:600;color:var(--pu)">🎯 تقييم المخاطر التجارية — 🇸🇦 المملكة</div>'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+          '<span style="font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace">'+riskScore+'/100</span>'+
+          '<span style="font-size:12px;font-weight:700;color:'+riskColor+'">'+riskLevel+'</span>'+
+        '</div>'+
       '</div>'+
-      '<div class="risk-meter">'+segsHtml+'</div>'+
-      '<div style="font-size:10px;color:var(--t3);margin-top:4px;line-height:1.6">'+
-        'الدولة المُخطِرة: '+(HIGH_RISK_MEMBERS.includes(n.memberCode)?'<span style="color:var(--rd)">من الشركاء التجاريين الرئيسيين للمملكة</span>':'من الشركاء الثانويين')+
-        (n.commentDeadline&&open?' · موعد التعليق: '+n.commentDeadline:'')+
+      '<div class="risk-meter" style="margin-bottom:8px">'+segsHtml+'</div>'+
+
+      // جدول تفصيل النقاط
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px">'+
+
+        // المحور الأول
+        '<div style="background:var(--bg4);border-radius:7px;padding:6px 8px;border:1px solid var(--b1)">'+
+          '<div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">الأثر التجاري</div>'+
+          '<div style="font-size:15px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono',monospace">'+tradeScore+'</div>'+
+          '<div style="font-size:9px;color:var(--t3)">من 40 نقطة</div>'+
+          '<div style="margin-top:4px;font-size:9px;color:var(--t2)">'+
+            (partner?
+              partner.flag+' '+Math.round(partner.trade_share)+'% من تجارة المملكة':
+              '🌍 شريك ثانوي')+
+          '</div>'+
+        '</div>'+
+
+        // المحور الثاني
+        '<div style="background:var(--bg4);border-radius:7px;padding:6px 8px;border:1px solid var(--b1)">'+
+          '<div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">حساسية القطاع</div>'+
+          '<div style="font-size:15px;font-weight:700;color:var(--pu);font-family:'JetBrains Mono',monospace">'+sectorScore+'</div>'+
+          '<div style="font-size:9px;color:var(--t3)">من 35 نقطة</div>'+
+          '<div style="margin-top:4px;font-size:9px;color:var(--t2)">'+
+            ((n.products||[]).length?
+              (n.products||[]).slice(0,2).join(' · '):
+              'قطاع غير محدد')+
+          '</div>'+
+        '</div>'+
+
+        // المحور الثالث
+        '<div style="background:var(--bg4);border-radius:7px;padding:6px 8px;border:1px solid var(--b1)">'+
+          '<div style="font-size:9px;color:var(--t4);margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px">ضيق المهلة</div>'+
+          '<div style="font-size:15px;font-weight:700;color:'+(deadlineScore>=20?'var(--rd)':deadlineScore>=12?'var(--am)':'var(--gr)')+';font-family:'JetBrains Mono',monospace">'+deadlineScore+'</div>'+
+          '<div style="font-size:9px;color:var(--t3)">من 25 نقطة</div>'+
+          '<div style="margin-top:4px;font-size:9px;color:var(--t2)">'+
+            (open&&n.commentDeadline?
+              (function(){var dl=Math.ceil((new Date(n.commentDeadline)-new Date())/86400000);return dl>0?dl+' يوم متبقٍ':'انتهت المهلة';})():
+              (open?'مفتوح / لا مهلة':'منتهي'))+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+
+      // مصادر البيانات
+      '<div style="font-size:9px;color:var(--t4);padding:5px 8px;background:var(--bg4);border-radius:6px;border:1px solid var(--b1);line-height:1.6">'+
+        '📁 المصادر: '+
+        (partner?partner.source:'ITC Trade Map 2023')+
+        ' · هيئة الإحصاء · ZATCA 2023 · WTO TPR'+
       '</div>'+
     '</div>'+
 
