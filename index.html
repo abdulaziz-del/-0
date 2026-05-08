@@ -926,10 +926,54 @@ var D=[],selId=null,flt='all',tab='full',pg=1,tpg=1,busy=false,curPage='dash';
 var TC={},ALERTS=[],CMP={a:null,b:null};
 
 // ══ INIT ══
-async function init(){
-  try{await fetch(API+'/');}catch(e){}
-  doLoad();
+function init(){
+  // عرض البيانات فوراً بدون انتظار أي اتصال
+  var demo = buildDemoData();
+  applyData({notifications:demo, total:demo.length, pages:1, page:1}, 'demo');
+  setStatus('live', demo.length + ' إخطار (تجريبي)');
+  // ثم محاولة جلب البيانات الحقيقية في الخلفية
   loadAlerts();
+  setTimeout(tryLoadReal, 500);
+}
+
+async function tryLoadReal(){
+  // محاولة Backend
+  try{
+    var ctrl=new AbortController();
+    setTimeout(function(){ctrl.abort();},5000);
+    var r=await fetch(API+'/api/wto/search?page=1&pageSize=50',{signal:ctrl.signal});
+    if(r.ok){
+      var d=await r.json();
+      if(d.notifications&&d.notifications.length>0){
+        applyData(d,'backend');
+        setStatus('live', (d.total||d.notifications.length)+' إخطار');
+        translateBatch();
+        return;
+      }
+    }
+  }catch(e){}
+  // محاولة WTO مباشرة
+  try{
+    var ctrl2=new AbortController();
+    setTimeout(function(){ctrl2.abort();},8000);
+    var wr=await fetch('https://api.wto.org/eping/notifications/search?page=1&pageSize=50&language=1',{
+      signal:ctrl2.signal,
+      headers:{'Accept':'application/json'}
+    });
+    if(wr.ok){
+      var wd=await wr.json();
+      var rows=extractRows(wd);
+      if(rows.length>0){
+        var parsed=rows.map(parseItem);
+        applyData({notifications:parsed,total:wd.totalCount||parsed.length,pages:1,page:1},'wto-direct');
+        setStatus('live',(wd.totalCount||parsed.length)+' إخطار (WTO مباشر)');
+        translateBatch();
+        return;
+      }
+    }
+  }catch(e){}
+  // البيانات التجريبية تبقى — نحدّث الحالة فقط
+  setStatus('err','بيانات تجريبية — WTO غير متاح حالياً');
 }
 
 // ══ LOAD ══
@@ -937,17 +981,9 @@ async function doLoad(force){
   if(busy)return;
   busy=true;
   document.getElementById('rfbtn').disabled=true;
+  setStatus('loading','جارٍ التحديث...');
+  showProg(true,20);
 
-  // ══ خطوة 1: عرض البيانات التجريبية فوراً (بدون انتظار) ══
-  if(D.length===0){
-    setStatus('loading','جارٍ الجلب...');
-    showProg(true,20);
-    var demo=buildDemoData();
-    applyData({notifications:demo,total:demo.length,pages:1,page:1},'demo');
-    showProg(false);
-  }
-
-  // ══ خطوة 2: محاولة Backend في الخلفية ══
   var loaded=false;
   try{
     var srch=document.getElementById('srch').value;
@@ -1009,11 +1045,15 @@ async function doLoad(force){
     showProg(false);
   }
 
-  // إذا لم ينجح أي مصدر حقيقي — البيانات التجريبية تبقى معروضة
   if(!loaded){
-    setStatus('err','البيانات التجريبية معروضة — تعذّر الاتصال بـ WTO');
+    // لا تمسح البيانات الموجودة — البيانات التجريبية تبقى
+    if(D.length===0){
+      var demo=buildDemoData();
+      applyData({notifications:demo,total:demo.length,pages:1,page:1},'demo');
+    }
+    setStatus('err','تعذّر الاتصال — عرض البيانات المتاحة');
   }
-
+  showProg(false);
   busy=false;
   document.getElementById('rfbtn').disabled=false;
 }
