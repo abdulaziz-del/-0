@@ -936,93 +936,87 @@ async function init(){
 async function doLoad(force){
   if(busy)return;
   busy=true;
-  setStatus('loading','جارٍ الجلب...');
   document.getElementById('rfbtn').disabled=true;
-  showProg(true,15);
 
-  var srch = document.getElementById('srch').value;
-  var mc   = document.getElementById('srch2').value;
-  if(flt==='saudi') mc='C682';
+  // ══ خطوة 1: عرض البيانات التجريبية فوراً (بدون انتظار) ══
+  if(D.length===0){
+    setStatus('loading','جارٍ الجلب...');
+    showProg(true,20);
+    var demo=buildDemoData();
+    applyData({notifications:demo,total:demo.length,pages:1,page:1},'demo');
+    showProg(false);
+  }
 
-  // ══ محاولة 1: backend (proxy) ══
-  var loaded = false;
+  // ══ خطوة 2: محاولة Backend في الخلفية ══
+  var loaded=false;
   try{
+    var srch=document.getElementById('srch').value;
+    var mc=document.getElementById('srch2').value;
+    if(flt==='saudi') mc='C682';
     var params=['page='+pg,'pageSize=50'];
-    if(flt==='SPS')   params.push('domainIds=2');
-    else if(flt==='TBT') params.push('domainIds=1');
+    if(flt==='SPS')       params.push('domainIds=2');
+    else if(flt==='TBT')  params.push('domainIds=1');
     if(srch) params.push('freeText='+encodeURIComponent(srch));
     if(mc)   params.push('countryIds='+encodeURIComponent(mc));
-    showProg(true,40);
-    var ctrl = new AbortController();
-    var tid  = setTimeout(function(){ctrl.abort();}, 8000); // 8s timeout
-    var r = await fetch(API+'/api/wto/search?'+params.join('&'), {signal:ctrl.signal});
+    showProg(true,30);
+    var ctrl=new AbortController();
+    var tid=setTimeout(function(){ctrl.abort();},6000);
+    var r=await fetch(API+'/api/wto/search?'+params.join('&'),{signal:ctrl.signal});
     clearTimeout(tid);
-    showProg(true,75);
+    showProg(true,80);
     if(r.ok){
-      var d = await r.json();
-      if(d.notifications && d.notifications.length > 0){
-        applyData(d, 'backend');
-        loaded = true;
+      var d=await r.json();
+      if(d.notifications&&d.notifications.length>0){
+        applyData(d,'backend');
+        loaded=true;
+        showProg(false);
       }
     }
-  }catch(e){ console.warn('Backend failed:', e.message); }
+  }catch(e){console.warn('Backend:',e.message);}
 
-  // ══ محاولة 2: WTO ePing API مباشرة (بدون backend) ══
+  // ══ خطوة 3: WTO API مباشرة إذا فشل Backend ══
   if(!loaded){
-    setStatus('loading','جارٍ الجلب من WTO مباشرة...');
-    showProg(true,50);
     try{
-      // WTO ePing API public endpoint
-      var wtoParams = {
-        page: pg,
-        pageSize: 50,
-        language: 1
-      };
-      if(flt==='SPS')    wtoParams.domainIds = 2;
-      else if(flt==='TBT') wtoParams.domainIds = 1;
-      if(mc)   wtoParams.countryIds = mc;
-      if(srch) wtoParams.freeText   = srch;
-
-      var qs = Object.keys(wtoParams).map(function(k){
-        return encodeURIComponent(k)+'='+encodeURIComponent(wtoParams[k]);
-      }).join('&');
-
-      var wtoUrl = 'https://api.wto.org/eping/notifications/search?' + qs;
-      var wr = await fetch(wtoUrl, {
-        headers:{
-          'Accept':'application/json',
-          'Ocp-Apim-Subscription-Key': WTO_KEY || ''
-        }
+      var srch2=document.getElementById('srch').value;
+      var mc2=document.getElementById('srch2').value;
+      if(flt==='saudi') mc2='C682';
+      var wtoP={page:pg,pageSize:50,language:1};
+      if(flt==='SPS')      wtoP.domainIds=2;
+      else if(flt==='TBT') wtoP.domainIds=1;
+      if(mc2)   wtoP.countryIds=mc2;
+      if(srch2) wtoP.freeText=srch2;
+      var qs=Object.keys(wtoP).map(function(k){return k+'='+encodeURIComponent(wtoP[k]);}).join('&');
+      setStatus('loading','جارٍ الجلب من WTO...');
+      showProg(true,50);
+      var ctrl2=new AbortController();
+      var tid2=setTimeout(function(){ctrl2.abort();},10000);
+      var wr=await fetch('https://api.wto.org/eping/notifications/search?'+qs,{
+        signal:ctrl2.signal,
+        headers:{'Accept':'application/json','Ocp-Apim-Subscription-Key':WTO_KEY||''}
       });
-      showProg(true,85);
+      clearTimeout(tid2);
+      showProg(true,90);
       if(wr.ok){
-        var wd = await wr.json();
-        var rows = extractRows(wd);
-        if(rows.length > 0){
-          var parsed = rows.map(parseItem);
-          var total  = wd.totalCount || wd.total || parsed.length;
-          var pages  = Math.max(1, Math.ceil(total / 50));
-          applyData({notifications: parsed, total: total, pages: pages, page: pg}, 'wto-direct');
-          loaded = true;
+        var wd=await wr.json();
+        var rows=extractRows(wd);
+        if(rows.length>0){
+          var parsed=rows.map(parseItem);
+          applyData({notifications:parsed,total:wd.totalCount||parsed.length,pages:Math.ceil((wd.totalCount||parsed.length)/50),page:pg},'wto-direct');
+          loaded=true;
         }
       }
-    }catch(e){ console.warn('WTO direct failed:', e.message); }
+    }catch(e){console.warn('WTO direct:',e.message);}
+    showProg(false);
   }
 
-  // ══ محاولة 3: بيانات تجريبية (demo) ══
+  // إذا لم ينجح أي مصدر حقيقي — البيانات التجريبية تبقى معروضة
   if(!loaded){
-    setStatus('loading','تحميل بيانات تجريبية...');
-    var demoData = buildDemoData();
-    applyData({notifications: demoData, total: demoData.length, pages:1, page:1}, 'demo');
-    loaded = true;
-    setStatus('err','تعذّر الاتصال — بيانات تجريبية');
+    setStatus('err','البيانات التجريبية معروضة — تعذّر الاتصال بـ WTO');
   }
 
-  showProg(false);
-  busy = false;
-  document.getElementById('rfbtn').disabled = false;
+  busy=false;
+  document.getElementById('rfbtn').disabled=false;
 }
-
 // ══ استخراج صفوف من استجابة WTO ══
 function extractRows(d){
   if(Array.isArray(d)) return d;
@@ -1087,10 +1081,12 @@ function applyData(d, source){
       n = parseItem(n);
     }
     return Object.assign({}, n, {
-      titleAr:    TC[n.symbol]||'',
-      analysis:   null,
+      // نحتفظ بـ titleAr الموجودة (البيانات التجريبية أو المترجمة)
+      // ونضيف من TC فقط إذا لم تكن موجودة
+      titleAr:    n.titleAr || TC[n.symbol] || '',
+      analysis:   n.analysis   || null,
       loading:    false,
-      docAnalysis:null,
+      docAnalysis:n.docAnalysis || null,
       docLoading: false
     });
   });
@@ -1507,7 +1503,7 @@ function renderList(){
         '</div>'+
         '<span class="ndate">'+(n.date||'')+'</span>'+
       '</div>'+
-      '<div class="nc-row2">'+(n.titleAr?n.titleAr:'<span style="color:var(--t4)">'+(n.title||n.symbol||'—')+'</span>')+'</div>'+
+      '<div class="nc-row2">'+(n.titleAr||n.title||n.symbol||'—')+'</div>'+
       '<div class="nc-row3">'+
         '<span class="nc-mem">'+(FL[n.memberCode]||'🌍')+' '+(n.member||'')+'</span>'+
         '<div class="nc-meta">'+
