@@ -754,17 +754,80 @@ function renderDet(n){
     '</div>'+
 
     '<div class="risk-det">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'+
+
+      /* ── العنوان والدرجة ── */
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
         '<div style="font-size:11px;font-weight:600;color:var(--pu)">🎯 تقييم المخاطر التجارية — 🇸🇦 المملكة</div>'+
-        '<div style="display:flex;align-items:center;gap:5px"><span style="font-size:10px;color:var(--t3)">'+sc+'/100</span><span style="font-size:12px;font-weight:700;color:'+rl.c+'">'+rl.t+'</span></div>'+
+        '<div style="display:flex;align-items:center;gap:5px">'+
+          '<span style="font-size:10px;color:var(--t3)">'+sc+'/100</span>'+
+          '<span style="font-size:12px;font-weight:700;color:'+rl.c+'">'+rl.t+'</span>'+
+        '</div>'+
       '</div>'+
       '<div class="risk-meter">'+segs+'</div>'+
+
+      /* ── المحاور الثلاثة ── */
       '<div class="axis-grid">'+
-        '<div class="axis-box"><div class="axis-lbl">الأثر التجاري</div><div class="axis-val" style="color:var(--ac)">'+ts+'</div><div class="axis-sub">من 40 نقطة'+(p?' · '+Math.round(p.ts)+'%':'')+'</div></div>'+
-        '<div class="axis-box"><div class="axis-lbl">حساسية القطاع</div><div class="axis-val" style="color:var(--pu)">'+secS+'</div><div class="axis-sub">من 35 نقطة</div></div>'+
-        '<div class="axis-box"><div class="axis-lbl">ضيق المهلة</div><div class="axis-val" style="color:'+(dlS>=20?'var(--rd)':dlS>=12?'var(--am)':'var(--gr)')+'">'+dlS+'</div><div class="axis-sub">من 25 نقطة</div></div>'+
+        '<div class="axis-box">'+
+          '<div class="axis-lbl">المحور 1 — الأثر التجاري</div>'+
+          '<div class="axis-val" style="color:var(--ac)">'+ts+'</div>'+
+          '<div class="axis-sub">من 40 نقطة'+(p?' · الحصة: '+Math.round(p.ts)+'%':'')+'</div>'+
+          '<div style="font-size:8px;color:var(--t4);margin-top:3px;line-height:1.5">'+
+            'حصة الدولة من تجارة المملكة<br>'+
+            'حساسية الصادرات (×3)<br>'+
+            'حساسية الواردات (×2)'+
+          '</div>'+
+        '</div>'+
+        '<div class="axis-box">'+
+          '<div class="axis-lbl">المحور 2 — حساسية القطاع</div>'+
+          '<div class="axis-val" style="color:var(--pu)">'+secS+'</div>'+
+          '<div class="axis-sub">من 35 نقطة</div>'+
+          '<div style="font-size:8px;color:var(--t4);margin-top:3px;line-height:1.5">'+
+            'بتروكيماويات / أسمدة → 5<br>'+
+            'أغذية / دواء / صلب → 4<br>'+
+            'مبيدات / نسيج / آلات → 3'+
+          '</div>'+
+        '</div>'+
+        '<div class="axis-box">'+
+          '<div class="axis-lbl">المحور 3 — ضيق المهلة</div>'+
+          '<div class="axis-val" style="color:'+(dlS>=20?'var(--rd)':dlS>=12?'var(--am)':'var(--gr)')+'">'+dlS+'</div>'+
+          '<div class="axis-sub">من 25 نقطة</div>'+
+          '<div style="font-size:8px;color:var(--t4);margin-top:3px;line-height:1.5">'+
+            '≤14 يوم → 25 (عاجل جداً)<br>'+
+            '≤30 يوم → 20 (عاجل)<br>'+
+            '≤60 يوم → 12 (متابعة)'+
+          '</div>'+
+        '</div>'+
       '</div>'+
-      '<div style="font-size:9px;color:var(--t4);padding:5px 7px;background:var(--bg4);border-radius:6px;border:1px solid var(--b1)">📁 '+(p?p.src:'ITC Trade Map 2023')+' · هيئة الإحصاء · ZATCA 2023</div>'+
+
+      /* ── التصنيف ── */
+      '<div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap">'+
+        '<span style="font-size:8px;padding:2px 7px;border-radius:20px;background:rgba(244,63,94,.1);color:#fb7185;border:1px solid rgba(244,63,94,.2)">≥75 بالغ الخطورة</span>'+
+        '<span style="font-size:8px;padding:2px 7px;border-radius:20px;background:rgba(244,63,94,.1);color:#fb7185;border:1px solid rgba(244,63,94,.2)">≥55 عالٍ</span>'+
+        '<span style="font-size:8px;padding:2px 7px;border-radius:20px;background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)">≥38 متوسط</span>'+
+        '<span style="font-size:8px;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)">≥20 منخفض</span>'+
+        '<span style="font-size:8px;padding:2px 7px;border-radius:20px;background:var(--bg4);color:var(--t3);border:1px solid var(--b1)">أقل ضئيل</span>'+
+      '</div>'+
+
+      /* ── المصادر ── */
+      '<div style="font-size:8px;color:var(--t4);padding:6px 8px;background:var(--bg4);border-radius:6px;border:1px solid var(--b1);line-height:1.8;margin-bottom:5px">'+
+        '<span style="color:var(--t3);font-weight:600">📁 مصادر البيانات:</span><br>'+
+        '• '+(p?p.src:'ITC Trade Map 2023')+' — حصص التجارة وحساسية الصادرات<br>'+
+        '• الهيئة العامة للإحصاء (2023) — النشرة السنوية للتجارة الخارجية<br>'+
+        '• هيئة الزكاة والضريبة والجمارك ZATCA (2023) — إحصاءات الاستيراد/التصدير<br>'+
+        '• ITC Trade Map (trademap.org) — بيانات التجارة الدولية<br>'+
+        '• WTO Trade Policy Review — مراجعة السياسة التجارية للمملكة'+
+      '</div>'+
+
+      /* ── إخلاء المسؤولية ── */
+      '<div style="font-size:8px;padding:7px 9px;border-radius:6px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);line-height:1.8">'+
+        '<span style="color:var(--am);font-weight:600">⚠️ إخلاء المسؤولية:</span><br>'+
+        '<span style="color:var(--t4)">'+
+          'هذا التقييم <b style="color:var(--t3)">أداة استرشادية مبدئية</b> فقط، ولا يُعدّ تقريراً قانونياً أو اقتصادياً معتمداً. '+
+          'يستند إلى بيانات إجمالية وتقديرات عامة، وقد لا يعكس الوضع الدقيق لكل منتج أو سوق. '+
+          'لا تتحمل المنصة أي مسؤولية عن القرارات التجارية أو القانونية المبنية على هذا التقييم. '+
+
+        '</span>'+
+      '</div>'+
     '</div>'+
 
     (docs?'<div class="det-dc"><div class="det-hd">المستندات الرسمية</div>'+docs+'</div>':'')+
