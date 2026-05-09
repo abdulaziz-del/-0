@@ -266,7 +266,7 @@ button{font-family:inherit;cursor:pointer}
     <button class="nb" onclick="goPage('search',this)">🔍 بحث متقدم</button>
     <button class="nb" onclick="goPage('compare',this)">⚖️ مقارنة</button>
     <button class="nb" onclick="goPage('alerts',this)">🔔 تنبيهاتي</button>
-    <button class="nb" onclick="goPage('export',this)">📤 تصدير</button>
+
   </nav>
   <div class="hright">
     <div class="hstat" id="hstat"><div class="hdot" id="hdot"></div><span id="hlbl">جارٍ التحميل...</span></div>
@@ -444,33 +444,22 @@ button{font-family:inherit;cursor:pointer}
         <div style="font-size:10px;color:var(--t2);line-height:1.7;margin-bottom:9px">منصة ePing الرسمية تتيح الاشتراك في تنبيهات فورية مخصصة حسب القطاع والدولة ونوع SPS/TBT</div>
         <a href="https://eping.wto.org" target="_blank" class="btn-ai" style="font-size:11px;padding:7px 14px;display:inline-flex">🔗 الاشتراك في ePing الرسمي</a>
       </div>
-    </div>
 
-    <!-- EXPORT -->
-    <div id="p-export" class="pnl">
-      <div class="sec-title">📤 تصدير البيانات <span>— تحميل ومشاركة بيانات الإخطارات</span></div>
-      <div class="exp-grid">
-        <div class="exp-card" onclick="expJSON()"><div class="ei">📦</div><h3>JSON</h3><p>بيانات كاملة للمعالجة البرمجية</p></div>
-        <div class="exp-card" onclick="expCSV()"><div class="ei">📊</div><h3>CSV / Excel</h3><p>جدول متوافق مع Excel وSheets</p></div>
-        <div class="exp-card" onclick="cpOpen()"><div class="ei">📋</div><h3>نسخ المفتوحة</h3><p>نسخ الإخطارات المفتوحة للتعليق</p></div>
-        <div class="exp-card" onclick="expAnalyses()"><div class="ei">🤖</div><h3>التحليلات</h3><p>تصدير التحليلات القانونية المنجزة</p></div>
-        <div class="exp-card" onclick="cpStats()"><div class="ei">📈</div><h3>الإحصاءات</h3><p>نسخ ملخص إحصائي منسّق</p></div>
-        <div class="exp-card" onclick="window.print()"><div class="ei">🖨️</div><h3>طباعة</h3><p>طباعة التقرير الحالي</p></div>
+      <!-- مصادر رسمية -->
+      <div style="margin-top:12px">
+        <div class="sec-title" style="font-size:12px;margin-bottom:10px">🔗 المصادر والمنصات الرسمية</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+          <a href="https://eping.wto.org" target="_blank" class="rl"><span class="ri">🌐</span><div><div class="rn">ePing Alert System</div><div class="ru">eping.wto.org</div></div></a>
+          <a href="https://docs.wto.org" target="_blank" class="rl"><span class="ri">📄</span><div><div class="rn">WTO Documents Online</div><div class="ru">docs.wto.org</div></div></a>
+          <a href="https://www.wto.org/english/tratop_e/sps_e/sps_e.htm" target="_blank" class="rl"><span class="ri">🌿</span><div><div class="rn">لجنة SPS الرسمية</div><div class="ru">wto.org/sps</div></div></a>
+          <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="rl"><span class="ri">⚙️</span><div><div class="rn">لجنة TBT الرسمية</div><div class="ru">wto.org/tbt</div></div></a>
+          <a href="https://mc.gov.sa" target="_blank" class="rl"><span class="ri">🏛️</span><div><div class="rn">وزارة التجارة السعودية</div><div class="ru">mc.gov.sa</div></div></a>
+          <a href="https://www.zatca.gov.sa" target="_blank" class="rl"><span class="ri">💼</span><div><div class="rn">هيئة الزكاة والجمارك</div><div class="ru">zatca.gov.sa</div></div></a>
+          <a href="https://www.trademap.org" target="_blank" class="rl"><span class="ri">🌍</span><div><div class="rn">ITC Trade Map</div><div class="ru">trademap.org</div></div></a>
+          <a href="https://unctad.org" target="_blank" class="rl"><span class="ri">📊</span><div><div class="rn">UNCTAD</div><div class="ru">unctad.org</div></div></a>
+        </div>
       </div>
-      <div class="sec-title" style="font-size:12px;margin-top:4px">🔗 المصادر الرسمية</div>
-      <div class="res-links">
-        <a href="https://eping.wto.org" target="_blank" class="rl"><span class="ri">🌐</span><div><div class="rn">ePing Alert System</div><div class="ru">eping.wto.org</div></div></a>
-        <a href="https://docs.wto.org" target="_blank" class="rl"><span class="ri">📄</span><div><div class="rn">WTO Documents Online</div><div class="ru">docs.wto.org</div></div></a>
-        <a href="https://www.wto.org/english/tratop_e/sps_e/sps_e.htm" target="_blank" class="rl"><span class="ri">🌿</span><div><div class="rn">لجنة SPS الرسمية</div><div class="ru">wto.org/sps</div></div></a>
-        <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="rl"><span class="ri">⚙️</span><div><div class="rn">لجنة TBT الرسمية</div><div class="ru">wto.org/tbt</div></div></a>
-        <a href="https://mc.gov.sa" target="_blank" class="rl"><span class="ri">🏛️</span><div><div class="rn">وزارة التجارة السعودية</div><div class="ru">mc.gov.sa</div></div></a>
-        <a href="https://www.zatca.gov.sa" target="_blank" class="rl"><span class="ri">💼</span><div><div class="rn">هيئة الزكاة والجمارك</div><div class="ru">zatca.gov.sa</div></div></a>
-        <a href="https://itc.int" target="_blank" class="rl"><span class="ri">🌍</span><div><div class="rn">ITC Trade Map</div><div class="ru">itc.int</div></div></a>
-        <a href="https://www.codexalimentarius.org" target="_blank" class="rl"><span class="ri">🍽️</span><div><div class="rn">Codex Alimentarius</div><div class="ru">codexalimentarius.org</div></div></a>
-      </div>
-    </div>
-
-  </div><!-- /main -->
+    </div></div><!-- /main -->
 </div><!-- /wrap -->
 
 <script>
@@ -783,7 +772,7 @@ function renderDet(n){
     (!n.analysis?
       '<div class="btn-ctr">'+
         '<button class="btn-ai" id="btn-analyze" onclick="doAnalyze(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
-          (n.loading?'<span class="ldots">⏳ يُحلَّل</span>':'🤖 تحليل قانوني شامل')+
+          (n.loading?'<span class="ldots">⏳ يُحلَّل</span>':'🎯 تحليل الأخطار')+
         '</button>'+
         '<div class="btn-hint">تحليل وفق SPS / TBT / DSU مع توصيات للمملكة</div>'+
       '</div>':'')+
@@ -803,13 +792,6 @@ function renderDet(n){
           '<button class="actb bl" onclick="doAnalyze(\''+nid+'\')">🔄 إعادة</button>'+
           '<button class="actb" onclick="addCmp(\''+nid+'\')">⚖️ مقارنة</button>'+
         '</div>'+
-      '</div>':'')+
-    (hasPdf?
-      '<div class="det-dc" style="border-color:rgba(16,185,129,.2)">'+
-        '<div class="det-hd" style="color:var(--gr)">تحليل المستند الرسمي</div>'+
-        (!n.docAnalysis&&!n.docLoading?'<div class="btn-ctr"><button class="btn-ai gr" onclick="doAnalyzeDoc(\''+nid+'\')">📄 تحليل محتوى المستند</button></div>':'')+
-        (n.docLoading?'<div style="text-align:center;padding:10px;font-size:11px;color:var(--am)"><span class="ldots">⏳ جارٍ تحليل المستند</span></div>':'')+
-        (n.docAnalysis?'<div class="abox" style="border-color:rgba(16,185,129,.2)">'+n.docAnalysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><div class="act-row"><button class="actb" onclick="cpDoc()">📋 نسخ</button><button class="actb gn" onclick="doAnalyzeDoc(\''+nid+'\')">🔄 إعادة</button></div>':'')+
       '</div>':'');
 }
 function showDet(v){
@@ -823,7 +805,7 @@ function getTab(n){
 }
 function swTab(t,b){tab=t;document.querySelectorAll('.atab').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var bx=document.getElementById('abox');var n=D.find(function(x){return x.id===selId;});if(bx&&n)bx.innerHTML=getTab(n);}
 function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis)navigator.clipboard&&navigator.clipboard.writeText(n.analysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}
-function cpDoc(){var n=D.find(function(x){return x.id===selId;});if(n&&n.docAnalysis)navigator.clipboard&&navigator.clipboard.writeText(n.docAnalysis).then(function(){var b=event.target;b.textContent='✅ تم';setTimeout(function(){b.textContent='📋 نسخ';},2000);});}
+
 
 // ═══ ANALYZE ═══
 function parseAn(n,txt){
@@ -848,18 +830,6 @@ async function doAnalyze(sid){
   }catch(e){}
   var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. موعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(isSPS?'SPS — المادة 5 (تقييم المخاطر) والمادة 7':'TBT — المادة 2 (عدم التمييز) والمادة 5')+'\n• المعايير: '+(isSPS?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n• حق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. مراجعة معايير SASO بالتوافق مع '+(isSPS?'Codex':'ISO')+'\n5. متابعة لجنة '+(isSPS?'SPS':'TBT')+' في WTO';
   parseAn(n,t);n.loading=false;tab='full';renderList();renderDet(n);
-}
-async function doAnalyzeDoc(sid){
-  var n=D.find(function(x){return x.id===sid||eid(x.id)===sid;});
-  if(!n||n.docLoading)return;
-  var urls=[];(n.docs||[]).forEach(function(d){if(d.url&&d.url.startsWith('http'))urls.push(d.url);});
-  n.docLoading=true;n.docAnalysis=null;renderList();renderDet(n);
-  try{
-    var r=await fetch(API+'/api/analyze-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,title:n.titleEn||n.title||'',pdf_url:urls[0]||'',pdf_text:'',products:n.products||[],keywords:n.keywords||[],commentDeadline:n.commentDeadline||''})});
-    if(r.ok){var d=await r.json();if(d.analysis&&d.analysis.length>30){n.docAnalysis=d.analysis;n.docLoading=false;renderList();renderDet(n);return;}}
-  }catch(e){}
-  n.docAnalysis='تعذّر جلب المستند'+(urls.length?'\n\nرابط المستند: '+urls[0]:'')+'\n\nيرجى فتح الرابط مباشرة للاطلاع على المستند الرسمي.';
-  n.docLoading=false;renderList();renderDet(n);
 }
 
 // ═══ DASHBOARD ═══
@@ -974,12 +944,7 @@ async function addAlert(){var b={type:document.getElementById('al-type').value,s
 async function toggleAl(id,cb){try{await fetch(API+'/api/alerts/'+id,{method:'PUT'});}catch(e){cb.checked=!cb.checked;}var a=ALERTS.find(function(x){return x.id===id;});if(a)a.active=cb.checked;}
 async function delAl(id){try{await fetch(API+'/api/alerts/'+id,{method:'DELETE'});}catch(e){}ALERTS=ALERTS.filter(function(a){return a.id!==id;});renderAlerts();}
 
-// ═══ EXPORT ═══
-function expJSON(){var b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-notifications.json';a.click();}
-function expCSV(){var rows=['\uFEFF'+['رقم الوثيقة','الدولة','النوع','العنوان العربي','العنوان الإنجليزي','الحالة','التاريخ','موعد التعليق','المنتجات'].join(',')];D.forEach(function(n){rows.push(['"'+(n.symbol||'')+'"','"'+(n.member||'')+'"','"'+(n.type||'')+'"','"'+((n.titleAr||'').replace(/"/g,"'"))+'"','"'+((n.title||'').replace(/"/g,"'"))+'"','"'+(n.status||'')+'"','"'+(n.date||'')+'"','"'+(n.commentDeadline||'')+'"','"'+((n.products||[]).join('; '))+'"'].join(','));});var b=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-notifications.csv';a.click();}
-function cpOpen(){var op=D.filter(function(n){return n.status==='مفتوح للتعليق';});var txt='إخطارات WTO المفتوحة\n'+'='.repeat(30)+'\n\n'+op.map(function(n,i){return(i+1)+'. '+n.symbol+'\n   '+( n.member||'')+' | '+(n.type||'')+'\n   '+(n.titleAr||n.title||'')+'\n   الموعد: '+(n.commentDeadline||'—')+'\n';}).join('\n');navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ نُسخ '+op.length+' إخطار');});}
-function expAnalyses(){var an=D.filter(function(n){return n.analysis;});if(!an.length){alert('لا توجد تحليلات بعد');return;}var txt=an.map(function(n){return'# '+n.symbol+' — '+n.member+'\n## '+(n.titleAr||n.title||'')+'\n\n'+n.analysis+'\n\n'+'—'.repeat(40)+'\n\n';}).join('');var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='eping-analyses.txt';a.click();}
-function cpStats(){var sp=D.filter(function(n){return n.type==='SPS';}).length,tb=D.filter(function(n){return n.type==='TBT';}).length,op=D.filter(function(n){return n.status==='مفتوح للتعليق';}).length;var txt='📊 إحصاءات ePing — WTO\n='.repeat(25)+'\n• إجمالي: '+D.length+'\n• مفتوحة: '+op+'\n• SPS: '+sp+'\n• TBT: '+tb+'\n• التاريخ: '+new Date().toLocaleDateString('ar-SA');navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ تم نسخ الإحصاءات');});}
+
 
 // ═══ NAV ═══
 function goPage(pg2,btn){
