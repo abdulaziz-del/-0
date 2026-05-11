@@ -279,7 +279,7 @@ button{font-family:inherit;cursor:pointer}
     <button class="nb" onclick="goPage('search',this)">🔍 بحث متقدم</button>
     <button class="nb" onclick="goPage('compare',this)">⚖️ مقارنة</button>
     <button class="nb" onclick="goPage('alerts',this)">🔔 تنبيهاتي</button>
-    <button class="nb" onclick="goPage('ntm',this)">🛡️ التدابير NTM</button>
+    <button class="nb" onclick="goPage('ntm',this)">🛡️ التدابير غير الجمركية</button>
 
   </nav>
   <div class="hright">
@@ -539,70 +539,100 @@ button{font-family:inherit;cursor:pointer}
       </div>
     <!-- NTM PANEL -->
     <div id="p-ntm" class="pnl">
-      <div class="sec-title">🛡️ التدابير غير الجمركية (NTM) <span>— UNCTAD TRAINS · WITS · WTO</span></div>
+      <div class="sec-title">🛡️ التدابير غير الجمركية <span>— UNCTAD TRAINS · WITS API · WTO</span></div>
 
       <!-- KPIs -->
       <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi" style="--kc:var(--pu)"><div class="kpi-ico">🛡️</div><div class="kpi-val" id="ntm-kt" style="color:var(--pu)">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">NTMs مُحمَّلة</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="ntm-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراء</div></div>
+        <div class="kpi" style="--kc:var(--pu)"><div class="kpi-ico">🛡️</div><div class="kpi-val" id="ntm-kt" style="color:var(--pu)">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">من WITS TRAINS</div></div>
+        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="ntm-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
         <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="ntm-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚖️</div><div class="kpi-val" id="ntm-kd" style="color:var(--rd)">0</div><div class="kpi-lbl">قابل للنزاع</div><div class="kpi-sub">آلية DSU</div></div>
+        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚖️</div><div class="kpi-val" id="ntm-kd" style="color:var(--rd)">0</div><div class="kpi-lbl">قابل للنزاع</div><div class="kpi-sub">آلية DSU — WTO</div></div>
       </div>
 
       <!-- فلاتر + جلب -->
       <div class="dc" style="margin-bottom:12px">
-        <div class="det-hd">تحميل وفلترة التدابير</div>
+        <div class="det-hd" style="margin-bottom:10px">🔍 جلب وفلترة التدابير من WITS TRAINS API</div>
         <div class="adv-grid" style="margin-bottom:10px">
           <div class="adv-field">
             <label>الدولة المطبِّقة</label>
             <select class="ss" id="ntm-reporter" style="margin:0">
+              <option value="all">🌍 جميع الدول</option>
               <option value="USA">🇺🇸 الولايات المتحدة</option>
               <option value="EU">🇪🇺 الاتحاد الأوروبي</option>
               <option value="CHN">🇨🇳 الصين</option>
               <option value="IND">🇮🇳 الهند</option>
               <option value="JPN">🇯🇵 اليابان</option>
               <option value="GBR">🇬🇧 المملكة المتحدة</option>
+              <option value="DEU">🇩🇪 ألمانيا</option>
+              <option value="FRA">🇫🇷 فرنسا</option>
+              <option value="AUS">🇦🇺 أستراليا</option>
+              <option value="CAN">🇨🇦 كندا</option>
+              <option value="BRA">🇧🇷 البرازيل</option>
+              <option value="KOR">🇰🇷 كوريا الجنوبية</option>
               <option value="SAU">🇸🇦 المملكة العربية السعودية</option>
             </select>
           </div>
           <div class="adv-field">
             <label>نوع التدبير</label>
             <select class="ss" id="ntm-type-f" style="margin:0">
-              <option value="">الكل</option>
+              <option value="all">الكل</option>
               <option value="SPS">SPS — صحي/نباتي</option>
               <option value="TBT">TBT — تقني</option>
               <option value="QR">QR — قيود كمية</option>
               <option value="IL">IL — ترخيص استيراد</option>
+              <option value="CPS">CPS — مكافحة إغراق</option>
+              <option value="SBS">SBS — دعم ومكافحة دعم</option>
             </select>
           </div>
           <div class="adv-field">
             <label>مستوى الخطر</label>
             <select class="ss" id="ntm-risk-f" style="margin:0">
               <option value="">الكل</option>
-              <option value="high">مرتفع فقط</option>
-              <option value="medium">متوسط فقط</option>
-              <option value="low">منخفض فقط</option>
+              <option value="high">🔴 مرتفع فقط</option>
+              <option value="medium">🟡 متوسط فقط</option>
+              <option value="low">🟢 منخفض فقط</option>
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>الأثر على SA</label>
+            <select class="ss" id="ntm-saudi-f" style="margin:0">
+              <option value="">الكل</option>
+              <option value="1">يؤثر على صادرات SA فقط</option>
             </select>
           </div>
         </div>
         <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
-          <button class="btn-ai" onclick="loadNtmSample()" style="padding:8px 16px;font-size:11px">📋 تحميل بيانات تجريبية</button>
-          <button class="actb" onclick="filterNtm()">🔍 فلترة</button>
-          <button class="actb" onclick="ntmSaudiOnly()">🇸🇦 يؤثر على SA فقط</button>
-          <button class="actb" onclick="ntmDisputeOnly()">⚖️ قابل للنزاع</button>
+          <button class="btn-ai" onclick="ntmPg=1;loadNtmData(true)" style="padding:8px 18px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">⬇️ جلب من WITS API</button>
+          <button class="actb" onclick="ntmPg=1;loadNtmData(false)">🔍 فلترة</button>
+          <button class="actb" onclick="ntmSaudiOnly()">🇸🇦 يؤثر على SA</button>
+          <button class="actb" onclick="ntmDisputeOnly()">⚖️ خطر مرتفع</button>
+          <button class="actb" onclick="ntmPg=1;loadNtmData(false)" style="border-color:rgba(245,158,11,.3);color:var(--am)">↻ تحديث</button>
           <span id="ntm-cnt" style="font-size:10px;color:var(--t3)"></span>
         </div>
       </div>
 
       <!-- قائمة + تفاصيل -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
-          <div class="det-hd" style="margin-bottom:8px">قائمة التدابير</div>
-          <div id="ntm-list"><div class="empty-st"><div style="font-size:22px;opacity:.3">🛡️</div><div style="font-size:10px">اضغط "تحميل بيانات تجريبية" للبدء</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="det-hd">قائمة التدابير</div>
+          <div id="ntm-list" style="max-height:520px;overflow-y:auto">
+            <div class="empty-st"><div style="font-size:22px;opacity:.3">🛡️</div><div style="font-size:10px">اضغط "جلب من WITS API" للبدء</div></div>
+          </div>
+          <!-- Pagination -->
+          <div id="ntm-pgbar" style="display:none;justify-content:center;align-items:center;gap:8px;padding:6px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px">
+            <button class="actb" id="ntm-pp" onclick="ntmChangePg(-1)" style="padding:3px 10px;font-size:10px">→ السابق</button>
+            <span id="ntm-pglbl" style="font-size:10px;color:var(--t2)">1/1</span>
+            <button class="actb" id="ntm-pn" onclick="ntmChangePg(1)" style="padding:3px 10px;font-size:10px">التالي ←</button>
+          </div>
         </div>
         <div>
-          <div class="det-hd" style="margin-bottom:8px">التفاصيل والتحليل</div>
-          <div id="ntm-det"><div class="empty-st" style="padding:20px"><div style="font-size:22px;opacity:.3">👆</div><div style="font-size:10px">اختر تدبيراً من القائمة</div></div></div>
+          <div class="det-hd" style="margin-bottom:8px">التفاصيل والتحليل القانوني</div>
+          <div id="ntm-det" style="max-height:560px;overflow-y:auto">
+            <div class="empty-st" style="padding:20px">
+              <div style="font-size:22px;opacity:.3">👆</div>
+              <div style="font-size:10px">اختر تدبيراً من القائمة لعرض تفاصيله وتحليله</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1177,6 +1207,7 @@ function goPage(pg2,btn){
   document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('show');});
   var el=document.getElementById('p-'+pg2);
   if(el)el.classList.add('show');
+  if(pg2==='ntm'&&NTM_ALL.length===0){loadNtmSample();}
 }
 
 // ═══ STATUS ═══
@@ -1208,56 +1239,138 @@ function buildDemo(){
 }
 
 
-// ═══════════════════════════════════════
-// NTM — التدابير غير الجمركية
-// ═══════════════════════════════════════
-var NTM_ALL=[], NTM_FILTERED=[], ntmSelIdx=-1;
+// ═══════════════════════════════════════════════════════
+// NTM — التدابير غير الجمركية  (WITS TRAINS API حقيقي)
+// ═══════════════════════════════════════════════════════
+var NTM_DATA=[], ntmSelIdx=-1, ntmPg=1, ntmTotalPg=1, ntmTotal=0, ntmBusy=false;
 var NTM_RISK_MAP={high:{lbl:'خطر مرتفع',cls:'ntm-risk-high',ico:'🔴'},medium:{lbl:'خطر متوسط',cls:'ntm-risk-medium',ico:'🟡'},low:{lbl:'خطر منخفض',cls:'ntm-risk-low',ico:'🟢'}};
 var NTM_ACTION_MAP={monitor:{lbl:'متابعة',cls:'ntm-action-monitor'},notify:{lbl:'إخطار',cls:'ntm-action-notify'},consult:{lbl:'استشارة',cls:'ntm-action-consult'},stc:{lbl:'STC',cls:'ntm-action-stc'},dispute:{lbl:'نزاع DSU',cls:'ntm-action-dispute'}};
-var ISO_FLAG2={USA:'🇺🇸',EU:'🇪🇺',CHN:'🇨🇳',IND:'🇮🇳',JPN:'🇯🇵',GBR:'🇬🇧',SAU:'🇸🇦',DEU:'🇩🇪',FRA:'🇫🇷',AUS:'🇦🇺',CAN:'🇨🇦',BRA:'🇧🇷',KOR:'🇰🇷',TUR:'🇹🇷'};
+var ISO_FLAG2={USA:'🇺🇸',EU:'🇪🇺',CHN:'🇨🇳',IND:'🇮🇳',JPN:'🇯🇵',GBR:'🇬🇧',SAU:'🇸🇦',DEU:'🇩🇪',FRA:'🇫🇷',AUS:'🇦🇺',CAN:'🇨🇦',BRA:'🇧🇷',KOR:'🇰🇷',TUR:'🇹🇷',NLD:'🇳🇱',SWE:'🇸🇪',CHE:'🇨🇭',NOR:'🇳🇴',SGP:'🇸🇬',BRA:'🇧🇷'};
 
-function loadNtmSample(){
-  NTM_ALL=[
-    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'150110',product_description:'Palm oil, crude',year:2024,ntm_code:'A14',ntm_type:'SPS',ntm_description:'Pest/disease freedom requirements',measure_summary_ar:'الولايات المتحدة تفرض متطلبات SPS على زيت النخيل السعودي تشمل شهادة خلو من الآفات',measure_summary_en:'US SPS certification requirement for crude palm oil imports',legal_classification:'SPS Agreement Art. 5.1',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','GATT 1994 Art. XX(b)'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'أصدرت الولايات المتحدة تدبير SPS يستوجب شهادة صحية لاستيراد زيت النخيل الخام من المملكة العربية السعودية. التدبير مرتبط بمتطلبات الخلو من الآفات وفق معايير IPPC.',action_rationale:'إخطار القطاع الخاص وإعداد وثائق الامتثال وفق الشهادات المطلوبة. مراجعة متطلبات Codex Alimentarius.',legal_text_reference:'7 USC 7701; 9 CFR Part 94'},
-    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'760110',product_description:'Aluminium (not alloyed)',year:2024,ntm_code:'B31',ntm_type:'TBT',ntm_description:'Performance requirements - lifecycle assessment',measure_summary_ar:'الاتحاد الأوروبي يفرض متطلبات أداء بيئية على الألومنيوم المستورد تشمل تقييم دورة الحياة والبصمة الكربونية',measure_summary_en:'EU performance requirements for aluminium imports - lifecycle assessment',legal_classification:'TBT Agreement Art. 2.2',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement','GATT 1994 Art. III:4'],impact_saudi_exports:true,risk_level:'high',recommended_action:'stc',executive_summary:'أصدر الاتحاد الأوروبي تدبير TBT يفرض متطلبات أداء بيئية على الألومنيوم المستورد. يؤثر مباشرة على صادرات ma\'aden.',action_rationale:'إثارة Specific Trade Concern أمام لجنة TBT في WTO. الشروط البيئية قد تُشكّل عائقاً تقنياً غير ضروري وفق المادة 2.2.',legal_text_reference:'EU Regulation 2024/1610; CBAM Framework'},
-    {reporter_iso:'CHN',reporter_country:'China',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'270900',product_description:'Crude petroleum oils',year:2023,ntm_code:'E111',ntm_type:'QR',ntm_description:'Import quota for national energy policy',measure_summary_ar:'الصين تطبّق نظام حصص للاستيراد على النفط الخام ضمن سياسة الطاقة الوطنية وإصلاحات قطاع الطاقة',measure_summary_en:'China import quota system for crude petroleum - national energy policy',legal_classification:'GATT 1994 Art. XI',wto_agreement:'GATT 1994',wto_agreements_all:['GATT 1994 Art. XI','Import Licensing Agreement'],impact_saudi_exports:false,risk_level:'low',recommended_action:'monitor',executive_summary:'تطبّق الصين نظام حصص للاستيراد على النفط الخام ضمن سياسة الطاقة الوطنية. الأثر محدود على المملكة نظراً للعلاقات الاستراتيجية.',action_rationale:'متابعة دورية عبر القنوات الثنائية. لا يستدعي إجراء فورياً في الوقت الراهن.',legal_text_reference:'NDRC Order No. 6/2023'},
-    {reporter_iso:'IND',reporter_country:'India',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'290511',product_description:'Methanol (petrochemicals)',year:2024,ntm_code:'A84',ntm_type:'SPS',ntm_description:'BIS certification requirement',measure_summary_ar:'الهند تفرض متطلبات شهادة BIS على الميثانول البتروكيماوي السعودي مستندةً إلى مبدأ الاحتياط في اتفاقية SPS',measure_summary_en:'India BIS certification for methanol imports - Saudi petrochemicals affected',legal_classification:'SPS Agreement Art. 5.7',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','TBT Agreement Art. 5'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'consult',executive_summary:'فرضت الهند متطلبات شهادة BIS على الميثانول تؤثر على صادرات SABIC وأرامكو البتروكيماوية.',action_rationale:'فتح حوار فني ثنائي مع الجانب الهندي. استشارة هيئة الغذاء والدواء والشركات المصدِّرة.',legal_text_reference:'BIS Act 2016; BIS/IS 517:2023'},
-    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'WLD',partner_country:'World',hs_code:'761699',product_description:'Articles of aluminium',year:2024,ntm_code:'D213',ntm_type:'QR',ntm_description:'Anti-dumping measures on aluminium articles',measure_summary_ar:'الولايات المتحدة تفرض رسوم مكافحة إغراق على منتجات الألومنيوم تطال الصادرات السعودية من ma\'aden',measure_summary_en:'US anti-dumping measures on aluminium articles',legal_classification:'GATT Art. VI + Anti-Dumping Agreement',wto_agreement:'SCM Agreement',wto_agreements_all:['Anti-Dumping Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'dispute',executive_summary:'تستوجب رسوم مكافحة الإغراق الأمريكية على الألومنيوم دراسة جدية لإمكانية رفع نزاع DSU أمام WTO.',action_rationale:'تكليف فريق قانوني لتقييم قابلية الطعن وفق المادة 17 من اتفاقية AD. المملكة لديها سابقة في آلية DSU.',legal_text_reference:'19 USC 1673; ITC Investigation 731-TA-1557'},
-    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'310100',product_description:'Fertilizers - ammonium nitrate',year:2024,ntm_code:'L12',ntm_type:'QR',ntm_description:'Subsidy investigation on fertilizers',measure_summary_ar:'الاتحاد الأوروبي يجري تحقيق في دعم الأسمدة السعودية المصدَّرة (نترات الأمونيوم) وفق اتفاقية SCM',measure_summary_en:'EU countervailing duty investigation on Saudi fertilizer exports',legal_classification:'SCM Agreement Art. 11',wto_agreement:'SCM Agreement',wto_agreements_all:['SCM Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'consult',executive_summary:'فتح الاتحاد الأوروبي تحقيق في الدعم الحكومي السعودي للأسمدة. يهدد صادرات SABIC AgriNutrients وSAFCO.',action_rationale:'استشارة عاجلة مع وزارة التجارة وMMC وSABIC لتقييم الدعم القابل للإجراء وفق SCM.',legal_text_reference:'EU Reg. 2024/1017; OJ L 2024'},
+// ── الدالة الرئيسية — جلب من API الحقيقي ──
+async function loadNtmData(force){
+  if(ntmBusy)return;
+  ntmBusy=true;
+  ntmSetLoading(true);
+  var reporter = document.getElementById('ntm-reporter').value || 'all';
+  var type     = document.getElementById('ntm-type-f').value  || 'all';
+  var risk     = document.getElementById('ntm-risk-f').value  || '';
+  var saudi    = document.getElementById('ntm-saudi-f') ? document.getElementById('ntm-saudi-f').value : '';
+  var params   = [
+    'reporter_iso='+ reporter,
+    'ntm_type='    + type,
+    'page='        + ntmPg,
+    'page_size=50',
+    'translate=1',
   ];
-  NTM_FILTERED=NTM_ALL.slice();
-  updateNtmKpis();
+  if(risk)   params.push('risk_level='   + risk);
+  if(saudi==='1') params.push('impact_saudi=1');
+  if(force)  params.push('refresh=1');
+
+  var url = API + '/api/ntm/search?' + params.join('&');
+
+  try{
+    var ctrl = new AbortController();
+    setTimeout(function(){ctrl.abort();}, 30000);
+    var r = await fetch(url, {signal: ctrl.signal});
+    if(r.ok){
+      var d = await r.json();
+      NTM_DATA      = d.ntm || [];
+      ntmTotal      = d.total || NTM_DATA.length;
+      ntmTotalPg    = d.pages || 1;
+      ntmSelIdx     = -1;
+      var stats     = d.stats || {};
+      document.getElementById('ntm-kt').textContent = ntmTotal;
+      document.getElementById('ntm-kh').textContent = stats.high    || 0;
+      document.getElementById('ntm-ks').textContent = stats.saudi   || 0;
+      document.getElementById('ntm-kd').textContent = stats.dispute || 0;
+      document.getElementById('ntm-cnt').textContent =
+        ntmTotal + ' تدبير | ص ' + ntmPg + '/' + ntmTotalPg +
+        (d.source === 'WITS_TRAINS' ? ' — WITS TRAINS' : '');
+      renderNtmList();
+      renderNtmPagination();
+      // إذا لم يرجع شيء من الخادم → fallback للبيانات التجريبية
+      if(!NTM_DATA.length){
+        ntmLoadFallback();
+      }
+    } else {
+      throw new Error('HTTP ' + r.status);
+    }
+  } catch(e){
+    // الخادم غير متاح أو WITS لا يرد → بيانات تجريبية
+    ntmLoadFallback();
+  }
+  ntmBusy = false;
+  ntmSetLoading(false);
+}
+
+// ── Fallback: بيانات تجريبية عند عدم توفر WITS ──
+function ntmLoadFallback(){
+  NTM_DATA=[
+    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'150110',product_description:'Palm oil, crude',year:2024,ntm_code:'A14',ntm_type:'SPS',ntm_description:'Pest/disease freedom requirements',measure_summary_ar:'الولايات المتحدة تفرض متطلبات SPS على زيت النخيل السعودي — شهادة خلو من الآفات وفق IPPC',measure_summary_en:'US SPS certification for crude palm oil imports',legal_classification:'SPS Agreement Art. 5.1',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','GATT 1994 Art. XX(b)'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'7 USC 7701; 9 CFR Part 94'},
+    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'760110',product_description:'Aluminium (not alloyed)',year:2024,ntm_code:'B31',ntm_type:'TBT',ntm_description:'Performance requirements - lifecycle assessment',measure_summary_ar:'الاتحاد الأوروبي: متطلبات أداء بيئية على الألومنيوم — تقييم دورة الحياة والبصمة الكربونية (CBAM)',measure_summary_en:'EU TBT on aluminium - lifecycle & carbon assessment',legal_classification:'TBT Agreement Art. 2.2',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement','GATT 1994 Art. III:4'],impact_saudi_exports:true,risk_level:'high',recommended_action:'stc',executive_summary:'',action_rationale:'',legal_text_reference:'EU Regulation 2024/1610; CBAM'},
+    {reporter_iso:'CHN',reporter_country:'China',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'270900',product_description:'Crude petroleum oils',year:2023,ntm_code:'E111',ntm_type:'QR',ntm_description:'Import quota - national energy policy',measure_summary_ar:'الصين: نظام حصص استيراد للنفط الخام — سياسة الطاقة الوطنية وإصلاحات قطاع الطاقة',measure_summary_en:'China petroleum import quota system',legal_classification:'GATT 1994 Art. XI',wto_agreement:'GATT 1994',wto_agreements_all:['GATT 1994 Art. XI','IL Agreement'],impact_saudi_exports:false,risk_level:'low',recommended_action:'monitor',executive_summary:'',action_rationale:'',legal_text_reference:'NDRC Order No. 6/2023'},
+    {reporter_iso:'IND',reporter_country:'India',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'290511',product_description:'Methanol (petrochemicals)',year:2024,ntm_code:'A84',ntm_type:'SPS',ntm_description:'BIS certification requirement',measure_summary_ar:'الهند: شهادة BIS على الميثانول البتروكيماوي — يؤثر على صادرات SABIC وأرامكو',measure_summary_en:'India BIS certification for methanol imports',legal_classification:'SPS Agreement Art. 5.7',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','TBT Agreement Art. 5'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'BIS Act 2016; BIS/IS 517:2023'},
+    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'WLD',partner_country:'World',hs_code:'761699',product_description:'Articles of aluminium',year:2024,ntm_code:'D213',ntm_type:'QR',ntm_description:'Anti-dumping on aluminium articles',measure_summary_ar:'الولايات المتحدة: رسوم مكافحة إغراق على منتجات الألومنيوم — تطال صادرات maaden السعودية',measure_summary_en:'US anti-dumping on aluminium articles',legal_classification:'Anti-Dumping Agreement + GATT Art. VI',wto_agreement:'SCM Agreement',wto_agreements_all:['Anti-Dumping Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'dispute',executive_summary:'',action_rationale:'',legal_text_reference:'19 USC 1673; ITC Investigation 731-TA-1557'},
+    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'310100',product_description:'Fertilizers - ammonium nitrate',year:2024,ntm_code:'L12',ntm_type:'QR',ntm_description:'Countervailing duty investigation - fertilizers',measure_summary_ar:'الاتحاد الأوروبي: تحقيق في دعم الأسمدة السعودية (نترات الأمونيوم) — يهدد صادرات SABIC وSAFCO',measure_summary_en:'EU CVD investigation on Saudi fertilizer exports',legal_classification:'SCM Agreement Art. 11',wto_agreement:'SCM Agreement',wto_agreements_all:['SCM Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'EU Reg. 2024/1017'},
+    {reporter_iso:'JPN',reporter_country:'Japan',partner_iso:'WLD',partner_country:'World',hs_code:'390110',product_description:'Polyethylene / plastics',year:2024,ntm_code:'B14',ntm_type:'TBT',ntm_description:'Labeling requirements for plastic products',measure_summary_ar:'اليابان: اشتراطات وسم منتجات البلاستيك — تأثير على صادرات SABIC البتروكيماوية للسوق الياباني',measure_summary_en:'Japan TBT labeling for plastic/polyethylene products',legal_classification:'TBT Agreement Art. 2.1',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'JIS Z 1651:2023'},
+    {reporter_iso:'GBR',reporter_country:'United Kingdom',partner_iso:'WLD',partner_country:'World',hs_code:'290213',product_description:'Toluene (petrochemicals)',year:2024,ntm_code:'B21',ntm_type:'TBT',ntm_description:'UK REACH chemical registration',measure_summary_ar:'المملكة المتحدة: لائحة UK REACH لتسجيل الكيماويات — متطلبات جديدة ما بعد Brexit تؤثر على الصادرات السعودية',measure_summary_en:'UK REACH regulation for chemical registration post-Brexit',legal_classification:'TBT Agreement Art. 2.2',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement','GATT 1994'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'UK REACH SI 2019/758'},
+    {reporter_iso:'AUS',reporter_country:'Australia',partner_iso:'WLD',partner_country:'World',hs_code:'080610',product_description:'Grapes / fresh dates',year:2023,ntm_code:'A21',ntm_type:'SPS',ntm_description:'Biosecurity requirements for fresh produce',measure_summary_ar:'أستراليا: اشتراطات الأمن البيولوجي للمنتجات الطازجة — قيود على استيراد التمور السعودية الطازجة',measure_summary_en:'Australia biosecurity SPS on fresh fruit/dates',legal_classification:'SPS Agreement Art. 2.2',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'Biosecurity Act 2015 (AU)'},
+    {reporter_iso:'KOR',reporter_country:'Korea',partner_iso:'WLD',partner_country:'World',hs_code:'720241',product_description:'Ferrochromium / steel alloys',year:2024,ntm_code:'D101',ntm_type:'CPS',ntm_description:'Safeguard measures on steel imports',measure_summary_ar:'كوريا الجنوبية: تدابير ضمانات على واردات الصلب — تؤثر على صادرات حديد المملكة والمنتجات الفولاذية',measure_summary_en:'Korea safeguard on steel imports',legal_classification:'Agreement on Safeguards Art. 4',wto_agreement:'Agreement on Safeguards',wto_agreements_all:['Agreement on Safeguards','GATT 1994 Art. XIX'],impact_saudi_exports:true,risk_level:'high',recommended_action:'stc',executive_summary:'',action_rationale:'',legal_text_reference:'Korean Trade Act Art. 16'},
+  ];
+  ntmTotal   = NTM_DATA.length;
+  ntmTotalPg = 1;
+  document.getElementById('ntm-kt').textContent = ntmTotal;
+  document.getElementById('ntm-kh').textContent = NTM_DATA.filter(function(m){return m.risk_level==='high';}).length;
+  document.getElementById('ntm-ks').textContent = NTM_DATA.filter(function(m){return m.impact_saudi_exports;}).length;
+  document.getElementById('ntm-kd').textContent = NTM_DATA.filter(function(m){return m.recommended_action==='dispute';}).length;
+  document.getElementById('ntm-cnt').textContent = ntmTotal + ' تدبير (بيانات تجريبية — WITS غير متاح حالياً)';
   renderNtmList();
-  document.getElementById('ntm-cnt').textContent='إجمالي: '+NTM_ALL.length+' تدابير';
+  renderNtmPagination();
 }
 
-function filterNtm(){
-  var reporter=document.getElementById('ntm-reporter').value;
-  var type=document.getElementById('ntm-type-f').value;
-  var risk=document.getElementById('ntm-risk-f').value;
-  NTM_FILTERED=NTM_ALL.filter(function(m){
-    if(reporter&&m.reporter_iso!==reporter)return false;
-    if(type&&m.ntm_type!==type)return false;
-    if(risk&&m.risk_level!==risk)return false;
-    return true;
-  });
-  renderNtmList();
-  document.getElementById('ntm-cnt').textContent='نتائج: '+NTM_FILTERED.length+' من '+NTM_ALL.length;
+// ── تحديث الفلاتر ──
+function filterNtm(){ntmPg=1;loadNtmData(false);}
+function ntmSaudiOnly(){
+  var el=document.getElementById('ntm-saudi-f');
+  if(el) el.value=(el.value==='1'?'':'1');
+  ntmPg=1; loadNtmData(false);
 }
-function ntmSaudiOnly(){NTM_FILTERED=NTM_ALL.filter(function(m){return m.impact_saudi_exports;});renderNtmList();document.getElementById('ntm-cnt').textContent='يؤثر على صادرات SA: '+NTM_FILTERED.length;}
-function ntmDisputeOnly(){NTM_FILTERED=NTM_ALL.filter(function(m){return m.recommended_action==='dispute';});renderNtmList();document.getElementById('ntm-cnt').textContent='قابل للنزاع: '+NTM_FILTERED.length;}
-
-function updateNtmKpis(){
-  document.getElementById('ntm-kt').textContent=NTM_ALL.length;
-  document.getElementById('ntm-kh').textContent=NTM_ALL.filter(function(m){return m.risk_level==='high';}).length;
-  document.getElementById('ntm-ks').textContent=NTM_ALL.filter(function(m){return m.impact_saudi_exports;}).length;
-  document.getElementById('ntm-kd').textContent=NTM_ALL.filter(function(m){return m.recommended_action==='dispute';}).length;
+function ntmDisputeOnly(){
+  var el=document.getElementById('ntm-risk-f');
+  if(el) el.value='high';
+  ntmPg=1; loadNtmData(false);
 }
 
+// ── Pagination ──
+function ntmChangePg(delta){
+  ntmPg=Math.max(1,Math.min(ntmTotalPg, ntmPg+delta));
+  loadNtmData(false);
+}
+function renderNtmPagination(){
+  var el=document.getElementById('ntm-pgbar');
+  if(!el)return;
+  if(ntmTotalPg<=1){el.style.display='none';return;}
+  el.style.display='flex';
+  document.getElementById('ntm-pglbl').textContent = ntmPg+'/'+ntmTotalPg;
+  document.getElementById('ntm-pp').disabled = ntmPg<=1;
+  document.getElementById('ntm-pn').disabled = ntmPg>=ntmTotalPg;
+}
+
+// ── Loading state ──
+function ntmSetLoading(v){
+  var el=document.getElementById('ntm-list');
+  if(v) el.innerHTML='<div class="empty-st"><div style="font-size:20px;animation:pulse 1s infinite">⏳</div><div style="font-size:10px;color:var(--am)">جارٍ الجلب من WITS TRAINS API...</div></div>';
+}
+
+// ── رسم القائمة ──
 function renderNtmList(){
   var el=document.getElementById('ntm-list');
-  if(!NTM_FILTERED.length){el.innerHTML='<div class="empty-st"><div style="font-size:16px;opacity:.3">🛡️</div><div style="font-size:10px">لا نتائج</div></div>';return;}
-  el.innerHTML=NTM_FILTERED.map(function(m,i){
+  if(!NTM_DATA.length){
+    el.innerHTML='<div class="empty-st"><div style="font-size:16px;opacity:.3">🛡️</div><div style="font-size:10px">لا نتائج — عدّل الفلاتر أو اضغط تحديث</div></div>';
+    return;
+  }
+  el.innerHTML=NTM_DATA.map(function(m,i){
     var rm=NTM_RISK_MAP[m.risk_level]||NTM_RISK_MAP.medium;
     var am=NTM_ACTION_MAP[m.recommended_action]||NTM_ACTION_MAP.monitor;
     return '<div class="ntm-card'+(ntmSelIdx===i?' sel':'')+'" onclick="selNtm('+i+')">'+
@@ -1268,54 +1381,63 @@ function renderNtmList(){
         '</div>'+
         '<span style="font-size:9px;color:var(--t4)">'+(m.year||'')+'</span>'+
       '</div>'+
-      '<div style="font-size:11px;font-weight:500;color:#b8cce8;line-height:1.5;margin-bottom:5px">'+(m.measure_summary_ar||m.ntm_description||'تدبير غير جمركي')+'</div>'+
+      '<div style="font-size:11px;font-weight:500;color:#b8cce8;line-height:1.5;margin-bottom:5px">'+(m.measure_summary_ar||m.ntm_description||m.measure_summary_en||'تدبير غير جمركي')+'</div>'+
       '<div style="display:flex;justify-content:space-between;align-items:center">'+
-        '<span style="font-size:10px;color:var(--t3)">'+(ISO_FLAG2[m.reporter_iso]||'🌍')+' '+(m.reporter_country||m.reporter_iso)+(m.impact_saudi_exports?' <span style="color:var(--cy);font-size:9px">• SA</span>':'')+'</span>'+
+        '<span style="font-size:10px;color:var(--t3)">'+(ISO_FLAG2[m.reporter_iso]||'🌍')+' '+(m.reporter_country||m.reporter_iso||'')+(m.impact_saudi_exports?' <span style="color:var(--cy);font-size:9px">• SA</span>':'')+'</span>'+
         '<span class="bdg '+am.cls+'" style="font-size:9px">'+am.lbl+'</span>'+
       '</div>'+
     '</div>';
   }).join('');
 }
 
+// ── اختيار تدبير ──
 function selNtm(i){
   ntmSelIdx=i;
-  var m=NTM_FILTERED[i];
   renderNtmList();
+  var m=NTM_DATA[i];
   if(!m)return;
   var rm=NTM_RISK_MAP[m.risk_level]||NTM_RISK_MAP.medium;
   var am=NTM_ACTION_MAP[m.recommended_action]||NTM_ACTION_MAP.monitor;
   var wtoTags=(m.wto_agreements_all||[m.wto_agreement]).filter(Boolean).map(function(w){return'<span class="wto-tag">'+w+'</span>';}).join('');
+  var riskBg=m.risk_level==='high'?'background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2)':m.risk_level==='medium'?'background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)':'background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2)';
+  var riskColor=m.risk_level==='high'?'var(--rd)':m.risk_level==='medium'?'var(--am)':'var(--gr)';
+  var riskDesc=m.risk_level==='high'?'يُرجَّح تعارضه مع WTO أو يضر بصادرات المملكة ضرراً بالغاً':m.risk_level==='medium'?'يستوجب المتابعة وقد يكون تمييزياً':'تدبير روتيني لا يؤثر جوهرياً على التجارة';
+
   document.getElementById('ntm-det').innerHTML=
-    '<div style="padding:10px 12px;border-radius:10px;margin-bottom:10px;'+(m.risk_level==='high'?'background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2)':m.risk_level==='medium'?'background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)':'background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2)')+'" >'+
+    '<div style="padding:10px 12px;border-radius:10px;margin-bottom:10px;'+riskBg+'">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
-        '<span style="font-size:12px;font-weight:700;color:'+(m.risk_level==='high'?'var(--rd)':m.risk_level==='medium'?'var(--am)':'var(--gr)')+'">'+rm.ico+' '+rm.lbl+'</span>'+
+        '<span style="font-size:12px;font-weight:700;color:'+riskColor+'">'+rm.ico+' '+rm.lbl+'</span>'+
         '<span class="bdg '+am.cls+'">'+am.lbl+'</span>'+
       '</div>'+
-      '<div style="font-size:9px;color:var(--t3)">'+( m.risk_level==='high'?'يُرجَّح تعارضه مع WTO أو يضر بصادرات المملكة ضرراً بالغاً':m.risk_level==='medium'?'يستوجب المتابعة وقد يكون تمييزياً':'تدبير روتيني لا يؤثر جوهرياً على التجارة')+'</div>'+
+      '<div style="font-size:9px;color:var(--t3)">'+riskDesc+'</div>'+
     '</div>'+
+
     '<div class="det-dc" style="margin-bottom:8px">'+
       '<div class="det-hd">بيانات التدبير</div>'+
       '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'+
         '<span class="bdg" style="background:rgba(139,92,246,.1);color:#c4b5fd;border:1px solid rgba(139,92,246,.2)">'+(m.ntm_type||'—')+'</span>'+
+        '<span class="bdg" style="background:rgba(139,92,246,.05);color:#a78bfa;border:1px solid rgba(139,92,246,.15)">'+(m.ntm_code||'')+'</span>'+
         (m.impact_saudi_exports?'<span class="bdg" style="background:rgba(6,182,212,.1);color:#22d3ee;border:1px solid rgba(6,182,212,.2)">🇸🇦 يؤثر على SA</span>':'')+
       '</div>'+
       '<div style="font-size:13px;font-weight:600;color:#b8cce8;margin-bottom:4px;line-height:1.5">'+(m.measure_summary_ar||m.ntm_description||'')+'</div>'+
-      '<div style="font-size:10px;color:var(--t3);margin-bottom:10px">'+(m.measure_summary_en||'')+'</div>'+
+      (m.measure_summary_en&&m.measure_summary_en!==m.ntm_description?'<div style="font-size:10px;color:var(--t3);margin-bottom:10px">'+m.measure_summary_en+'</div>':'')+
       '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:10px;border-top:1px solid var(--b1)">'+
         '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">الدولة المطبِّقة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(ISO_FLAG2[m.reporter_iso]||'🌍')+' '+(m.reporter_country||m.reporter_iso||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">الدولة الشريكة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(ISO_FLAG2[m.partner_iso]||'🌍')+' '+(m.partner_country||m.partner_iso||'WLD')+'</div></div>'+
         '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">كود HS</div><div style="font-size:11px;font-weight:600;color:#c0d4f0;font-family:monospace">'+(m.hs_code||'—')+'</div></div>'+
-        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">رمز التدبير</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.ntm_code||'—')+'</div></div>'+
-        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">الاتفاقية</div><div style="font-size:10px;color:#93b4dd">'+(m.legal_classification||m.wto_agreement||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">المنتج</div><div style="font-size:10px;color:var(--t2)">'+(m.product_description||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">اتفاقية WTO</div><div style="font-size:10px;color:#93b4dd">'+(m.legal_classification||m.wto_agreement||'—')+'</div></div>'+
         '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">المرجع القانوني</div><div style="font-size:10px;color:var(--t3)">'+(m.legal_text_reference||'—')+'</div></div>'+
-        '<div><div style="font-size:9px;color:var(--t4);margin-bottom:2px">السنة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.year||'—')+'</div></div>'+
       '</div>'+
       (wtoTags?'<div style="margin-top:8px">'+wtoTags+'</div>':'')+
     '</div>'+
+
     (m.executive_summary?
       '<div class="det-dc" style="margin-bottom:8px;border-color:rgba(139,92,246,.2)">'+
         '<div class="det-hd">الملخص التنفيذي</div>'+
         '<div style="font-size:12px;line-height:1.9;color:#b8cce8">'+m.executive_summary+'</div>'+
       '</div>':'')+
+
     (m.action_rationale?
       '<div class="det-dc" style="margin-bottom:8px">'+
         '<div class="det-hd">مبررات التوصية — '+am.lbl+'</div>'+
@@ -1324,35 +1446,83 @@ function selNtm(i){
           '<button class="actb" onclick="analyzeNtmAI('+i+')">🤖 تحليل AI</button>'+
           '<button class="actb" onclick="cpNtm('+i+')">📋 نسخ</button>'+
         '</div>'+
-      '</div>':'<div class="btn-ctr"><button class="btn-ai" onclick="analyzeNtmAI('+i+')" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button></div>');
+      '</div>':
+      '<div class="btn-ctr">'+
+        '<button class="btn-ai" onclick="analyzeNtmAI('+i+')" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button>'+
+        '<div class="btn-hint">تحليل وفق اتفاقيات WTO — SPS / TBT / DSU / SCM</div>'+
+      '</div>');
 }
 
+// ── تحليل AI ──
 async function analyzeNtmAI(i){
-  var m=NTM_FILTERED[i];
+  var m=NTM_DATA[i];
   if(!m)return;
-  var det=document.getElementById('ntm-det');
-  det.innerHTML+='<div class="det-dc" id="ntm-ai-box"><div class="shim" style="width:82%"></div><div class="shim"></div><div class="shim" style="width:62%"></div><div style="font-size:10px;color:var(--am);text-align:center">⏳ جارٍ التحليل القانوني...</div></div>';
+  // إضافة skeleton loader
+  var detEl=document.getElementById('ntm-det');
+  var existing=detEl.querySelector('#ntm-ai-box');
+  if(!existing){
+    detEl.insertAdjacentHTML('beforeend',
+      '<div class="det-dc" id="ntm-ai-box">'+
+        '<div class="det-hd">التحليل القانوني AI</div>'+
+        '<div class="shim" style="width:82%"></div><div class="shim"></div><div class="shim" style="width:62%"></div>'+
+        '<div style="font-size:10px;color:var(--am);text-align:center;margin-top:6px">⏳ جارٍ التحليل...</div>'+
+      '</div>'
+    );
+  }
   try{
-    var body={symbol:(m.reporter_iso||'')+'/'+( m.ntm_code||''),member:m.reporter_country||m.reporter_iso||'',type:m.ntm_type||'TBT',date:(m.year||'')+'-01-01',commentDeadline:'',title:m.measure_summary_en||m.ntm_description||'NTM',products:m.product_description?[m.product_description]:[],docs:[],ntm_extra:{hs_code:m.hs_code,legal_ref:m.legal_text_reference,partner:m.partner_country||m.partner_iso}};
-    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(r.ok){
-      var d=await r.json();
-      if(d.analysis){
-        m.ai_analysis=d.analysis;
-        var box=document.getElementById('ntm-ai-box');
-        if(box)box.outerHTML='<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div style="font-size:12px;line-height:1.9;color:#b8cce8;white-space:pre-wrap">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><div style="display:flex;gap:6px;margin-top:8px"><button class="actb" onclick="navigator.clipboard.writeText(NTM_FILTERED['+i+'].ai_analysis||\'\')" >📋 نسخ التحليل</button></div></div>';
+    // نستخدم endpoint NTM المخصص أولاً
+    var r=await fetch(API+'/api/ntm/analyze',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(m)
+    });
+    if(!r.ok) throw new Error('ntm/analyze failed');
+    var d=await r.json();
+    if(d.analysis){
+      m.executive_summary = d.executive_summary||'';
+      m.action_rationale  = d.action_rationale||'';
+      m.ai_analysis       = d.analysis;
+      document.getElementById('ntm-ai-box').outerHTML=
+        '<div class="det-dc" style="border-color:rgba(139,92,246,.2)">'+
+          '<div class="det-hd">التحليل القانوني AI</div>'+
+          '<div style="font-size:12px;line-height:1.9;color:#b8cce8;white-space:pre-wrap">'+
+            d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+
+          '</div>'+
+          '<div style="display:flex;gap:6px;margin-top:8px">'+
+            '<button class="actb" onclick="navigator.clipboard&&navigator.clipboard.writeText(NTM_DATA['+i+'].ai_analysis||\'\')" >📋 نسخ التحليل</button>'+
+            '<button class="actb" onclick="selNtm('+i+')">🔄 تحديث العرض</button>'+
+          '</div>'+
+        '</div>';
+      return;
+    }
+  }catch(e){}
+  // fallback للـ endpoint العام
+  try{
+    var body={symbol:m.reporter_iso+'/'+m.ntm_code,member:m.reporter_country||m.reporter_iso,type:m.ntm_type,date:(m.year||'')+'-01-01',commentDeadline:'',title:m.measure_summary_en||m.ntm_description||'NTM Measure',products:m.product_description?[m.product_description]:[],docs:[]};
+    var r2=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r2.ok){
+      var d2=await r2.json();
+      if(d2.analysis){
+        m.ai_analysis=d2.analysis;
+        document.getElementById('ntm-ai-box').outerHTML=
+          '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div>'+
+          '<div style="font-size:12px;line-height:1.9;color:#b8cce8;white-space:pre-wrap">'+d2.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+          '<button class="actb" onclick="navigator.clipboard&&navigator.clipboard.writeText(NTM_DATA['+i+'].ai_analysis||\'\')" style="margin-top:8px">📋 نسخ</button></div>';
         return;
       }
     }
   }catch(e){}
   var box=document.getElementById('ntm-ai-box');
-  if(box)box.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center">تعذّر الاتصال بخدمة التحليل</div>';
+  if(box)box.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:10px">تعذّر الاتصال بخدمة التحليل</div>';
 }
+
 function cpNtm(i){
-  var m=NTM_FILTERED[i];if(!m)return;
-  var txt='التدبير: '+m.ntm_type+' — '+m.ntm_code+'\nالدولة: '+(m.reporter_country||m.reporter_iso)+'\nHS: '+m.hs_code+'\nالخطر: '+m.risk_level+'\nالتوصية: '+(NTM_ACTION_MAP[m.recommended_action]||{lbl:m.recommended_action}).lbl+'\n\n'+(m.executive_summary||'')+'\n\n'+(m.action_rationale||'');
+  var m=NTM_DATA[i];if(!m)return;
+  var txt='التدبير: '+m.ntm_type+' — '+m.ntm_code+'\nالدولة: '+(m.reporter_country||m.reporter_iso)+'\nHS: '+m.hs_code+'\nالخطر: '+m.risk_level+'\nالتوصية: '+(NTM_ACTION_MAP[m.recommended_action]||{lbl:m.recommended_action}).lbl+'\n\n'+(m.executive_summary||m.ai_analysis||'');
   navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ تم النسخ');});
 }
+
+// ── loadNtmSample يستدعي الـ API الحقيقي ──
+function loadNtmSample(){loadNtmData(false);}
 
 
 </script>
