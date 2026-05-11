@@ -279,7 +279,8 @@ button{font-family:inherit;cursor:pointer}
     <button class="nb" onclick="goPage('search',this)">🔍 بحث متقدم</button>
     <button class="nb" onclick="goPage('compare',this)">⚖️ مقارنة</button>
     <button class="nb" onclick="goPage('alerts',this)">🔔 تنبيهاتي</button>
-    <button class="nb" onclick="goPage('ntm',this)">🛡️ التدابير غير الجمركية</button>
+    <button class="nb" onclick="goPage('ntm-un',this)">🛡️ التدابير غير الجمركية UN</button>
+    <button class="nb" onclick="goPage('ntm-wto',this)">🛡️ التدابير غير الجمركية WTO</button>
 
   </nav>
   <div class="hright">
@@ -538,114 +539,225 @@ button{font-family:inherit;cursor:pointer}
         </div>
       </div>
     <!-- NTM PANEL -->
-    <div id="p-ntm" class="pnl">
-      <div class="sec-title">🛡️ التدابير غير الجمركية <span>— UNCTAD TRAINS · WITS API · WTO</span></div>
+    <!-- ═══ التدابير غير الجمركية UN ═══ -->
+    <div id="p-ntm-un" class="pnl">
+      <div class="sec-title">🛡️ التدابير غير الجمركية UN <span>— UNCTAD TRAINS Online</span></div>
 
       <!-- KPIs -->
       <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi" style="--kc:var(--pu)"><div class="kpi-ico">🛡️</div><div class="kpi-val" id="ntm-kt" style="color:var(--pu)">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">من WITS TRAINS</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="ntm-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
-        <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="ntm-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚖️</div><div class="kpi-val" id="ntm-kd" style="color:var(--rd)">0</div><div class="kpi-lbl">قابل للنزاع</div><div class="kpi-sub">آلية DSU — WTO</div></div>
+        <div class="kpi" style="--kc:#0ea5e9"><div class="kpi-ico">🇺🇳</div><div class="kpi-val" id="un-kt" style="color:#0ea5e9">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">مُحمَّلة من UNCTAD</div></div>
+        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="un-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
+        <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="un-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
+        <div class="kpi" style="--kc:var(--gr)"><div class="kpi-ico">📊</div><div class="kpi-val" id="un-kc" style="color:var(--gr)">0</div><div class="kpi-lbl">دول مُحلَّلة</div><div class="kpi-sub">من ملف Excel</div></div>
       </div>
 
-      <!-- فلاتر + جلب -->
-      <div class="dc" style="margin-bottom:12px">
-        <div class="det-hd" style="margin-bottom:10px">🔍 جلب وفلترة التدابير من WITS TRAINS API</div>
-        <div class="adv-grid" style="margin-bottom:10px">
-          <div class="adv-field">
-            <label>الدولة المطبِّقة</label>
-            <select class="ss" id="ntm-reporter" style="margin:0">
-              <option value="all">🌍 جميع الدول</option>
+      <!-- خطوات الجلب -->
+      <div class="dc" style="margin-bottom:12px;border-color:rgba(14,165,233,.25)">
+        <div class="det-hd" style="color:#38bdf8;margin-bottom:12px">📥 جلب البيانات من UNCTAD TRAINS — 3 خطوات</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+          <div style="background:var(--bg3);border:1px solid rgba(14,165,233,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">1️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#e0f2fe;margin-bottom:6px">افتح منصة UNCTAD</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:10px">اختر الدولة والنوع وحمّل Excel</div>
+            <button class="btn-ai" onclick="openUNTrains()" style="width:100%;justify-content:center;padding:7px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">🔗 فتح UNCTAD TRAINS</button>
+          </div>
+          <div style="background:var(--bg3);border:1px solid rgba(14,165,233,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">2️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#e0f2fe;margin-bottom:6px">حمّل ملف Excel</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:10px">اضغط Export to Excel في الموقع</div>
+            <div style="background:rgba(14,165,233,.08);border:1px dashed rgba(14,165,233,.3);border-radius:7px;padding:8px;font-size:10px;color:#7dd3fc">
+              ابحث عن زر:<br><strong>Export to Excel ↗</strong>
+            </div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid rgba(14,165,233,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">3️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#e0f2fe;margin-bottom:6px">ارفع الملف للتحليل</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:8px">يُحلَّل تلقائياً بـ Claude AI</div>
+            <label style="display:block;background:linear-gradient(135deg,#065f46,#059669);color:#fff;border-radius:7px;padding:7px;font-size:11px;cursor:pointer;font-weight:600">
+              📂 رفع Excel
+              <input type="file" accept=".xlsx,.xls,.csv" onchange="handleUNFile(this)" style="display:none">
+            </label>
+          </div>
+        </div>
+        <!-- فلاتر مرجعية للمستخدم -->
+        <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:8px;padding:10px">
+          <div style="font-size:10px;color:#7dd3fc;margin-bottom:8px;font-weight:600">💡 فلاتر مقترحة عند فتح UNCTAD TRAINS</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="ss" id="un-country-hint" style="margin:0;flex:1;min-width:140px;font-size:11px">
               <option value="USA">🇺🇸 الولايات المتحدة</option>
               <option value="EU">🇪🇺 الاتحاد الأوروبي</option>
               <option value="CHN">🇨🇳 الصين</option>
               <option value="IND">🇮🇳 الهند</option>
               <option value="JPN">🇯🇵 اليابان</option>
               <option value="GBR">🇬🇧 المملكة المتحدة</option>
-              <option value="DEU">🇩🇪 ألمانيا</option>
-              <option value="FRA">🇫🇷 فرنسا</option>
               <option value="AUS">🇦🇺 أستراليا</option>
+              <option value="KOR">🇰🇷 كوريا الجنوبية</option>
               <option value="CAN">🇨🇦 كندا</option>
               <option value="BRA">🇧🇷 البرازيل</option>
-              <option value="KOR">🇰🇷 كوريا الجنوبية</option>
               <option value="SAU">🇸🇦 المملكة العربية السعودية</option>
             </select>
-          </div>
-          <div class="adv-field">
-            <label>نوع التدبير</label>
-            <select class="ss" id="ntm-type-f" style="margin:0">
-              <option value="all">الكل</option>
+            <select class="ss" id="un-type-hint" style="margin:0;flex:1;min-width:140px;font-size:11px">
+              <option value="">كل الأنواع</option>
               <option value="SPS">SPS — صحي/نباتي</option>
               <option value="TBT">TBT — تقني</option>
+              <option value="ADP">ADP — مكافحة إغراق</option>
+              <option value="CV">CV — رسوم تعويضية</option>
+              <option value="SG">SG — ضمانات</option>
               <option value="QR">QR — قيود كمية</option>
-              <option value="IL">IL — ترخيص استيراد</option>
-              <option value="CPS">CPS — مكافحة إغراق</option>
-              <option value="SBS">SBS — دعم ومكافحة دعم</option>
             </select>
+            <button class="btn-ai" onclick="openUNTrainsFiltered()" style="padding:7px 14px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">🔗 فتح مع الفلاتر</button>
           </div>
-          <div class="adv-field">
-            <label>مستوى الخطر</label>
-            <select class="ss" id="ntm-risk-f" style="margin:0">
-              <option value="">الكل</option>
-              <option value="high">🔴 مرتفع فقط</option>
-              <option value="medium">🟡 متوسط فقط</option>
-              <option value="low">🟢 منخفض فقط</option>
-            </select>
-          </div>
-          <div class="adv-field">
-            <label>الأثر على SA</label>
-            <select class="ss" id="ntm-saudi-f" style="margin:0">
-              <option value="">الكل</option>
-              <option value="1">يؤثر على صادرات SA فقط</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
-          <button class="btn-ai" onclick="ntmPg=1;loadNtmData(true)" style="padding:8px 18px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">⬇️ جلب من WITS API</button>
-          <button class="actb" onclick="ntmPg=1;loadNtmData(false)">🔍 فلترة</button>
-          <button class="actb" onclick="ntmSaudiOnly()">🇸🇦 يؤثر على SA</button>
-          <button class="actb" onclick="ntmDisputeOnly()">⚖️ خطر مرتفع</button>
-          <button class="actb" onclick="ntmPg=1;loadNtmData(false)" style="border-color:rgba(245,158,11,.3);color:var(--am)">↻ تحديث</button>
-          <span id="ntm-cnt" style="font-size:10px;color:var(--t3)"></span>
         </div>
       </div>
+
+      <!-- منطقة حالة الرفع -->
+      <div id="un-upload-status" style="display:none"></div>
 
       <!-- قائمة + تفاصيل -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="display:flex;flex-direction:column;gap:6px">
-          <div class="det-hd">قائمة التدابير</div>
-          <div id="ntm-list" style="max-height:520px;overflow-y:auto">
-            <div class="empty-st"><div style="font-size:22px;opacity:.3">🛡️</div><div style="font-size:10px">اضغط "جلب من WITS API" للبدء</div></div>
+          <div class="det-hd">قائمة التدابير
+            <span id="un-cnt" style="font-size:9px;color:var(--t3);font-weight:400;margin-right:8px"></span>
           </div>
-          <!-- Pagination -->
-          <div id="ntm-pgbar" style="display:none;justify-content:center;align-items:center;gap:8px;padding:6px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px">
-            <button class="actb" id="ntm-pp" onclick="ntmChangePg(-1)" style="padding:3px 10px;font-size:10px">→ السابق</button>
-            <span id="ntm-pglbl" style="font-size:10px;color:var(--t2)">1/1</span>
-            <button class="actb" id="ntm-pn" onclick="ntmChangePg(1)" style="padding:3px 10px;font-size:10px">التالي ←</button>
+          <div id="un-list" style="max-height:480px;overflow-y:auto">
+            <div class="empty-st"><div style="font-size:28px;opacity:.25">🇺🇳</div><div style="font-size:10px">ارفع ملف Excel من UNCTAD TRAINS</div></div>
+          </div>
+          <div id="un-pgbar" style="display:none;justify-content:center;align-items:center;gap:8px;padding:6px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px">
+            <button class="actb" id="un-pp" onclick="unChangePg(-1)" style="padding:3px 10px;font-size:10px">→ السابق</button>
+            <span id="un-pglbl" style="font-size:10px;color:var(--t2)">1/1</span>
+            <button class="actb" id="un-pn" onclick="unChangePg(1)" style="padding:3px 10px;font-size:10px">التالي ←</button>
           </div>
         </div>
         <div>
           <div class="det-hd" style="margin-bottom:8px">التفاصيل والتحليل القانوني</div>
-          <div id="ntm-det" style="max-height:560px;overflow-y:auto">
-            <div class="empty-st" style="padding:20px">
-              <div style="font-size:22px;opacity:.3">👆</div>
-              <div style="font-size:10px">اختر تدبيراً من القائمة لعرض تفاصيله وتحليله</div>
-            </div>
+          <div id="un-det" style="max-height:540px;overflow-y:auto">
+            <div class="empty-st" style="padding:20px"><div style="font-size:22px;opacity:.3">👆</div><div style="font-size:10px">اختر تدبيراً لعرض تفاصيله وتحليله</div></div>
           </div>
         </div>
       </div>
 
-      <!-- مصادر -->
-      <div class="dc" style="margin-top:12px">
-        <div class="det-hd">🔗 مصادر بيانات NTM الرسمية</div>
+      <!-- مصادر UN -->
+      <div class="dc" style="margin-top:12px;border-color:rgba(14,165,233,.2)">
+        <div class="det-hd" style="color:#38bdf8">🔗 مصادر UNCTAD الرسمية</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
-          <a href="https://wits.worldbank.org/tariff/non-tariff-measures/en/ntm-datadownload" target="_blank" class="rl"><span class="ri">🌐</span><div><div class="rn">WITS NTM Data</div><div class="ru">wits.worldbank.org</div></div></a>
-          <a href="https://trainsonline.unctad.org" target="_blank" class="rl"><span class="ri">📊</span><div><div class="rn">UNCTAD TRAINS</div><div class="ru">trainsonline.unctad.org</div></div></a>
-          <a href="https://i-tip.wto.org/goods/" target="_blank" class="rl"><span class="ri">⚖️</span><div><div class="rn">WTO I-TIP Goods</div><div class="ru">i-tip.wto.org</div></div></a>
-          <a href="https://www.macmap.org" target="_blank" class="rl"><span class="ri">🗺️</span><div><div class="rn">Market Access Map</div><div class="ru">macmap.org</div></div></a>
-          <a href="https://unctad.org/topic/trade-analysis/non-tariff-measures" target="_blank" class="rl"><span class="ri">📋</span><div><div class="rn">UNCTAD — NTM Analysis</div><div class="ru">unctad.org/ntm</div></div></a>
-          <a href="https://www.wto.org/english/tratop_e/dispu_e/dispu_e.htm" target="_blank" class="rl"><span class="ri">🏛️</span><div><div class="rn">WTO DSU — النزاعات</div><div class="ru">wto.org/disputes</div></div></a>
+          <a href="https://trainsonline.unctad.org/detailedSearch" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">🔍</span><div><div class="rn">TRAINS Detailed Search</div><div class="ru">trainsonline.unctad.org</div></div></a>
+          <a href="https://trainsonline.unctad.org/bulkDataDownload" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">📥</span><div><div class="rn">TRAINS Bulk Download</div><div class="ru">trainsonline.unctad.org</div></div></a>
+          <a href="https://wits.worldbank.org/tariff/non-tariff-measures/en/ntm-datadownload" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">🌐</span><div><div class="rn">WITS NTM Export</div><div class="ru">wits.worldbank.org</div></div></a>
+          <a href="https://unctad.org/topic/trade-analysis/non-tariff-measures" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">📋</span><div><div class="rn">UNCTAD NTM Hub</div><div class="ru">unctad.org/ntm</div></div></a>
+          <a href="https://www.macmap.org/en/query/ntms" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">🗺️</span><div><div class="rn">Market Access Map</div><div class="ru">macmap.org</div></div></a>
+          <a href="https://globaltradehelpdesk.org" target="_blank" class="rl" style="border-color:rgba(14,165,233,.25)"><span class="ri">🤝</span><div><div class="rn">Global Trade Helpdesk</div><div class="ru">globaltradehelpdesk.org</div></div></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ التدابير غير الجمركية WTO ═══ -->
+    <div id="p-ntm-wto" class="pnl">
+      <div class="sec-title">🛡️ التدابير غير الجمركية WTO <span>— I-TIP Goods · WTO</span></div>
+
+      <!-- KPIs -->
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi" style="--kc:var(--pu)"><div class="kpi-ico">⚖️</div><div class="kpi-val" id="wto-kt" style="color:var(--pu)">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">مُحمَّلة من I-TIP</div></div>
+        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="wto-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
+        <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="wto-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
+        <div class="kpi" style="--kc:var(--am)"><div class="kpi-ico">🔔</div><div class="kpi-val" id="wto-kstc" style="color:var(--am)">0</div><div class="kpi-lbl">STCs مُسجَّلة</div><div class="kpi-sub">Specific Trade Concerns</div></div>
+      </div>
+
+      <!-- خطوات الجلب WTO -->
+      <div class="dc" style="margin-bottom:12px;border-color:rgba(139,92,246,.25)">
+        <div class="det-hd" style="color:#a78bfa;margin-bottom:12px">📥 جلب البيانات من WTO I-TIP — 3 خطوات</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+          <div style="background:var(--bg3);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">1️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#ede9fe;margin-bottom:6px">افتح WTO I-TIP</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:10px">اختر الدولة والنوع والتاريخ</div>
+            <button class="btn-ai" onclick="openITIP()" style="width:100%;justify-content:center;padding:7px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">🔗 فتح WTO I-TIP</button>
+          </div>
+          <div style="background:var(--bg3);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">2️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#ede9fe;margin-bottom:6px">حمّل ملف Excel</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:10px">اضغط Export to Excel في الموقع</div>
+            <div style="background:rgba(139,92,246,.08);border:1px dashed rgba(139,92,246,.3);border-radius:7px;padding:8px;font-size:10px;color:#c4b5fd">
+              ابحث عن زر:<br><strong>Export to excel ↗</strong>
+            </div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:22px;margin-bottom:6px">3️⃣</div>
+            <div style="font-size:12px;font-weight:600;color:#ede9fe;margin-bottom:6px">ارفع الملف للتحليل</div>
+            <div style="font-size:10px;color:var(--t3);margin-bottom:8px">يُحلَّل تلقائياً بـ Claude AI</div>
+            <label style="display:block;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border-radius:7px;padding:7px;font-size:11px;cursor:pointer;font-weight:600">
+              📂 رفع Excel
+              <input type="file" accept=".xlsx,.xls,.csv" onchange="handleWTOFile(this)" style="display:none">
+            </label>
+          </div>
+        </div>
+        <!-- فلاتر WTO -->
+        <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:8px;padding:10px">
+          <div style="font-size:10px;color:#c4b5fd;margin-bottom:8px;font-weight:600">💡 فلاتر مقترحة عند فتح I-TIP</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="ss" id="wto-member-hint" style="margin:0;flex:1;min-width:140px;font-size:11px">
+              <option value="">كل الدول</option>
+              <option value="840">🇺🇸 الولايات المتحدة</option>
+              <option value="097">🇪🇺 الاتحاد الأوروبي</option>
+              <option value="156">🇨🇳 الصين</option>
+              <option value="356">🇮🇳 الهند</option>
+              <option value="392">🇯🇵 اليابان</option>
+              <option value="826">🇬🇧 المملكة المتحدة</option>
+              <option value="036">🇦🇺 أستراليا</option>
+              <option value="410">🇰🇷 كوريا الجنوبية</option>
+              <option value="124">🇨🇦 كندا</option>
+              <option value="076">🇧🇷 البرازيل</option>
+              <option value="682">🇸🇦 المملكة العربية السعودية</option>
+            </select>
+            <select class="ss" id="wto-type-hint" style="margin:0;flex:1;min-width:140px;font-size:11px">
+              <option value="">كل الأنواع</option>
+              <option value="SPS">SPS — صحي/نباتي</option>
+              <option value="TBT">TBT — تقني</option>
+              <option value="ADP">ADP — مكافحة إغراق</option>
+              <option value="CV">CV — رسوم تعويضية</option>
+              <option value="SG">SG — ضمانات</option>
+              <option value="QR">QR — قيود كمية</option>
+            </select>
+            <button class="btn-ai" onclick="openITIPFiltered()" style="padding:7px 14px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">🔗 فتح مع الفلاتر</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- منطقة حالة الرفع WTO -->
+      <div id="wto-upload-status" style="display:none"></div>
+
+      <!-- قائمة + تفاصيل WTO -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="det-hd">قائمة التدابير
+            <span id="wto-cnt" style="font-size:9px;color:var(--t3);font-weight:400;margin-right:8px"></span>
+          </div>
+          <div id="wto-list" style="max-height:480px;overflow-y:auto">
+            <div class="empty-st"><div style="font-size:28px;opacity:.25">⚖️</div><div style="font-size:10px">ارفع ملف Excel من WTO I-TIP</div></div>
+          </div>
+          <div id="wto-pgbar" style="display:none;justify-content:center;align-items:center;gap:8px;padding:6px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px">
+            <button class="actb" id="wto-pp" onclick="wtoChangePg(-1)" style="padding:3px 10px;font-size:10px">→ السابق</button>
+            <span id="wto-pglbl" style="font-size:10px;color:var(--t2)">1/1</span>
+            <button class="actb" id="wto-pn" onclick="wtoChangePg(1)" style="padding:3px 10px;font-size:10px">التالي ←</button>
+          </div>
+        </div>
+        <div>
+          <div class="det-hd" style="margin-bottom:8px">التفاصيل والتحليل القانوني</div>
+          <div id="wto-det" style="max-height:540px;overflow-y:auto">
+            <div class="empty-st" style="padding:20px"><div style="font-size:22px;opacity:.3">👆</div><div style="font-size:10px">اختر تدبيراً لعرض تفاصيله وتحليله</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- مصادر WTO -->
+      <div class="dc" style="margin-top:12px;border-color:rgba(139,92,246,.2)">
+        <div class="det-hd" style="color:#a78bfa">🔗 مصادر WTO الرسمية</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
+          <a href="https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">🔍</span><div><div class="rn">I-TIP Detailed Query</div><div class="ru">i-tip.wto.org</div></div></a>
+          <a href="https://i-tip.wto.org/goods/Forms/MemberView.aspx?mode=modify&action=search" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">🌍</span><div><div class="rn">I-TIP by Members</div><div class="ru">i-tip.wto.org</div></div></a>
+          <a href="https://i-tip.wto.org/goods/Forms/ProductViewNew.aspx?mode=modify&action=search" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">📦</span><div><div class="rn">I-TIP by Products</div><div class="ru">i-tip.wto.org</div></div></a>
+          <a href="https://www.wto.org/english/tratop_e/dispu_e/dispu_e.htm" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">🏛️</span><div><div class="rn">WTO DSU — النزاعات</div><div class="ru">wto.org/disputes</div></div></a>
+          <a href="https://www.wto.org/english/tratop_e/sps_e/spsims_e.htm" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">🌿</span><div><div class="rn">SPS IMS</div><div class="ru">wto.org/sps</div></div></a>
+          <a href="https://www.wto.org/english/tratop_e/tbt_e/tbt_e.htm" target="_blank" class="rl" style="border-color:rgba(139,92,246,.25)"><span class="ri">🔧</span><div><div class="rn">TBT IMS</div><div class="ru">wto.org/tbt</div></div></a>
         </div>
       </div>
     </div>
@@ -1304,29 +1416,56 @@ async function loadNtmData(force){
   ntmSetLoading(false);
 }
 
-// ── Fallback: بيانات تجريبية عند عدم توفر WITS ──
+// ── Fallback: رسالة واضحة فقط — البيانات في الخادم ──
 function ntmLoadFallback(){
-  NTM_DATA=[
-    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'150110',product_description:'Palm oil, crude',year:2024,ntm_code:'A14',ntm_type:'SPS',ntm_description:'Pest/disease freedom requirements',measure_summary_ar:'الولايات المتحدة تفرض متطلبات SPS على زيت النخيل السعودي — شهادة خلو من الآفات وفق IPPC',measure_summary_en:'US SPS certification for crude palm oil imports',legal_classification:'SPS Agreement Art. 5.1',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','GATT 1994 Art. XX(b)'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'7 USC 7701; 9 CFR Part 94'},
-    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'760110',product_description:'Aluminium (not alloyed)',year:2024,ntm_code:'B31',ntm_type:'TBT',ntm_description:'Performance requirements - lifecycle assessment',measure_summary_ar:'الاتحاد الأوروبي: متطلبات أداء بيئية على الألومنيوم — تقييم دورة الحياة والبصمة الكربونية (CBAM)',measure_summary_en:'EU TBT on aluminium - lifecycle & carbon assessment',legal_classification:'TBT Agreement Art. 2.2',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement','GATT 1994 Art. III:4'],impact_saudi_exports:true,risk_level:'high',recommended_action:'stc',executive_summary:'',action_rationale:'',legal_text_reference:'EU Regulation 2024/1610; CBAM'},
-    {reporter_iso:'CHN',reporter_country:'China',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'270900',product_description:'Crude petroleum oils',year:2023,ntm_code:'E111',ntm_type:'QR',ntm_description:'Import quota - national energy policy',measure_summary_ar:'الصين: نظام حصص استيراد للنفط الخام — سياسة الطاقة الوطنية وإصلاحات قطاع الطاقة',measure_summary_en:'China petroleum import quota system',legal_classification:'GATT 1994 Art. XI',wto_agreement:'GATT 1994',wto_agreements_all:['GATT 1994 Art. XI','IL Agreement'],impact_saudi_exports:false,risk_level:'low',recommended_action:'monitor',executive_summary:'',action_rationale:'',legal_text_reference:'NDRC Order No. 6/2023'},
-    {reporter_iso:'IND',reporter_country:'India',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'290511',product_description:'Methanol (petrochemicals)',year:2024,ntm_code:'A84',ntm_type:'SPS',ntm_description:'BIS certification requirement',measure_summary_ar:'الهند: شهادة BIS على الميثانول البتروكيماوي — يؤثر على صادرات SABIC وأرامكو',measure_summary_en:'India BIS certification for methanol imports',legal_classification:'SPS Agreement Art. 5.7',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement','TBT Agreement Art. 5'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'BIS Act 2016; BIS/IS 517:2023'},
-    {reporter_iso:'USA',reporter_country:'United States',partner_iso:'WLD',partner_country:'World',hs_code:'761699',product_description:'Articles of aluminium',year:2024,ntm_code:'D213',ntm_type:'QR',ntm_description:'Anti-dumping on aluminium articles',measure_summary_ar:'الولايات المتحدة: رسوم مكافحة إغراق على منتجات الألومنيوم — تطال صادرات maaden السعودية',measure_summary_en:'US anti-dumping on aluminium articles',legal_classification:'Anti-Dumping Agreement + GATT Art. VI',wto_agreement:'SCM Agreement',wto_agreements_all:['Anti-Dumping Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'dispute',executive_summary:'',action_rationale:'',legal_text_reference:'19 USC 1673; ITC Investigation 731-TA-1557'},
-    {reporter_iso:'EU',reporter_country:'European Union',partner_iso:'SAU',partner_country:'Saudi Arabia',hs_code:'310100',product_description:'Fertilizers - ammonium nitrate',year:2024,ntm_code:'L12',ntm_type:'QR',ntm_description:'Countervailing duty investigation - fertilizers',measure_summary_ar:'الاتحاد الأوروبي: تحقيق في دعم الأسمدة السعودية (نترات الأمونيوم) — يهدد صادرات SABIC وSAFCO',measure_summary_en:'EU CVD investigation on Saudi fertilizer exports',legal_classification:'SCM Agreement Art. 11',wto_agreement:'SCM Agreement',wto_agreements_all:['SCM Agreement','GATT 1994 Art. VI'],impact_saudi_exports:true,risk_level:'high',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'EU Reg. 2024/1017'},
-    {reporter_iso:'JPN',reporter_country:'Japan',partner_iso:'WLD',partner_country:'World',hs_code:'390110',product_description:'Polyethylene / plastics',year:2024,ntm_code:'B14',ntm_type:'TBT',ntm_description:'Labeling requirements for plastic products',measure_summary_ar:'اليابان: اشتراطات وسم منتجات البلاستيك — تأثير على صادرات SABIC البتروكيماوية للسوق الياباني',measure_summary_en:'Japan TBT labeling for plastic/polyethylene products',legal_classification:'TBT Agreement Art. 2.1',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'JIS Z 1651:2023'},
-    {reporter_iso:'GBR',reporter_country:'United Kingdom',partner_iso:'WLD',partner_country:'World',hs_code:'290213',product_description:'Toluene (petrochemicals)',year:2024,ntm_code:'B21',ntm_type:'TBT',ntm_description:'UK REACH chemical registration',measure_summary_ar:'المملكة المتحدة: لائحة UK REACH لتسجيل الكيماويات — متطلبات جديدة ما بعد Brexit تؤثر على الصادرات السعودية',measure_summary_en:'UK REACH regulation for chemical registration post-Brexit',legal_classification:'TBT Agreement Art. 2.2',wto_agreement:'TBT Agreement',wto_agreements_all:['TBT Agreement','GATT 1994'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'consult',executive_summary:'',action_rationale:'',legal_text_reference:'UK REACH SI 2019/758'},
-    {reporter_iso:'AUS',reporter_country:'Australia',partner_iso:'WLD',partner_country:'World',hs_code:'080610',product_description:'Grapes / fresh dates',year:2023,ntm_code:'A21',ntm_type:'SPS',ntm_description:'Biosecurity requirements for fresh produce',measure_summary_ar:'أستراليا: اشتراطات الأمن البيولوجي للمنتجات الطازجة — قيود على استيراد التمور السعودية الطازجة',measure_summary_en:'Australia biosecurity SPS on fresh fruit/dates',legal_classification:'SPS Agreement Art. 2.2',wto_agreement:'SPS Agreement',wto_agreements_all:['SPS Agreement'],impact_saudi_exports:true,risk_level:'medium',recommended_action:'notify',executive_summary:'',action_rationale:'',legal_text_reference:'Biosecurity Act 2015 (AU)'},
-    {reporter_iso:'KOR',reporter_country:'Korea',partner_iso:'WLD',partner_country:'World',hs_code:'720241',product_description:'Ferrochromium / steel alloys',year:2024,ntm_code:'D101',ntm_type:'CPS',ntm_description:'Safeguard measures on steel imports',measure_summary_ar:'كوريا الجنوبية: تدابير ضمانات على واردات الصلب — تؤثر على صادرات حديد المملكة والمنتجات الفولاذية',measure_summary_en:'Korea safeguard on steel imports',legal_classification:'Agreement on Safeguards Art. 4',wto_agreement:'Agreement on Safeguards',wto_agreements_all:['Agreement on Safeguards','GATT 1994 Art. XIX'],impact_saudi_exports:true,risk_level:'high',recommended_action:'stc',executive_summary:'',action_rationale:'',legal_text_reference:'Korean Trade Act Art. 16'},
-  ];
-  ntmTotal   = NTM_DATA.length;
-  ntmTotalPg = 1;
-  document.getElementById('ntm-kt').textContent = ntmTotal;
-  document.getElementById('ntm-kh').textContent = NTM_DATA.filter(function(m){return m.risk_level==='high';}).length;
-  document.getElementById('ntm-ks').textContent = NTM_DATA.filter(function(m){return m.impact_saudi_exports;}).length;
-  document.getElementById('ntm-kd').textContent = NTM_DATA.filter(function(m){return m.recommended_action==='dispute';}).length;
-  document.getElementById('ntm-cnt').textContent = ntmTotal + ' تدبير (بيانات تجريبية — WITS غير متاح حالياً)';
-  renderNtmList();
-  renderNtmPagination();
+  // في حالة فشل الاتصال بالخادم — نعرض رسالة مع زر إعادة المحاولة
+  document.getElementById('ntm-list').innerHTML=
+    '<div class="empty-st" style="padding:20px">'+
+      '<div style="font-size:22px">⚠️</div>'+
+      '<div style="font-size:11px;color:var(--am);margin:6px 0">تعذّر الاتصال بالخادم</div>'+
+      '<div style="font-size:10px;color:var(--t3);margin-bottom:10px">تأكد أن الخادم يعمل على Render</div>'+
+      '<button class="actb" onclick="ntmPg=1;loadNtmData(false)">↻ إعادة المحاولة</button>'+
+    '</div>';
+  document.getElementById('ntm-cnt').textContent='تعذّر الاتصال';
+  ntmBusy=false;
+}
+
+// ── توليد تدابير إضافية عبر Claude AI ──
+async function ntmGenerateAI(){
+  var reporter = document.getElementById('ntm-reporter').value||'all';
+  var type     = document.getElementById('ntm-type-f').value||'all';
+  var cntEl    = document.getElementById('ntm-cnt');
+  cntEl.textContent='⏳ جارٍ التوليد عبر Claude AI...';
+  cntEl.style.color='var(--am)';
+  try{
+    var r=await fetch(API+'/api/ntm/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({reporter_iso:reporter, ntm_type:type, count:15})
+    });
+    if(r.ok){
+      var d=await r.json();
+      var newItems=d.ntm||[];
+      if(newItems.length){
+        NTM_DATA=NTM_DATA.concat(newItems);
+        ntmTotal=NTM_DATA.length;
+        // تحديث KPIs
+        document.getElementById('ntm-kt').textContent=ntmTotal;
+        document.getElementById('ntm-kh').textContent=NTM_DATA.filter(function(m){return m.risk_level==='high';}).length;
+        document.getElementById('ntm-ks').textContent=NTM_DATA.filter(function(m){return m.impact_saudi_exports;}).length;
+        document.getElementById('ntm-kd').textContent=NTM_DATA.filter(function(m){return m.recommended_action==='dispute';}).length;
+        cntEl.textContent=ntmTotal+' تدبير (أُضيف '+newItems.length+' جديد عبر AI)';
+        cntEl.style.color='var(--gr)';
+        renderNtmList();
+        return;
+      }
+    }
+    cntEl.textContent='تعذّر التوليد — تحقق من مفتاح Claude';
+    cntEl.style.color='var(--rd)';
+  }catch(e){
+    cntEl.textContent='خطأ: '+e.message;
+    cntEl.style.color='var(--rd)';
+  }
 }
 
 // ── تحديث الفلاتر ──
@@ -1524,7 +1663,361 @@ function cpNtm(i){
 // ── loadNtmSample يستدعي الـ API الحقيقي ──
 function loadNtmSample(){loadNtmData(false);}
 
+// ════════════════════════════════════════════════════════════
+// التدابير غير الجمركية — UN (UNCTAD TRAINS) + WTO (I-TIP)
+// ════════════════════════════════════════════════════════════
+var NTM_RM={high:{lbl:'خطر مرتفع',cls:'ntm-risk-high',ico:'🔴'},medium:{lbl:'خطر متوسط',cls:'ntm-risk-medium',ico:'🟡'},low:{lbl:'خطر منخفض',cls:'ntm-risk-low',ico:'🟢'}};
+var NTM_AM={monitor:{lbl:'متابعة',cls:'ntm-action-monitor'},notify:{lbl:'إخطار',cls:'ntm-action-notify'},consult:{lbl:'استشارة',cls:'ntm-action-consult'},stc:{lbl:'STC',cls:'ntm-action-stc'},dispute:{lbl:'نزاع DSU',cls:'ntm-action-dispute'}};
+var NTM_SAUDI_HS=['27','28','29','31','39','40','72','76','08','15','17','48'];
 
+function ntmCalcRisk(t,impact){
+  var b={SPS:'medium',TBT:'medium',ADP:'high',CV:'high',SG:'high',QR:'medium',TRQ:'low',EXP:'low'}[t]||'low';
+  if(impact&&b==='medium')return 'high';
+  if(impact&&b==='low')return 'medium';
+  return b;
+}
+function ntmCalcAction(risk,t){
+  if(risk==='high')return(t==='ADP'||t==='CV')?'dispute':'stc';
+  if(risk==='medium')return(t==='SPS'||t==='TBT')?'consult':'notify';
+  return 'monitor';
+}
+function ntmSaudiImpact(reporter,partner,hs){
+  var g=['SAU','ARE','KWT','QAT','BHR','OMN'];
+  if(partner&&g.indexOf((partner||'').substring(0,3).toUpperCase())>=0)return true;
+  if(reporter&&g.indexOf((reporter||'').substring(0,3).toUpperCase())>=0)return false;
+  if(hs&&NTM_SAUDI_HS.indexOf((hs||'').substring(0,2))>=0)return true;
+  return false;
+}
+
+// فتح المنصات
+function openUNTrains(){window.open('https://trainsonline.unctad.org/detailedSearch','_blank');}
+function openUNTrainsFiltered(){window.open('https://trainsonline.unctad.org/detailedSearch','_blank');}
+function openITIP(){window.open('https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search','_blank');}
+function openITIPFiltered(){
+  var m=document.getElementById('wto-member-hint')?document.getElementById('wto-member-hint').value:'';
+  var t=document.getElementById('wto-type-hint')?document.getElementById('wto-type-hint').value:'';
+  var url='https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search';
+  if(m)url+='&member='+m;
+  if(t)url+='&measureType='+t;
+  window.open(url,'_blank');
+}
+
+// ── UN State ──
+var UN_DATA=[],unPg=1,unTotalPg=1,unSelIdx=-1;
+
+async function handleUNFile(inp){
+  var f=inp.files[0];if(!f)return;
+  var st=document.getElementById('un-upload-status');
+  st.style.display='block';
+  st.innerHTML='<div class="det-dc" style="border-color:rgba(14,165,233,.3)"><div style="font-size:12px;color:#38bdf8">⏳ جارٍ قراءة: '+f.name+'</div></div>';
+  try{
+    var rows=await parseNtmFile(f);
+    if(!rows.length){st.innerHTML='<div class="det-dc" style="border-color:rgba(239,68,68,.3)"><div style="font-size:12px;color:var(--rd)">⚠️ لم يتم العثور على بيانات</div></div>';return;}
+    UN_DATA=rows.map(function(r,i){return normalizeNtmRow(r,i,'UN');});
+    unPg=1;unTotalPg=Math.ceil(UN_DATA.length/50);unSelIdx=-1;
+    document.getElementById('un-kt').textContent=UN_DATA.length;
+    document.getElementById('un-kh').textContent=UN_DATA.filter(function(m){return m.risk_level==='high';}).length;
+    document.getElementById('un-ks').textContent=UN_DATA.filter(function(m){return m.impact_saudi;}).length;
+    document.getElementById('un-kc').textContent=new Set(UN_DATA.map(function(m){return m.reporter_iso;})).size;
+    document.getElementById('un-cnt').textContent=UN_DATA.length+' تدبير';
+    renderUnList();renderUnPgBar();
+    st.innerHTML='<div class="det-dc" style="border-color:rgba(14,165,233,.3)"><div style="font-size:12px;color:#38bdf8">✅ تم تحميل <strong>'+UN_DATA.length+'</strong> تدبير — جارٍ الترجمة...</div></div>';
+    translateNtmBatch(UN_DATA,'un-list',renderUnList);
+  }catch(e){st.innerHTML='<div class="det-dc" style="border-color:rgba(239,68,68,.3)"><div style="font-size:12px;color:var(--rd)">❌ '+e.message+'</div></div>';}
+  inp.value='';
+}
+function unChangePg(d){unPg=Math.max(1,Math.min(unTotalPg,unPg+d));renderUnList();renderUnPgBar();}
+function renderUnPgBar(){
+  var el=document.getElementById('un-pgbar');
+  if(unTotalPg<=1){el.style.display='none';return;}
+  el.style.display='flex';
+  document.getElementById('un-pglbl').textContent=unPg+'/'+unTotalPg;
+  document.getElementById('un-pp').disabled=unPg<=1;
+  document.getElementById('un-pn').disabled=unPg>=unTotalPg;
+}
+function renderUnList(){renderNtmList2(UN_DATA,'un-list',unPg,unSelIdx,'un');}
+function selUnNtm(idx){unSelIdx=idx;renderUnList();var m=UN_DATA[idx];if(m)renderNtmDet2(m,idx,'un-det','un');}
+
+// ── WTO State ──
+var WTO_DATA=[],wtoPg=1,wtoTotalPg=1,wtoSelIdx=-1;
+
+async function handleWTOFile(inp){
+  var f=inp.files[0];if(!f)return;
+  var st=document.getElementById('wto-upload-status');
+  st.style.display='block';
+  st.innerHTML='<div class="det-dc" style="border-color:rgba(139,92,246,.3)"><div style="font-size:12px;color:#a78bfa">⏳ جارٍ قراءة: '+f.name+'</div></div>';
+  try{
+    var rows=await parseNtmFile(f);
+    if(!rows.length){st.innerHTML='<div class="det-dc" style="border-color:rgba(239,68,68,.3)"><div style="font-size:12px;color:var(--rd)">⚠️ لم يتم العثور على بيانات</div></div>';return;}
+    WTO_DATA=rows.map(function(r,i){return normalizeNtmRow(r,i,'WTO');});
+    wtoPg=1;wtoTotalPg=Math.ceil(WTO_DATA.length/50);wtoSelIdx=-1;
+    document.getElementById('wto-kt').textContent=WTO_DATA.length;
+    document.getElementById('wto-kh').textContent=WTO_DATA.filter(function(m){return m.risk_level==='high';}).length;
+    document.getElementById('wto-ks').textContent=WTO_DATA.filter(function(m){return m.impact_saudi;}).length;
+    document.getElementById('wto-kstc').textContent=WTO_DATA.filter(function(m){return m.recommended_action==='stc'||m.recommended_action==='dispute';}).length;
+    document.getElementById('wto-cnt').textContent=WTO_DATA.length+' تدبير';
+    renderWtoList();renderWtoPgBar();
+    st.innerHTML='<div class="det-dc" style="border-color:rgba(139,92,246,.3)"><div style="font-size:12px;color:#a78bfa">✅ تم تحميل <strong>'+WTO_DATA.length+'</strong> تدبير — جارٍ الترجمة...</div></div>';
+    translateNtmBatch(WTO_DATA,'wto-list',renderWtoList);
+  }catch(e){st.innerHTML='<div class="det-dc" style="border-color:rgba(239,68,68,.3)"><div style="font-size:12px;color:var(--rd)">❌ '+e.message+'</div></div>';}
+  inp.value='';
+}
+function wtoChangePg(d){wtoPg=Math.max(1,Math.min(wtoTotalPg,wtoPg+d));renderWtoList();renderWtoPgBar();}
+function renderWtoPgBar(){
+  var el=document.getElementById('wto-pgbar');
+  if(wtoTotalPg<=1){el.style.display='none';return;}
+  el.style.display='flex';
+  document.getElementById('wto-pglbl').textContent=wtoPg+'/'+wtoTotalPg;
+  document.getElementById('wto-pp').disabled=wtoPg<=1;
+  document.getElementById('wto-pn').disabled=wtoPg>=wtoTotalPg;
+}
+function renderWtoList(){renderNtmList2(WTO_DATA,'wto-list',wtoPg,wtoSelIdx,'wto');}
+function selWtoNtm(idx){wtoSelIdx=idx;renderWtoList();var m=WTO_DATA[idx];if(m)renderNtmDet2(m,idx,'wto-det','wto');}
+
+// ── مشترك: قراءة الملف ──
+async function parseNtmFile(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        var data=new Uint8Array(e.target.result);
+        // CSV
+        if(file.name.toLowerCase().endsWith('.csv')){
+          var text=new TextDecoder('utf-8').decode(data);
+          var lines=text.split('\n').filter(function(l){return l.trim();});
+          if(!lines.length){resolve([]);return;}
+          var sep=lines[0].includes('\t')?'\t':',';
+          var headers=lines[0].split(sep).map(function(h){return h.replace(/^"|"$/g,'').trim();});
+          resolve(lines.slice(1).map(function(l){
+            var cols=l.split(sep);var obj={};
+            headers.forEach(function(h,i){obj[h]=(cols[i]||'').replace(/^"|"$/g,'').trim();});
+            return obj;
+          }).filter(function(r){return Object.values(r).some(Boolean);}));
+          return;
+        }
+        // Excel via SheetJS (loaded from CDN if available)
+        if(typeof XLSX!=='undefined'){
+          var wb=XLSX.read(data,{type:'array'});
+          var ws=wb.Sheets[wb.SheetNames[0]];
+          resolve(XLSX.utils.sheet_to_json(ws,{defval:''}));return;
+        }
+        // Fallback: read as text and parse tab/comma
+        var text2=new TextDecoder('utf-8',{fatal:false}).decode(data);
+        var lines2=text2.split('\n').filter(function(l){return l.trim()&&!l.startsWith('<?')&&!l.startsWith('<html');});
+        if(lines2.length<2){resolve([]);return;}
+        var sep2=lines2[0].includes('\t')?'\t':',';
+        var h2=lines2[0].split(sep2).map(function(x){return x.replace(/^"|"$/g,'').trim();});
+        resolve(lines2.slice(1).map(function(l){
+          var c=l.split(sep2);var o={};
+          h2.forEach(function(h,i){o[h]=(c[i]||'').replace(/^"|"$/g,'').trim();});
+          return o;
+        }).filter(function(r){return Object.values(r).some(Boolean);}));
+      }catch(err){reject(err);}
+    };
+    reader.onerror=function(){reject(new Error('FileReader error'));};
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// ── تطبيع صف ──
+function normalizeNtmRow(row,idx,src){
+  function g(){for(var i=0;i<arguments.length;i++){var v=row[arguments[i]];if(v&&String(v).trim())return String(v).trim();}return '';}
+  var reporter=g('Reporting Member','Member imposing','Reporter','Reporting Economy','Member','reporterName');
+  var partner =g('Affected Partner','Partner affected','Partner','partnerName','Affected Member');
+  var hs      =g('HS Code','HS','Product Code','hsCode','hs_code','Subheading','HS code');
+  var type    =g('Measure Type','Type','NTM Type','Measure','Category','ntm_type','Type of measure','measureType');
+  var desc    =g('Measure Description','Description','Title','Short Title','measureDescription','measure_description');
+  var year    =g('Year','Date','Year initiated','Start Year','year','distributionDate');
+  var legal   =g('Legal basis','Legal Reference','Regulation','legal_text_reference','Legal Text Reference');
+  var product =g('Product Description','Product','Affected Products','product_description','Products');
+  var code    =g('NTM Code','Code','ntmCode','Measure Code','NTM code');
+  var phase   =g('Phase','Status','In Force','phase','status');
+
+  var typeU=type.toUpperCase();
+  var tc='OTH';
+  if(typeU.includes('SPS'))tc='SPS';
+  else if(typeU.includes('TBT'))tc='TBT';
+  else if(typeU.includes('ANTI')||typeU.includes('ADP')||typeU.includes('DUMP'))tc='ADP';
+  else if(typeU.includes('COUNTER')||typeU.startsWith('CV'))tc='CV';
+  else if(typeU.includes('SAFE')||typeU.startsWith('SG'))tc='SG';
+  else if(typeU.includes('QUOT')||typeU.startsWith('QR'))tc='QR';
+  else if(typeU.includes('TRQ')||typeU.includes('TARIFF-RATE'))tc='TRQ';
+  else if(typeU.includes('EXPORT')||typeU.startsWith('XS'))tc='EXP';
+
+  var yr=parseInt(year)||new Date().getFullYear();
+  var impact=ntmSaudiImpact(reporter,partner,hs);
+  var risk=ntmCalcRisk(tc,impact);
+  var action=ntmCalcAction(risk,tc);
+
+  return {
+    _idx:idx,source:src,
+    reporter_iso:(reporter||'?').substring(0,3).toUpperCase(),
+    reporter_country:reporter,
+    partner_iso:(partner||'WLD').substring(0,3).toUpperCase(),
+    partner_country:partner||'World',
+    hs_code:hs, product_description:product,
+    year:yr, ntm_code:code, ntm_type:tc,
+    ntm_description:type, measure_en:desc, measure_ar:'',
+    legal_text_reference:legal, phase:phase,
+    impact_saudi:impact, risk_level:risk, recommended_action:action,
+    executive_summary:'', action_rationale:'', ai_analysis:''
+  };
+}
+
+// ── عرض قائمة مشترك ──
+function renderNtmList2(data,listId,pg,selIdx,prefix){
+  var el=document.getElementById(listId);
+  if(!data.length){
+    el.innerHTML='<div class="empty-st"><div style="font-size:28px;opacity:.25">'+(prefix==='un'?'🇺🇳':'⚖️')+'</div><div style="font-size:10px">ارفع ملف Excel من '+(prefix==='un'?'UNCTAD TRAINS':'WTO I-TIP')+'</div></div>';
+    return;
+  }
+  var page=data.slice((pg-1)*50,pg*50);
+  var ac=prefix==='un'?{'bg':'rgba(14,165,233,.1)','c':'#38bdf8','b':'rgba(14,165,233,.2)'}:{'bg':'rgba(139,92,246,.1)','c':'#c4b5fd','b':'rgba(139,92,246,.2)'};
+  el.innerHTML=page.map(function(m,i){
+    var idx=(pg-1)*50+i;
+    var rm=NTM_RM[m.risk_level]||NTM_RM.low;
+    var am=NTM_AM[m.recommended_action]||NTM_AM.monitor;
+    return '<div class="ntm-card'+(selIdx===idx?' sel':'')+'" onclick="sel'+prefix.toUpperCase()+'Ntm('+idx+')">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
+        '<div style="display:flex;gap:3px">'+
+          '<span class="bdg" style="background:'+ac.bg+';color:'+ac.c+';border:1px solid '+ac.b+'">'+(m.ntm_type||'—')+'</span>'+
+          '<span class="bdg '+rm.cls+'" style="font-size:8px">'+rm.ico+' '+rm.lbl+'</span>'+
+        '</div>'+
+        '<span style="font-size:9px;color:var(--t4)">'+(m.year||'')+'</span>'+
+      '</div>'+
+      '<div style="font-size:11px;font-weight:500;color:#b8cce8;line-height:1.5;margin-bottom:4px">'+(m.measure_ar||m.measure_en||m.ntm_description||'تدبير غير جمركي')+'</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center">'+
+        '<span style="font-size:10px;color:var(--t3)">'+(m.reporter_country||m.reporter_iso||'—')+(m.impact_saudi?' <span style="color:var(--cy);font-size:9px">• SA</span>':'')+'</span>'+
+        '<span class="bdg '+am.cls+'" style="font-size:9px">'+am.lbl+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── تفاصيل مشترك ──
+function renderNtmDet2(m,idx,detId,prefix){
+  var rm=NTM_RM[m.risk_level]||NTM_RM.low;
+  var am=NTM_AM[m.recommended_action]||NTM_AM.monitor;
+  var rc=m.risk_level==='high'?'var(--rd)':m.risk_level==='medium'?'var(--am)':'var(--gr)';
+  var rb=m.risk_level==='high'?'background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2)':m.risk_level==='medium'?'background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2)':'background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2)';
+  var ac=prefix==='un'?'#38bdf8':'#a78bfa';
+  var ab=prefix==='un'?'rgba(14,165,233,.15)':'rgba(139,92,246,.15)';
+
+  document.getElementById(detId).innerHTML=
+    '<div style="padding:10px 12px;border-radius:10px;margin-bottom:10px;'+rb+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
+        '<span style="font-size:12px;font-weight:700;color:'+rc+'">'+rm.ico+' '+rm.lbl+'</span>'+
+        '<span class="bdg '+am.cls+'">'+am.lbl+'</span>'+
+      '</div>'+
+      '<div style="font-size:9px;color:var(--t3)">'+(m.risk_level==='high'?'يُرجَّح تعارضه مع WTO':m.risk_level==='medium'?'يستوجب المتابعة':'تدبير روتيني')+'</div>'+
+    '</div>'+
+    '<div class="det-dc" style="margin-bottom:8px">'+
+      '<div class="det-hd">بيانات التدبير</div>'+
+      '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'+
+        '<span class="bdg" style="background:rgba(14,165,233,.08);color:'+ac+';border:1px solid '+ab+'">'+(m.ntm_type||'—')+'</span>'+
+        (m.ntm_code?'<span class="bdg" style="background:rgba(14,165,233,.06);color:'+ac+';border:1px solid '+ab+'">'+m.ntm_code+'</span>':'')+
+        (m.impact_saudi?'<span class="bdg" style="background:rgba(6,182,212,.1);color:#22d3ee;border:1px solid rgba(6,182,212,.2)">🇸🇦 يؤثر SA</span>':'')+
+        (m.phase?'<span class="bdg" style="background:rgba(71,85,105,.2);color:#94a3b8;border:1px solid rgba(71,85,105,.3)">'+m.phase+'</span>':'')+
+        '<span class="bdg" style="background:rgba(71,85,105,.1);color:#64748b;border:1px solid rgba(71,85,105,.2)">'+m.source+'</span>'+
+      '</div>'+
+      '<div style="font-size:13px;font-weight:600;color:#b8cce8;margin-bottom:4px;line-height:1.5">'+(m.measure_ar||m.measure_en||m.ntm_description||'—')+'</div>'+
+      (m.measure_ar&&m.measure_en?'<div style="font-size:10px;color:var(--t3);margin-bottom:8px">'+m.measure_en+'</div>':'')+
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:8px;border-top:1px solid var(--b1)">'+
+        '<div><div style="font-size:9px;color:var(--t4)">الدولة المطبِّقة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.reporter_country||m.reporter_iso||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4)">الدولة الشريكة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.partner_country||m.partner_iso||'WLD')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4)">كود HS</div><div style="font-size:11px;font-weight:600;color:#c0d4f0;font-family:monospace">'+(m.hs_code||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4)">المنتج</div><div style="font-size:10px;color:var(--t2)">'+(m.product_description||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4)">المرجع القانوني</div><div style="font-size:10px;color:var(--t3)">'+(m.legal_text_reference||'—')+'</div></div>'+
+        '<div><div style="font-size:9px;color:var(--t4)">السنة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.year||'—')+'</div></div>'+
+      '</div>'+
+    '</div>'+
+    (m.executive_summary?
+      '<div class="det-dc" style="margin-bottom:8px;border-color:'+ab+'">'+
+        '<div class="det-hd">الملخص التنفيذي</div>'+
+        '<div style="font-size:12px;line-height:1.9;color:#b8cce8">'+m.executive_summary+'</div>'+
+      '</div>':'')+
+    (m.action_rationale?
+      '<div class="det-dc" style="margin-bottom:8px">'+
+        '<div class="det-hd">مبررات التوصية — '+am.lbl+'</div>'+
+        '<div style="font-size:12px;line-height:1.9;color:#b8cce8">'+m.action_rationale+'</div>'+
+        '<div style="display:flex;gap:6px;margin-top:8px">'+
+          '<button class="actb" onclick="analyzeNtmRowAI(\''+prefix+'\','+idx+')">🔄 إعادة تحليل</button>'+
+          '<button class="actb" onclick="cpNtmRow(\''+prefix+'\','+idx+')">📋 نسخ</button>'+
+        '</div>'+
+      '</div>':
+      '<div class="btn-ctr"><button class="btn-ai" onclick="analyzeNtmRowAI(\''+prefix+'\','+idx+')" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
+}
+
+// ── تحليل AI ──
+async function analyzeNtmRowAI(prefix,idx){
+  var data=prefix==='un'?UN_DATA:WTO_DATA;
+  var m=data[idx];if(!m)return;
+  var detId=prefix+'-det';
+  document.getElementById(detId).insertAdjacentHTML('beforeend',
+    '<div class="det-dc" id="'+prefix+'-ai'+idx+'" style="border-color:rgba(139,92,246,.2)">'+
+      '<div class="det-hd">التحليل القانوني AI</div>'+
+      '<div class="shim" style="width:80%"></div><div class="shim"></div><div class="shim" style="width:60%"></div>'+
+      '<div style="text-align:center;font-size:10px;color:var(--am);margin-top:6px">⏳ جارٍ التحليل...</div>'+
+    '</div>');
+  try{
+    var r=await fetch(API+'/api/ntm/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        reporter_country:m.reporter_country,reporter_iso:m.reporter_iso,
+        partner_country:m.partner_country,partner_iso:m.partner_iso,
+        hs_code:m.hs_code,product_description:m.product_description,
+        year:m.year,ntm_code:m.ntm_code,ntm_type:m.ntm_type,
+        ntm_description:m.ntm_description,measure_summary_en:m.measure_en,
+        legal_text_reference:m.legal_text_reference,
+        wto_agreement:m.ntm_type==='SPS'?'SPS Agreement':m.ntm_type==='TBT'?'TBT Agreement':'GATT 1994'
+      })
+    });
+    if(r.ok){
+      var d=await r.json();
+      if(d.analysis){
+        m.executive_summary=d.executive_summary||'';
+        m.action_rationale=d.action_rationale||'';
+        m.ai_analysis=d.analysis;
+        var box=document.getElementById(prefix+'-ai'+idx);
+        if(box)box.outerHTML=
+          '<div class="det-dc" style="border-color:rgba(139,92,246,.2)">'+
+            '<div class="det-hd">التحليل القانوني AI</div>'+
+            '<div style="font-size:12px;line-height:1.9;color:#b8cce8;white-space:pre-wrap">'+
+              d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+
+            '</div>'+
+            '<button class="actb" onclick="cpNtmRow(\''+prefix+'\','+idx+')" style="margin-top:8px">📋 نسخ التحليل</button>'+
+          '</div>';
+        return;
+      }
+    }
+  }catch(e){}
+  var box2=document.getElementById(prefix+'-ai'+idx);
+  if(box2)box2.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
+}
+
+function cpNtmRow(prefix,idx){
+  var m=(prefix==='un'?UN_DATA:WTO_DATA)[idx];if(!m)return;
+  var txt='التدبير: '+m.ntm_type+' — '+(m.ntm_code||'')+'\nالدولة: '+(m.reporter_country||m.reporter_iso)+'\nHS: '+(m.hs_code||'—')+'\nالخطر: '+m.risk_level+'\nالتوصية: '+((NTM_AM[m.recommended_action]||{}).lbl||'')+'\n\n'+(m.executive_summary||'')+'\n\n'+(m.action_rationale||m.ai_analysis||'');
+  navigator.clipboard&&navigator.clipboard.writeText(txt).then(function(){alert('✅ تم النسخ');});
+}
+
+// ── ترجمة دفعية ──
+async function translateNtmBatch(data,listId,renderFn){
+  var need=data.filter(function(m){return !m.measure_ar&&m.measure_en;}).slice(0,12);
+  if(!need.length)return;
+  try{
+    var r=await fetch(API+'/api/translate-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:need.map(function(m){return m.measure_en;})})});
+    if(r.ok){var d=await r.json();(d.translations||[]).forEach(function(t,i){if(t)need[i].measure_ar=t;});renderFn();}
+  }catch(e){}
+}
+
+// تحميل SheetJS لدعم Excel
+(function(){
+  if(typeof XLSX==='undefined'){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    document.head.appendChild(s);
+  }
+})();
 </script>
 </body>
 </html>
