@@ -532,37 +532,30 @@ button{font-family:inherit;cursor:pointer}
     </div>
 
     <div id="p-ntm-un" class="pnl">
-      <div class="sec-title">🛡️ التدابير غير الجمركية UN <span>— UNCTAD TRAINS</span></div>
-      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi" style="--kc:#0ea5e9"><div class="kpi-ico">🇺🇳</div><div class="kpi-val" id="un-kt" style="color:#0ea5e9">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">اضغط تحميل</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="un-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
-        <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="un-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
-        <div class="kpi" style="--kc:var(--gr)"><div class="kpi-ico">📊</div><div class="kpi-val" id="un-kc" style="color:var(--gr)">0</div><div class="kpi-lbl">دول محلّلة</div><div class="kpi-sub">في البيانات</div></div>
-      </div>
-      <div class="dc" style="margin-bottom:12px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" onclick="_load('un')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">📋 تحميل بيانات تجريبية</button>
-          <button class="btn-ai" onclick="window.open('https://trainsonline.unctad.org/detailedSearch','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح UNCTAD TRAINS</button>
-          <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="un-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
-          <span id="un-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
+      <div class="sec-title">🛡️ التدابير غير الجمركية UN <span>— بحث مباشر في UNCTAD TRAINS</span></div>
+
+      <div class="adv-form">
+        <div class="adv-grid">
+          <div class="adv-field"><label>الدولة</label><input class="si" id="un-country" type="text" placeholder="مثال: Saudi Arabia / China / EU"/></div>
+          <div class="adv-field"><label>المنتج أو رمز HS</label><input class="si" id="un-product" type="text" placeholder="مثال: Steel / 7208 / plastics"/></div>
+          <div class="adv-field"><label>نوع التدبير</label><select class="ss" id="un-measure" style="margin:0"><option value="">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option><option value="NTM">NTM</option></select></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div>
-            <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="un-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
-            <div id="un-list" style="max-height:440px;overflow-y:auto"><div class="empty-st"><div style="font-size:20px;opacity:.2">🇺🇳</div><div style="font-size:9px">اضغط "تحميل بيانات تجريبية"</div></div></div>
-            <div id="un-pg" style="display:none;justify-content:center;align-items:center;gap:8px;padding:5px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;margin-top:5px">
-              <button class="actb" id="un-pp" style="padding:3px 9px;font-size:10px">→ السابق</button>
-              <span id="un-pl" style="font-size:10px;color:var(--t2)">1/1</span>
-              <button class="actb" id="un-pn" style="padding:3px 9px;font-size:10px">التالي ←</button>
-            </div>
-          </div>
-          <div>
-            <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="un-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
-          </div>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <button class="btn-ai" onclick="searchUNNTM()" style="padding:8px 18px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">🔍 بحث مباشر</button>
+          <button class="actb" onclick="clearNTMSearch('un')">مسح</button>
+          <a class="actb bl" href="https://trainsonline.unctad.org/detailedSearch" target="_blank" style="text-decoration:none">فتح المصدر الرسمي</a>
+          <span id="un-search-status" style="font-size:10px;color:var(--t3)"></span>
         </div>
       </div>
-      <div class="dc"><div class="det-hd">🔗 مصادر UNCTAD</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+
+      <div class="dc">
+        <div class="det-hd">نتائج UNCTAD TRAINS</div>
+        <div id="un-results">
+          <div class="empty-st" style="padding:24px"><div style="font-size:22px;opacity:.25">🇺🇳</div><div style="font-size:11px">أدخل الدولة أو المنتج ثم اضغط بحث مباشر.</div></div>
+        </div>
+      </div>
+
+      <div class="dc"><div class="det-hd">🔗 مصادر UNCTAD الرسمية</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
         <a href="https://trainsonline.unctad.org/detailedSearch" target="_blank" class="rl"><span class="ri">🔍</span><div><div class="rn">TRAINS Detailed Search</div><div class="ru">trainsonline.unctad.org</div></div></a>
         <a href="https://trainsonline.unctad.org/bulkDataDownload" target="_blank" class="rl"><span class="ri">📥</span><div><div class="rn">Bulk Download</div><div class="ru">trainsonline.unctad.org</div></div></a>
         <a href="https://unctad.org/topic/trade-analysis/non-tariff-measures" target="_blank" class="rl"><span class="ri">📋</span><div><div class="rn">UNCTAD NTM Hub</div><div class="ru">unctad.org</div></div></a>
@@ -570,40 +563,33 @@ button{font-family:inherit;cursor:pointer}
     </div>
 
     <div id="p-ntm-wto" class="pnl">
-      <div class="sec-title">🛡️ التدابير غير الجمركية WTO <span>— I-TIP Goods · 28,936 تدبير</span></div>
-      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi" style="--kc:var(--pu)"><div class="kpi-ico">⚖️</div><div class="kpi-val" id="wto-kt" style="color:var(--pu)">0</div><div class="kpi-lbl">إجمالي التدابير</div><div class="kpi-sub">اضغط تحميل</div></div>
-        <div class="kpi" style="--kc:var(--rd)"><div class="kpi-ico">⚠️</div><div class="kpi-val" id="wto-kh" style="color:var(--rd)">0</div><div class="kpi-lbl">خطر مرتفع</div><div class="kpi-sub">تستدعي إجراءً</div></div>
-        <div class="kpi" style="--kc:var(--cy)"><div class="kpi-ico">🇸🇦</div><div class="kpi-val" id="wto-ks" style="color:var(--cy)">0</div><div class="kpi-lbl">يؤثر على SA</div><div class="kpi-sub">صادرات المملكة</div></div>
-        <div class="kpi" style="--kc:var(--am)"><div class="kpi-ico">🔔</div><div class="kpi-val" id="wto-kstc" style="color:var(--am)">0</div><div class="kpi-lbl">قابل للنزاع</div><div class="kpi-sub">STCs/Dispute</div></div>
-      </div>
-      <div class="dc" style="margin-bottom:12px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" onclick="_load('wto')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">📋 تحميل بيانات تجريبية</button>
-          <button class="btn-ai" onclick="window.open('https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح WTO I-TIP</button>
-          <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="wto-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
-          <span id="wto-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
+      <div class="sec-title">🛡️ التدابير غير الجمركية WTO <span>— بحث مباشر في WTO i-TIP Goods</span></div>
+
+      <div class="adv-form">
+        <div class="adv-grid">
+          <div class="adv-field"><label>الدولة العضو</label><input class="si" id="wto-member" type="text" placeholder="مثال: Saudi Arabia / European Union / China"/></div>
+          <div class="adv-field"><label>رمز HS</label><input class="si" id="wto-hs" type="text" placeholder="مثال: 7208 / 39 / 2710"/></div>
+          <div class="adv-field"><label>نوع التدبير</label><select class="ss" id="wto-measure" style="margin:0"><option value="">الكل</option><option value="SPS">SPS</option><option value="TBT">TBT</option><option value="ADP">Anti-Dumping</option><option value="SG">Safeguards</option><option value="CV">Countervailing</option></select></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div>
-            <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="wto-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
-            <div id="wto-list" style="max-height:440px;overflow-y:auto"><div class="empty-st"><div style="font-size:20px;opacity:.2">⚖️</div><div style="font-size:9px">اضغط "تحميل بيانات تجريبية"</div></div></div>
-            <div id="wto-pg" style="display:none;justify-content:center;align-items:center;gap:8px;padding:5px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;margin-top:5px">
-              <button class="actb" id="wto-pp" style="padding:3px 9px;font-size:10px">→ السابق</button>
-              <span id="wto-pl" style="font-size:10px;color:var(--t2)">1/1</span>
-              <button class="actb" id="wto-pn" style="padding:3px 9px;font-size:10px">التالي ←</button>
-            </div>
-          </div>
-          <div>
-            <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="wto-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
-          </div>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <button class="btn-ai" onclick="searchWTONTM()" style="padding:8px 18px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">🔍 بحث مباشر</button>
+          <button class="actb" onclick="clearNTMSearch('wto')">مسح</button>
+          <a class="actb bl" href="https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search" target="_blank" style="text-decoration:none">فتح المصدر الرسمي</a>
+          <span id="wto-search-status" style="font-size:10px;color:var(--t3)"></span>
         </div>
       </div>
-      <div class="dc"><div class="det-hd">🔗 مصادر WTO</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+
+      <div class="dc">
+        <div class="det-hd">نتائج WTO i-TIP Goods</div>
+        <div id="wto-results">
+          <div class="empty-st" style="padding:24px"><div style="font-size:22px;opacity:.25">⚖️</div><div style="font-size:11px">أدخل الدولة أو رمز HS ثم اضغط بحث مباشر.</div></div>
+        </div>
+      </div>
+
+      <div class="dc"><div class="det-hd">🔗 مصادر WTO الرسمية</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
         <a href="https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search" target="_blank" class="rl"><span class="ri">🔍</span><div><div class="rn">I-TIP Detailed Query</div><div class="ru">i-tip.wto.org</div></div></a>
         <a href="https://i-tip.wto.org/goods/Forms/MemberView.aspx" target="_blank" class="rl"><span class="ri">🌍</span><div><div class="rn">I-TIP by Members</div><div class="ru">i-tip.wto.org</div></div></a>
-        <a href="https://www.wto.org/english/tratop_e/dispu_e/dispu_e.htm" target="_blank" class="rl"><span class="ri">🏛️</span><div><div class="rn">WTO DSU النزاعات</div><div class="ru">wto.org</div></div></a>
+        <a href="https://www.wto.org/english/tratop_e/tpr_e/tpr_e.htm" target="_blank" class="rl"><span class="ri">📊</span><div><div class="rn">Trade Policy Reviews</div><div class="ru">wto.org</div></div></a>
       </div></div>
     </div>
     </div></div><!-- /main -->
@@ -721,7 +707,7 @@ function applyData(notifs,total,pages,source){
   var sp=D.filter(function(n){return n.type==='SPS';}).length;
   var tb=D.filter(function(n){return n.type==='TBT';}).length;
   var tot=total||D.length;
-  setStatus('ok',tot.toLocaleString()+' إخطار'+(source==='demo'?' (تجريبي)':''));
+  setStatus('ok',tot.toLocaleString()+' إخطار'+(source==='demo'?' (نموذجي)':''));
   document.getElementById('st-t').textContent=tot.toLocaleString();
   document.getElementById('st-o').textContent=op;
   document.getElementById('st-s').textContent=sp;
@@ -730,7 +716,7 @@ function applyData(notifs,total,pages,source){
   document.getElementById('kpi-o').textContent=op;
   document.getElementById('kpi-s').textContent=sp;
   document.getElementById('kpi-b').textContent=tb;
-  document.getElementById('kpi-ts').textContent=source==='demo'?'بيانات تجريبية':'صفحة '+pg;
+  document.getElementById('kpi-ts').textContent=source==='demo'?'بيانات نموذجية':'صفحة '+pg;
   document.getElementById('kpi-os').textContent=op>0?'⚠️ تتطلب مراجعة':'لا إخطارات مفتوحة';
   if(D.length){document.getElementById('kpi-ss').textContent=Math.round(sp/D.length*100)+'% من الإجمالي';document.getElementById('kpi-bs').textContent=Math.round(tb/D.length*100)+'% من الإجمالي';}
   renderList();
@@ -1350,7 +1336,7 @@ function _load(pf){
   _nd[pf].data=raw.map(_norm);
   _nd[pf].pg=1;_nd[pf].tot=Math.max(1,Math.ceil(_nd[pf].data.length/50));_nd[pf].sel=-1;
   _kpi(pf);_list(pf);_pgBar(pf);
-  document.getElementById(pf+'-status').textContent=_nd[pf].data.length+' تدبير (بيانات تجريبية — UNCTAD/WTO)';
+  document.getElementById(pf+'-status').textContent=_nd[pf].data.length+' تدبير (بيانات نموذجية — UNCTAD/WTO)';
 }
 
 // ── رفع الملف ──
@@ -1440,6 +1426,81 @@ document.addEventListener('DOMContentLoaded', function(){
   _setupFile('un');
   _setupFile('wto');
 });
+
+
+// ═══ NTM DIRECT SEARCH: UNCTAD TRAINS + WTO I-TIP ═══
+function _escapeHtml(s){return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function _ntmOfficialUrl(source, data){
+  if(source==='un'){
+    return 'https://trainsonline.unctad.org/detailedSearch';
+  }
+  return 'https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search';
+}
+function _renderNTMResult(source, payload){
+  var box=document.getElementById(source==='un'?'un-results':'wto-results');
+  var status=document.getElementById(source==='un'?'un-search-status':'wto-search-status');
+  var official=payload.official_url||_ntmOfficialUrl(source, payload);
+  var title=source==='un'?'UNCTAD TRAINS':'WTO i-TIP Goods';
+  status.textContent='تم إنشاء البحث المباشر';
+  var summary='';
+  if(payload.query){
+    var chips=[];
+    Object.keys(payload.query).forEach(function(k){ if(payload.query[k]) chips.push('<span class="kwtag">'+_escapeHtml(k)+': '+_escapeHtml(payload.query[k])+'</span>'); });
+    if(chips.length) summary='<div class="ptags" style="margin-bottom:9px">'+chips.join('')+'</div>';
+  }
+  box.innerHTML='<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px">'
+    +'<a class="btn-ai" href="'+official+'" target="_blank" style="padding:8px 16px;font-size:11px;text-decoration:none">فتح النتائج في المصدر الرسمي</a>'
+    +'<button class="actb" onclick="copyText(\''+official.replace(/'/g,'\\\'')+'\')">نسخ الرابط</button>'
+    +'</div>'+summary
+    +'<div style="background:var(--bg3);border:1px solid var(--b1);border-radius:13px;padding:10px;margin-bottom:10px;font-size:11px;color:var(--t2);line-height:1.8">'
+    +'يعرض هذا القسم البحث من داخل المنصة مع رابط مباشر للمصدر الرسمي. بعض المواقع الرسمية قد تمنع التضمين الكامل داخل iframe لأسباب أمنية؛ عند ظهور صفحة فارغة استخدم زر فتح النتائج أعلاه.'
+    +'</div>'
+    +'<iframe title="'+title+'" src="'+official+'" style="width:100%;height:760px;border:1px solid var(--b1);border-radius:14px;background:white"></iframe>';
+}
+async function _runNTMSearch(source, params){
+  var status=document.getElementById(source==='un'?'un-search-status':'wto-search-status');
+  status.textContent='جارٍ تجهيز البحث...';
+  try{
+    var qs=new URLSearchParams(params).toString();
+    var endpoint=source==='un'?'/api/ntm/un/search':'/api/ntm/wto/search';
+    var r=await fetch(API+endpoint+'?'+qs);
+    var data=await r.json();
+    if(!data.ok) throw new Error(data.error||'تعذر تنفيذ البحث');
+    _renderNTMResult(source,data);
+  }catch(e){
+    var fallback={ok:true,official_url:_ntmOfficialUrl(source,params),query:params};
+    _renderNTMResult(source,fallback);
+    status.textContent='تم استخدام الرابط الرسمي المباشر';
+  }
+}
+function searchUNNTM(){
+  _runNTMSearch('un',{
+    country:document.getElementById('un-country').value.trim(),
+    product:document.getElementById('un-product').value.trim(),
+    measure:document.getElementById('un-measure').value
+  });
+}
+function searchWTONTM(){
+  _runNTMSearch('wto',{
+    member:document.getElementById('wto-member').value.trim(),
+    hs:document.getElementById('wto-hs').value.trim(),
+    measure:document.getElementById('wto-measure').value
+  });
+}
+function clearNTMSearch(source){
+  if(source==='un'){
+    ['un-country','un-product'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('un-measure').value='';
+    document.getElementById('un-search-status').textContent='';
+    document.getElementById('un-results').innerHTML='<div class="empty-st" style="padding:24px"><div style="font-size:22px;opacity:.25">🇺🇳</div><div style="font-size:11px">أدخل الدولة أو المنتج ثم اضغط بحث مباشر.</div></div>';
+  }else{
+    ['wto-member','wto-hs'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('wto-measure').value='';
+    document.getElementById('wto-search-status').textContent='';
+    document.getElementById('wto-results').innerHTML='<div class="empty-st" style="padding:24px"><div style="font-size:22px;opacity:.25">⚖️</div><div style="font-size:11px">أدخل الدولة أو رمز HS ثم اضغط بحث مباشر.</div></div>';
+  }
+}
+function copyText(t){navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){alert('✅ تم نسخ الرابط');});}
 
 // ═══ START ═══
 init();
