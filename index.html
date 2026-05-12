@@ -279,8 +279,8 @@ button{font-family:inherit;cursor:pointer}
     <button class="nb" onclick="goPage('search',this)">🔍 بحث متقدم</button>
     <button class="nb" onclick="goPage('compare',this)">⚖️ مقارنة</button>
     <button class="nb" onclick="goPage('alerts',this)">🔔 تنبيهاتي</button>
-    <button class="nb" onclick="goPage('ntm-un',this)">🛡️ التدابير غير الجمركية UN</button>
-    <button class="nb" onclick="goPage('ntm-wto',this)">🛡️ التدابير غير الجمركية WTO</button>
+    <button class="nb" onclick="goPage('ntm-un',this);setTimeout(function(){if(typeof loadUnSample==='function'&&(!window.UN_DATA||!UN_DATA.length))loadUnSample();},50)">🛡️ التدابير غير الجمركية UN</button>
+    <button class="nb" onclick="goPage('ntm-wto',this);setTimeout(function(){if(typeof loadWtoSample==='function'&&(!window.WTO_DATA||!WTO_DATA.length))loadWtoSample();},50)">🛡️ التدابير غير الجمركية WTO</button>
 
   </nav>
   <div class="hright">
@@ -766,6 +766,13 @@ button{font-family:inherit;cursor:pointer}
 </div><!-- /wrap -->
 
 <script>
+var UN_DATA=[]; var WTO_DATA=[];
+var NTM_RM={high:{lbl:'خطر مرتفع',cls:'ntm-risk-high',ico:'🔴'},medium:{lbl:'خطر متوسط',cls:'ntm-risk-medium',ico:'🟡'},low:{lbl:'خطر منخفض',cls:'ntm-risk-low',ico:'🟢'}};
+var NTM_AM={monitor:{lbl:'متابعة',cls:'ntm-action-monitor'},notify:{lbl:'إخطار',cls:'ntm-action-notify'},consult:{lbl:'استشارة',cls:'ntm-action-consult'},stc:{lbl:'STC',cls:'ntm-action-stc'},dispute:{lbl:'نزاع DSU',cls:'ntm-action-dispute'}};
+var unPg=1,unTotalPg=1,unSelIdx=-1;
+var wtoPg=1,wtoTotalPg=1,wtoSelIdx=-1;
+// (moved to top)
+// (moved to top)
 var API="https://lmns-lqnwny-ltjr-ldwly.onrender.com";
 var FL={C682:'🇸🇦',C784:'🇦🇪',C634:'🇶🇦',C414:'🇰🇼',C048:'🇧🇭',C512:'🇴🇲',C400:'🇯🇴',C818:'🇪🇬',C504:'🇲🇦',C788:'🇹🇳',C840:'🇺🇸',C381:'🇪🇺',C156:'🇨🇳',C356:'🇮🇳',C392:'🇯🇵',C826:'🇬🇧',C276:'🇩🇪',C250:'🇫🇷',C036:'🇦🇺',C124:'🇨🇦',C076:'🇧🇷',C410:'🇰🇷',C792:'🇹🇷',C360:'🇮🇩',C458:'🇲🇾',C702:'🇸🇬',C704:'🇻🇳',C152:'🇨🇱',C566:'🇳🇬',C710:'🇿🇦',C554:'🇳🇿'};
 var MN={C682:'المملكة العربية السعودية',C784:'الإمارات',C634:'قطر',C414:'الكويت',C840:'الولايات المتحدة',C381:'الاتحاد الأوروبي',C156:'الصين',C356:'الهند',C392:'اليابان',C826:'المملكة المتحدة',C276:'ألمانيا',C250:'فرنسا',C036:'أستراليا',C124:'كندا',C076:'البرازيل',C410:'كوريا الجنوبية',C792:'تركيا',C360:'إندونيسيا',C458:'ماليزيا',C702:'سنغافورة',C704:'فيتنام'};
@@ -1667,8 +1674,8 @@ function loadNtmSample(){loadNtmData(false);}
 // ════════════════════════════════════════════════════════════
 // التدابير غير الجمركية — UN (UNCTAD TRAINS) + WTO (I-TIP)
 // ════════════════════════════════════════════════════════════
-var NTM_RM={high:{lbl:'خطر مرتفع',cls:'ntm-risk-high',ico:'🔴'},medium:{lbl:'خطر متوسط',cls:'ntm-risk-medium',ico:'🟡'},low:{lbl:'خطر منخفض',cls:'ntm-risk-low',ico:'🟢'}};
-var NTM_AM={monitor:{lbl:'متابعة',cls:'ntm-action-monitor'},notify:{lbl:'إخطار',cls:'ntm-action-notify'},consult:{lbl:'استشارة',cls:'ntm-action-consult'},stc:{lbl:'STC',cls:'ntm-action-stc'},dispute:{lbl:'نزاع DSU',cls:'ntm-action-dispute'}};
+// (moved to top)
+// (moved to top)
 var NTM_SAUDI_HS=['27','28','29','31','39','40','72','76','08','15','17','48'];
 
 function ntmCalcRisk(t,impact){
@@ -1704,7 +1711,7 @@ function openITIPFiltered(){
 }
 
 // ── UN State ──
-var UN_DATA=[],unPg=1,unTotalPg=1,unSelIdx=-1;
+// (moved to top)
 
 async function handleUNFile(inp){
   var f=inp.files[0];if(!f)return;
@@ -1740,7 +1747,7 @@ function renderUnList(){renderNtmList2(UN_DATA,'un-list',unPg,unSelIdx,'un');}
 function selUnNtm(idx){unSelIdx=idx;renderUnList();var m=UN_DATA[idx];if(m)renderNtmDet2(m,idx,'un-det','un');}
 
 // ── WTO State ──
-var WTO_DATA=[],wtoPg=1,wtoTotalPg=1,wtoSelIdx=-1;
+// (moved to top)
 
 async function handleWTOFile(inp){
   var f=inp.files[0];if(!f)return;
