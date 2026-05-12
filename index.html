@@ -1035,7 +1035,7 @@ async function doAnalyze(sid){
     if(r.ok){var d=await r.json();if(d.analysis&&d.analysis.length>50){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet(n);return;}}
   }catch(e){}
   try{
-    var ar=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+    var ar=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
     if(ar.ok){var ad=await ar.json();if(ad.content&&ad.content[0]&&ad.content[0].text){parseAn(n,ad.content[0].text);n.loading=false;tab='full';renderList();renderDet(n);return;}}
   }catch(e){}
   var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. موعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(isSPS?'SPS — المادة 5 (تقييم المخاطر) والمادة 7':'TBT — المادة 2 (عدم التمييز) والمادة 5')+'\n• المعايير: '+(isSPS?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n• حق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. مراجعة معايير SASO بالتوافق مع '+(isSPS?'Codex':'ISO')+'\n5. متابعة لجنة '+(isSPS?'SPS':'TBT')+' في WTO';
@@ -1313,8 +1313,8 @@ function _sel(pf,idx){
       +'</div>'
     +'</div>'
     +(m.ai?
-      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
-    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
+      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
+    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل التدبير</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
 }
 function _pgBar(pf){
   var st=_nd[pf],el=document.getElementById(pf+'-pg');
@@ -1332,10 +1332,10 @@ async function _ai(pf,idx){
   var m=_nd[pf].data[idx];if(!m)return;
   var det=document.getElementById(pf+'-det');
   var bid='_ai_'+pf+'_'+idx;
-  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
+  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:m.code||'',member:m.r||'',type:m.tp,date:m.yr+'-01-01',commentDeadline:'',title:m.en||'',products:m.prod?[m.prod]:[],docs:[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">التحليل القانوني AI</div><div class="abox">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
+    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">تحليل التدبير</div><div class="abox">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
   }catch(e){}
   var b=document.getElementById(bid);if(b)b.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
 }
