@@ -1319,9 +1319,8 @@ function goPage(pg2,btn){
   document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('show');});
   var el=document.getElementById('p-'+pg2);
   if(el)el.classList.add('show');
-  if(pg2==='ntm'&&NTM_ALL.length===0){loadNtmSample();}
-  if(pg2==='ntm-un'&&UN_DATA.length===0){loadUnSample();}
-  if(pg2==='ntm-wto'&&WTO_DATA.length===0){loadWtoSample();}
+  if(pg2==='ntm-un'&&(!UN_DATA||UN_DATA.length===0)){loadUnSample();}
+  if(pg2==='ntm-wto'&&(!WTO_DATA||WTO_DATA.length===0)){loadWtoSample();}
 }
 
 // ═══ STATUS ═══
