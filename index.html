@@ -254,14 +254,6 @@ button{font-family:inherit;cursor:pointer}
 .fi{animation:fi .2s ease}
 .ldots::after{content:'...';animation:ldots 1.4s steps(4,end) infinite}
 @keyframes ldots{0%,20%{content:'.'}40%,60%{content:'..'}80%,100%{content:'...'}}
-
-/* FIX: show full NTM analysis without clipping */
-#p-ntm-un, #p-ntm-wto{min-height:auto!important;overflow:visible!important;}
-#un-det,#wto-det{max-height:none!important;height:auto!important;overflow:visible!important;}
-#un-det .det-dc,#wto-det .det-dc{max-height:none!important;height:auto!important;overflow:visible!important;}
-#un-det .abox,#wto-det .abox{max-height:none!important;height:auto!important;overflow:visible!important;white-space:pre-wrap!important;word-break:break-word!important;overflow-wrap:anywhere!important;}
-#p-ntm-un .ntm-grid,#p-ntm-wto .ntm-grid{align-items:start!important;}
-
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -461,7 +453,7 @@ button{font-family:inherit;cursor:pointer}
       <div class="det-empty" id="det-empty">
         <div class="det-empty-ico">⚖️</div>
         <div style="font-size:15px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
-        <div style="font-size:11px;max-width:270px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار في القائمة لعرض تفاصيله وتحليل التدبير</div>
+        <div style="font-size:11px;max-width:270px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار في القائمة لعرض تفاصيله وتحليله القانوني</div>
         <div class="qlinks" style="justify-content:center">
           <a href="https://eping.wto.org" target="_blank" class="ql">🌐 ePing</a>
           <a href="https://mc.gov.sa" target="_blank" class="ql">🇸🇦 وزارة التجارة</a>
@@ -554,7 +546,7 @@ button{font-family:inherit;cursor:pointer}
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="un-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="un-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
         </div>
-        <div class="ntm-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="un-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
             <div id="un-list" style="max-height:440px;overflow-y:auto"><div class="empty-st"><div style="font-size:20px;opacity:.2">🇺🇳</div><div style="font-size:9px">اضغط "تحميل البيانات"</div></div></div>
@@ -566,7 +558,7 @@ button{font-family:inherit;cursor:pointer}
           </div>
           <div>
             <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="un-det" style="overflow:visible"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
+            <div id="un-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
           </div>
         </div>
       </div>
@@ -592,7 +584,7 @@ button{font-family:inherit;cursor:pointer}
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="wto-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="wto-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
         </div>
-        <div class="ntm-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="wto-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
             <div id="wto-list" style="max-height:440px;overflow-y:auto"><div class="empty-st"><div style="font-size:20px;opacity:.2">⚖️</div><div style="font-size:9px">اضغط "تحميل البيانات"</div></div></div>
@@ -604,7 +596,7 @@ button{font-family:inherit;cursor:pointer}
           </div>
           <div>
             <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="wto-det" style="overflow:visible"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
+            <div id="wto-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
           </div>
         </div>
       </div>
@@ -1321,8 +1313,8 @@ function _sel(pf,idx){
       +'</div>'
     +'</div>'
     +(m.ai?
-      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
-    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل التدبير AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
+      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
+    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
 }
 function _pgBar(pf){
   var st=_nd[pf],el=document.getElementById(pf+'-pg');
@@ -1340,10 +1332,10 @@ async function _ai(pf,idx){
   var m=_nd[pf].data[idx];if(!m)return;
   var det=document.getElementById(pf+'-det');
   var bid='_ai_'+pf+'_'+idx;
-  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
+  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:m.code||'',member:m.r||'',type:m.tp,date:m.yr+'-01-01',commentDeadline:'',title:m.en||'',products:m.prod?[m.prod]:[],docs:[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">تحليل التدبير AI</div><div class="abox">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ التحليل كاملًا</button>';}}return;}}
+    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">التحليل القانوني AI</div><div class="abox">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
   }catch(e){}
   var b=document.getElementById(bid);if(b)b.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
 }
