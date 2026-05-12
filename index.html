@@ -1879,7 +1879,7 @@ function renderNtmList2(data,listId,pg,selIdx,prefix){
     var idx=(pg-1)*50+i;
     var rm=NTM_RM[m.risk_level]||NTM_RM.low;
     var am=NTM_AM[m.recommended_action]||NTM_AM.monitor;
-    return '<div class="ntm-card'+(selIdx===idx?' sel':'')+'" onclick="sel'+prefix.toUpperCase()+'Ntm('+idx+')">'+
+    return '<div class="ntm-card'+(selIdx===idx?' sel':'')+'" onclick="'+(prefix==='un'?'selUnNtm':'selWtoNtm')+'('+idx+')">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
         '<div style="display:flex;gap:3px">'+
           '<span class="bdg" style="background:'+ac.bg+';color:'+ac.c+';border:1px solid '+ac.b+'">'+(m.ntm_type||'—')+'</span>'+
