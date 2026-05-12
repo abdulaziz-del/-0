@@ -526,6 +526,50 @@ def translate_batch_ep():
     except Exception as e:
         return jsonify({"translations": [], "error": str(e)})
 
+
+
+# ── البحث المباشر في التدابير غير الجمركية UNCTAD / WTO ──
+def _clean_query_value(v):
+    return (v or "").strip()
+
+@app.route("/api/ntm/un/search", methods=["GET"])
+def ntm_un_search():
+    """إنشاء رابط بحث مباشر لموقع UNCTAD TRAINS داخل المنصة."""
+    country = _clean_query_value(request.args.get("country"))
+    product = _clean_query_value(request.args.get("product"))
+    measure = _clean_query_value(request.args.get("measure"))
+    official_url = "https://trainsonline.unctad.org/detailedSearch"
+    return jsonify({
+        "ok": True,
+        "source": "UNCTAD TRAINS",
+        "official_url": official_url,
+        "query": {
+            "country": country,
+            "product": product,
+            "measure": measure,
+        },
+        "note": "UNCTAD TRAINS قد لا يدعم تمرير جميع فلاتر البحث عبر URL عام؛ لذلك يتم فتح صفحة البحث الرسمية داخل المنصة مع حفظ مدخلات البحث." 
+    })
+
+@app.route("/api/ntm/wto/search", methods=["GET"])
+def ntm_wto_search():
+    """إنشاء رابط بحث مباشر لموقع WTO i-TIP Goods داخل المنصة."""
+    member = _clean_query_value(request.args.get("member"))
+    hs = _clean_query_value(request.args.get("hs"))
+    measure = _clean_query_value(request.args.get("measure"))
+    official_url = "https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search"
+    return jsonify({
+        "ok": True,
+        "source": "WTO i-TIP Goods",
+        "official_url": official_url,
+        "query": {
+            "member": member,
+            "hs": hs,
+            "measure": measure,
+        },
+        "note": "i-TIP يعتمد على ASP.NET session وقد لا يقبل كل الفلاتر كمعاملات URL مستقرة؛ لذلك يتم فتح البحث الرسمي داخل المنصة مع رابط مباشر." 
+    })
+
 # ── التنبيهات ──
 _alerts = []
 _alert_id = 0
