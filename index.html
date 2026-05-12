@@ -529,6 +529,7 @@ button{font-family:inherit;cursor:pointer}
           <a href="https://unctad.org" target="_blank" class="rl"><span class="ri">📊</span><div><div class="rn">UNCTAD</div><div class="ru">unctad.org</div></div></a>
         </div>
       </div>
+    </div>
 
     <div id="p-ntm-un" class="pnl">
       <div class="sec-title">🛡️ التدابير غير الجمركية UN <span>— UNCTAD TRAINS</span></div>
@@ -540,7 +541,7 @@ button{font-family:inherit;cursor:pointer}
       </div>
       <div class="dc" style="margin-bottom:12px">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" id="un-load-btn" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">📋 تحميل بيانات تجريبية</button>
+          <button class="btn-ai" onclick="_load('un')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">📋 تحميل بيانات تجريبية</button>
           <button class="btn-ai" onclick="window.open('https://trainsonline.unctad.org/detailedSearch','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح UNCTAD TRAINS</button>
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="un-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="un-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
@@ -578,7 +579,7 @@ button{font-family:inherit;cursor:pointer}
       </div>
       <div class="dc" style="margin-bottom:12px">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" id="wto-load-btn" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">📋 تحميل بيانات تجريبية</button>
+          <button class="btn-ai" onclick="_load('wto')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">📋 تحميل بيانات تجريبية</button>
           <button class="btn-ai" onclick="window.open('https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح WTO I-TIP</button>
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="wto-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="wto-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
