@@ -254,6 +254,11 @@ button{font-family:inherit;cursor:pointer}
 .fi{animation:fi .2s ease}
 .ldots::after{content:'...';animation:ldots 1.4s steps(4,end) infinite}
 @keyframes ldots{0%,20%{content:'.'}40%,60%{content:'..'}80%,100%{content:'...'}}
+.ntm-analysis-box{max-height:none!important;overflow:visible!important;white-space:pre-wrap;line-height:1.9}
+.ntm-criteria{background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.18);border-radius:var(--r2);padding:10px 12px;margin-bottom:8px}
+.ntm-criteria ul{margin:6px 18px 0 0;padding:0;color:var(--t2);font-size:10px;line-height:1.8}
+.ntm-criteria li{margin-bottom:2px}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -453,7 +458,7 @@ button{font-family:inherit;cursor:pointer}
       <div class="det-empty" id="det-empty">
         <div class="det-empty-ico">⚖️</div>
         <div style="font-size:15px;font-weight:600;color:var(--t2)">اختر إخطاراً للتحليل</div>
-        <div style="font-size:11px;max-width:270px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار في القائمة لعرض تفاصيله وتحليله القانوني</div>
+        <div style="font-size:11px;max-width:270px;line-height:1.7;color:var(--t3)">اضغط على أي إخطار في القائمة لعرض تفاصيله وتحليل التدبير</div>
         <div class="qlinks" style="justify-content:center">
           <a href="https://eping.wto.org" target="_blank" class="ql">🌐 ePing</a>
           <a href="https://mc.gov.sa" target="_blank" class="ql">🇸🇦 وزارة التجارة</a>
@@ -558,7 +563,7 @@ button{font-family:inherit;cursor:pointer}
           </div>
           <div>
             <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="un-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
+            <div id="un-det" style="max-height:none;overflow-y:visible"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
           </div>
         </div>
       </div>
@@ -596,7 +601,7 @@ button{font-family:inherit;cursor:pointer}
           </div>
           <div>
             <div class="det-hd" style="margin-bottom:6px">التفاصيل والتحليل</div>
-            <div id="wto-det" style="max-height:480px;overflow-y:auto"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
+            <div id="wto-det" style="max-height:none;overflow-y:visible"><div class="empty-st" style="padding:18px"><div style="font-size:18px;opacity:.2">👆</div><div style="font-size:9px">اختر تدبيراً</div></div></div>
           </div>
         </div>
       </div>
@@ -984,12 +989,12 @@ function renderDet(n){
         '<button class="btn-ai" id="btn-analyze" onclick="doAnalyze(\''+nid+'\')" '+(n.loading?'disabled':'')+'>'+
           (n.loading?'<span class="ldots">⏳ يُحلَّل</span>':'🎯 تحليل الأخطار')+
         '</button>'+
-        '<div class="btn-hint">تحليل وفق SPS / TBT / DSU مع توصيات للمملكة</div>'+
+        '<div class="btn-hint">تحليل التدبير وفق SPS / TBT / DSU مع توصيات للمملكة</div>'+
       '</div>':'')+
     (n.loading?'<div class="det-dc"><div class="shim" style="width:82%"></div><div class="shim"></div><div class="shim" style="width:62%"></div></div>':'')+
     (n.analysis?
       '<div class="det-dc">'+
-        '<div class="det-hd">التحليل القانوني</div>'+
+        '<div class="det-hd">تحليل التدبير</div>'+
         '<div class="atabs">'+
           '<button class="atab'+(tab==='sum'?' on':'')+'" onclick="swTab(\'sum\',this)">📋 الملخص</button>'+
           '<button class="atab'+(tab==='leg'?' on':'')+'" onclick="swTab(\'leg\',this)">⚖️ التحليل</button>'+
@@ -1020,7 +1025,7 @@ function cpA(){var n=D.find(function(x){return x.id===selId;});if(n&&n.analysis)
 // ═══ ANALYZE ═══
 function parseAn(n,txt){
   var s=txt.match(/الملخص التنفيذي\s*={0,3}\s*([\s\S]*?)(?=\n={2,}|\n===)/i);
-  var l=txt.match(/التحليل القانوني\s*={0,3}\s*([\s\S]*?)(?=\n={2,}|\n===)/i);
+  var l=txt.match(/تحليل التدبير\s*={0,3}\s*([\s\S]*?)(?=\n={2,}|\n===)/i);
   var rc=txt.match(/التوصيات\s*={0,3}\s*([\s\S]*)/i);
   n.analysis=txt;n.sum=s?s[1].trim():txt.slice(0,600);n.leg=l?l[1].trim():txt.slice(600,1300);n.rec=rc?rc[1].trim():txt.slice(1300);
 }
@@ -1029,7 +1034,7 @@ async function doAnalyze(sid){
   if(!n||n.loading)return;
   n.loading=true;n.analysis=null;renderList();renderDet(n);
   var isSPS=n.type==='SPS';
-  var prompt=['أنت محلل قانوني متخصص في اتفاقيات منظمة التجارة العالمية.','حلّل هذا الإخطار بالعربية الفصحى:','الرمز: '+n.symbol+' | الدولة: '+n.member+' | النوع: '+n.type,'التاريخ: '+n.date+' | موعد التعليق: '+(n.commentDeadline||'—'),'العنوان: '+(n.titleEn||n.title||''),'المنتجات: '+(n.products||[]).join('، '),'','=== الملخص التنفيذي ===','(4-5 جمل عن جوهر الإخطار وأثره على التجارة الدولية)','','=== التحليل القانوني ===','الأساس القانوني: اتفاقية '+(isSPS?'SPS المادة 5 و7':'TBT المادة 2 و5'),'معايير المرجعية: '+(isSPS?'Codex / OIE / IPPC':'ISO / IEC / ITU'),'الأثر على التجارة والدول الأعضاء','حقوق الاعتراض خلال 60-90 يوماً','','=== التوصيات ===','4-5 توصيات عملية للمملكة العربية السعودية'].join('\n');
+  var prompt=['أنت محلل تدابير تجارية متخصص في اتفاقيات منظمة التجارة العالمية.','حلّل هذا التدبير بالعربية الفصحى:','الرمز: '+n.symbol+' | الدولة: '+n.member+' | النوع: '+n.type,'التاريخ: '+n.date+' | موعد التعليق: '+(n.commentDeadline||'—'),'العنوان: '+(n.titleEn||n.title||''),'المنتجات: '+(n.products||[]).join('، '),'','=== الملخص التنفيذي ===','(4-5 جمل عن جوهر الإخطار وأثره على التجارة الدولية)','','=== تحليل التدبير ===','الأساس القانوني: اتفاقية '+(isSPS?'SPS المادة 5 و7':'TBT المادة 2 و5'),'معايير المرجعية: '+(isSPS?'Codex / OIE / IPPC':'ISO / IEC / ITU'),'الأثر على التجارة والدول الأعضاء','حقوق الاعتراض خلال 60-90 يوماً','','=== التوصيات ===','4-5 توصيات عملية للمملكة العربية السعودية'].join('\n');
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:n.symbol,member:n.member,type:n.type,date:n.date,commentDeadline:n.commentDeadline,title:n.titleEn||n.title,products:n.products||[],docs:n.docs||[]})});
     if(r.ok){var d=await r.json();if(d.analysis&&d.analysis.length>50){parseAn(n,d.analysis);n.loading=false;tab='full';renderList();renderDet(n);return;}}
@@ -1038,7 +1043,7 @@ async function doAnalyze(sid){
     var ar=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
     if(ar.ok){var ad=await ar.json();if(ad.content&&ad.content[0]&&ad.content[0].text){parseAn(n,ad.content[0].text);n.loading=false;tab='full';renderList();renderDet(n);return;}}
   }catch(e){}
-  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. موعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== التحليل القانوني ===\n• اتفاقية '+(isSPS?'SPS — المادة 5 (تقييم المخاطر) والمادة 7':'TBT — المادة 2 (عدم التمييز) والمادة 5')+'\n• المعايير: '+(isSPS?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n• حق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. مراجعة معايير SASO بالتوافق مع '+(isSPS?'Codex':'ISO')+'\n5. متابعة لجنة '+(isSPS?'SPS':'TBT')+' في WTO';
+  var t='=== الملخص التنفيذي ===\nأصدرت '+n.member+' إخطار '+n.type+' برقم '+n.symbol+' بتاريخ '+n.date+'. موعد التعليق: '+(n.commentDeadline||'—')+'.\n\n=== تحليل التدبير ===\n• اتفاقية '+(isSPS?'SPS — المادة 5 (تقييم المخاطر) والمادة 7':'TBT — المادة 2 (عدم التمييز) والمادة 5')+'\n• المعايير: '+(isSPS?'Codex Alimentarius / OIE / IPPC':'ISO / IEC / ITU')+'\n• المنتجات: '+(n.products||[]).join('، ')+'\n• حق الاعتراض: 60-90 يوماً للتعليق الرسمي\n\n=== التوصيات ===\n1. تقديم تعليقات رسمية قبل '+(n.commentDeadline||'—')+'\n2. تقييم الأثر على الصادرات السعودية\n3. التنسيق مع وزارة التجارة والهيئة العامة للتجارة الخارجية\n4. مراجعة معايير SASO بالتوافق مع '+(isSPS?'Codex':'ISO')+'\n5. متابعة لجنة '+(isSPS?'SPS':'TBT')+' في WTO';
   parseAn(n,t);n.loading=false;tab='full';renderList();renderDet(n);
 }
 
@@ -1243,6 +1248,23 @@ function _action(risk,tp){
   if(risk==='medium')return(tp==='SPS'||tp==='TBT')?'consult':'notify';
   return'monitor';
 }
+function _criteria(m){
+  var tp=m.tp||'';
+  var sa=!!m.sa;
+  var risk=m.risk||_risk(tp,sa);
+  var action=m.action||_action(risk,tp);
+  var riskTxt=risk==='high'?'مرتفع':risk==='medium'?'متوسط':'منخفض';
+  var actionTxt=(_AC[action]&&_AC[action].l)||'متابعة';
+  var typeTxt=(tp==='ADP'||tp==='CV'||tp==='SG')?'تدبير علاجي تجاري غالباً أعلى حساسية':(tp==='SPS'||tp==='TBT'||tp==='QR')?'تدبير تنظيمي أو كمي يتطلب متابعة فنية':'تدبير عام منخفض الأولوية';
+  var saTxt=sa?'يوجد ارتباط مباشر أو محتمل بالمملكة/صادراتها أو وارداتها':'لا يظهر ارتباط مباشر بالمملكة في بيانات العينة';
+  return '<div class="ntm-criteria"><div class="det-hd" style="margin-bottom:4px">معايير التصنيف</div>'
+    +'<ul>'
+    +'<li><b>نوع التدبير:</b> '+typeTxt+' ('+tp+').</li>'
+    +'<li><b>صلة التدبير بالمملكة:</b> '+saTxt+'.</li>'
+    +'<li><b>درجة المخاطر:</b> '+riskTxt+'؛ ADP/CV/SG أو SPS/TBT/QR المرتبطة بالمملكة تُصنف أعلى.</li>'
+    +'<li><b>الإجراء المقترح:</b> '+actionTxt+' بحسب نوع التدبير ودرجة المخاطر.</li>'
+    +'</ul></div>';
+}
 function _norm(r,i){
   var m=Object.assign({},r,{_i:i});
   if(!m.risk)m.risk=_risk(m.tp,m.sa);
@@ -1293,6 +1315,7 @@ function _sel(pf,idx){
         +'<span class="'+am.c+'">'+am.l+'</span>'
       +'</div><div style="font-size:9px;color:var(--t3)">'+(m.risk==='high'?'يُرجَّح تعارضه مع WTO':m.risk==='medium'?'يستوجب المتابعة':'تدبير روتيني')+'</div>'
     +'</div>'
+    +_criteria(m)
     +'<div class="det-dc" style="margin-bottom:8px">'
       +'<div class="det-hd">بيانات التدبير</div>'
       +'<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px">'
@@ -1313,8 +1336,8 @@ function _sel(pf,idx){
       +'</div>'
     +'</div>'
     +(m.ai?
-      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
-    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل قانوني AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
+      '<div class="det-dc" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="abox">'+m.ai.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><button class="actb" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_cp(this.dataset.pf,+this.dataset.idx)" style="margin-top:7px">📋 نسخ</button></div>'
+    :'<div class="btn-ctr"><button class="btn-ai" data-pf="'+pf+'" data-idx="'+idx+'" onclick="_ai(this.dataset.pf,+this.dataset.idx)" style="padding:8px 16px;font-size:11px">🤖 تحليل التدبير AI</button><div class="btn-hint">وفق GATT / SPS / TBT / DSU</div></div>');
 }
 function _pgBar(pf){
   var st=_nd[pf],el=document.getElementById(pf+'-pg');
@@ -1332,10 +1355,10 @@ async function _ai(pf,idx){
   var m=_nd[pf].data[idx];if(!m)return;
   var det=document.getElementById(pf+'-det');
   var bid='_ai_'+pf+'_'+idx;
-  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">التحليل القانوني AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
+  det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:m.code||'',member:m.r||'',type:m.tp,date:m.yr+'-01-01',commentDeadline:'',title:m.en||'',products:m.prod?[m.prod]:[],docs:[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">التحليل القانوني AI</div><div class="abox">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
+    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">تحليل التدبير AI</div><div class="abox ntm-analysis-box">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
   }catch(e){}
   var b=document.getElementById(bid);if(b)b.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
 }
