@@ -551,16 +551,7 @@ button{font-family:inherit;cursor:pointer}
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="un-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="un-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
         </div>
-        <!-- دليل رفع الملف -->
-        <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px">
-          <div style="font-size:10px;font-weight:600;color:#38bdf8;margin-bottom:6px">📥 كيفية رفع ملف التدابير من UNCTAD TRAINS:</div>
-          <div style="font-size:10px;color:var(--t3);line-height:1.9">
-            1️⃣ اضغط <strong style="color:#38bdf8">فتح UNCTAD TRAINS</strong> ← ابحث واختر الفلاتر المطلوبة<br>
-            2️⃣ اضغط زر <strong style="color:#38bdf8">Export</strong> في الموقع ← اختر <strong>Excel</strong> أو <strong>CSV</strong><br>
-            3️⃣ بعد التحميل، اضغط <strong style="color:#38bdf8">📂 رفع Excel/CSV</strong> ← اختر الملف المحمّل<br>
-            4️⃣ سيتم قراءة البيانات وعرضها تلقائياً مع إمكانية تحليل كل تدبير بـ AI
-          </div>
-        </div>
+        
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="un-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
@@ -599,16 +590,7 @@ button{font-family:inherit;cursor:pointer}
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="wto-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="wto-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
         </div>
-        <!-- دليل رفع الملف -->
-        <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px">
-          <div style="font-size:10px;font-weight:600;color:#a78bfa;margin-bottom:6px">📥 كيفية رفع ملف التدابير من WTO I-TIP:</div>
-          <div style="font-size:10px;color:var(--t3);line-height:1.9">
-            1️⃣ اضغط <strong style="color:#a78bfa">فتح WTO I-TIP</strong> ← اختر الدولة والنوع والسنة<br>
-            2️⃣ اضغط <strong style="color:#a78bfa">Export to excel</strong> في أعلى الجدول ← سيُحمَّل الملف تلقائياً<br>
-            3️⃣ اضغط <strong style="color:#a78bfa">📂 رفع Excel/CSV</strong> ← اختر الملف المحمّل<br>
-            4️⃣ سيتم قراءة البيانات وعرضها مع إمكانية تحليل كل تدبير بـ AI
-          </div>
-        </div>
+        
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <div class="det-hd" style="margin-bottom:6px">قائمة التدابير <span id="wto-cnt" style="font-size:9px;color:var(--t3);font-weight:400"></span></div>
@@ -1352,6 +1334,12 @@ function _sel(pf,idx){
         +'<div><div style="font-size:9px;color:var(--t4)">كود HS</div><div style="font-size:11px;font-weight:600;color:#c0d4f0;font-family:monospace">'+(m.hs||'—')+'</div></div>'
         +'<div><div style="font-size:9px;color:var(--t4)">المنتج</div><div style="font-size:10px;color:var(--t2)">'+(m.prod||'—')+'</div></div>'
         +'<div><div style="font-size:9px;color:var(--t4)">المرجع القانوني</div><div style="font-size:10px;color:var(--t3)">'+(m.legal||'—')+'</div></div>'
+      +'</div>'
+      +'<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'
+        +(pf==='un'?
+          '<a href="https://trainsonline.unctad.org/detailedSearch" target="_blank" class="actb" style="text-decoration:none;font-size:10px">🔗 عرض على UNCTAD TRAINS ↗</a>'
+        :'<a href="https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search" target="_blank" class="actb" style="text-decoration:none;font-size:10px">🔗 عرض على WTO I-TIP ↗</a>')
+      +'</div'
         +'<div><div style="font-size:9px;color:var(--t4)">السنة</div><div style="font-size:11px;font-weight:600;color:#c0d4f0">'+(m.yr||'—')+'</div></div>'
       +'</div>'
     +'</div>'
@@ -1380,7 +1368,7 @@ async function _ai(pf,idx){
   if(existing)existing.remove();
   det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
   try{
-    var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:m.code||'',member:m.r||'',type:m.tp,date:m.yr+'-01-01',commentDeadline:'',title:m.en||'',products:m.prod?[m.prod]:[],docs:[]})});
+    var r=await fetch(API+'/api/ntm/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ntm_type:m.tp,ntm_code:m.code||'',reporter_country:m.r||'',partner_country:m.p||'',hs_code:m.hs||'',product_description:m.prod||'',year:m.yr,measure_summary_en:m.en||'',ntm_description:m.en||'',legal_text_reference:m.legal||'',wto_agreement:m.tp==='SPS'?'SPS Agreement':m.tp==='TBT'?'TBT Agreement':'GATT 1994'})});
     if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.innerHTML='<div class="det-hd">تحليل التدبير</div><div class="abox ntm-analysis-box" style="white-space:pre-wrap;line-height:1.9;max-height:none">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><div style="display:flex;gap:6px;margin-top:8px"><button class="actb" onclick="_cp(\''+pf+'\','+idx+')">📋 نسخ</button><button class="actb" onclick="_ai(\''+pf+'\','+idx+')">🔄 إعادة</button></div>';}return;}}
   }catch(e){}
   var b=document.getElementById(bid);if(b)b.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
