@@ -610,6 +610,83 @@ def delete_alert(aid):
     return jsonify({"ok": True})
 
 
+@app.route("/api/ntm/analyze", methods=["POST"])
+def ntm_analyze():
+    """تحليل تدبير غير جمركي NTM عبر Claude"""
+    if not CLAUDE_KEY:
+        return jsonify({"error": "No Claude key", "analysis": ""})
+    try:
+        m      = request.get_json() or {}
+        tp     = m.get("ntm_type", m.get("type", ""))
+        reporter = m.get("reporter_country", m.get("member", ""))
+        partner  = m.get("partner_country", "")
+        hs     = m.get("hs_code", "")
+        prod   = m.get("product_description", "")
+        code   = m.get("ntm_code", m.get("symbol", ""))
+        yr     = str(m.get("year", m.get("date", "")[:4] if m.get("date") else ""))
+        desc   = m.get("measure_summary_en", m.get("title", m.get("ntm_description", "")))
+        legal  = m.get("legal_text_reference", "")
+        wto_ag = m.get("wto_agreement", "")
+
+        wto_ctx = {
+            "SPS": "اتفاقية التدابير الصحية والنباتية (SPS) — المواد 2 و5 و7\nمعايير: Codex Alimentarius / OIE / IPPC",
+            "TBT": "اتفاقية العوائق التقنية للتجارة (TBT) — المواد 2 و5\nمعايير: ISO / IEC / ITU",
+            "ADP": "اتفاقية مكافحة الإغراق (Anti-Dumping Agreement) — المادة 17\nGATT 1994 المادة VI",
+            "CV":  "اتفاقية الدعم والتدابير التعويضية (SCM) — المادة 25\nGATT 1994 المادة VI",
+            "SG":  "اتفاقية الضمانات (Safeguards Agreement) — المادة 4\nGATT 1994 المادة XIX",
+            "QR":  "GATT 1994 المادة XI — الإلغاء العام للقيود الكمية",
+        }.get(tp, "GATT 1994 + " + (wto_ag or "الاتفاقية ذات الصلة"))
+
+        prompt = "\n".join([
+            "أنت مستشار قانوني متخصص في منظمة التجارة العالمية (WTO) والتدابير غير الجمركية (NTMs).",
+            "حلّل التدبير التالي بأسلوب قانوني رسمي بالعربية الفصحى:",
+            "",
+            "رمز التدبير: " + code + " | النوع: " + tp,
+            "الدولة المطبِّقة: " + reporter,
+            "الدولة الشريكة: " + (partner or "جميع الأعضاء"),
+            "كود HS: " + hs + " | المنتج: " + prod,
+            "المرجع القانوني: " + (legal or "—"),
+            "السنة: " + (yr or "—"),
+            "وصف التدبير: " + desc,
+            "",
+            "الإطار القانوني المنطبق:",
+            wto_ctx,
+            "",
+            "=== الملخص التنفيذي ===",
+            "اكتب 4-5 جمل عن جوهر التدبير وأثره على صادرات المملكة العربية السعودية الرئيسية (الألومنيوم، البتروكيماويات، الأسمدة، النفط، التمور).",
+            "",
+            "=== التحليل القانوني ===",
+            "1. الأساس القانوني: " + wto_ctx,
+            "2. مدى توافق التدبير مع الاستثناءات المشروعة (GATT Art. XX أو المعايير الدولية)",
+            "3. الأثر التجاري المحدد على صادرات المملكة",
+            "4. حقوق الدول الأعضاء في الاعتراض وآليات DSU المتاحة",
+            "",
+            "=== مستوى الخطر والتوصية ===",
+            "حدد: مستوى الخطر (مرتفع / متوسط / منخفض)",
+            "التوصية: (متابعة / إخطار القطاع الخاص / استشارة / إثارة STC / النزاع DSU)",
+            "مبررات التوصية في 3-4 نقاط.",
+            "",
+            "=== الإجراءات العملية ===",
+            "3-5 خطوات عملية تنصح بها المملكة العربية السعودية.",
+            "",
+            "اكتب بالعربية الفصحى القانونية الرسمية. لا تختصر.",
+        ])
+
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-opus-4-7", "max_tokens": 3000,
+                  "messages": [{"role": "user", "content": prompt}]},
+            timeout=60
+        )
+        if r.status_code == 200:
+            text = r.json()["content"][0]["text"].strip()
+            return jsonify({"analysis": text})
+        return jsonify({"analysis": "", "error": r.text[:300]})
+    except Exception as e:
+        return jsonify({"error": str(e), "analysis": ""})
+
+
 # ── بدء التشغيل مع gunicorn ──
 def startup():
     def _init():
