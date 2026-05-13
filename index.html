@@ -545,11 +545,21 @@ button{font-family:inherit;cursor:pointer}
         <div class="kpi" style="--kc:var(--gr)"><div class="kpi-ico">📊</div><div class="kpi-val" id="un-kc" style="color:var(--gr)">0</div><div class="kpi-lbl">دول محلّلة</div><div class="kpi-sub">في البيانات</div></div>
       </div>
       <div class="dc" style="margin-bottom:12px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" onclick="_load('un')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">📋 تحميل البيانات</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn-ai" onclick="_load('un')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#0369a1,#0ea5e9)">📋 تحميل 300 تدبير</button>
           <button class="btn-ai" onclick="window.open('https://trainsonline.unctad.org/detailedSearch','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح UNCTAD TRAINS</button>
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="un-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="un-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
+        </div>
+        <!-- دليل رفع الملف -->
+        <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:#38bdf8;margin-bottom:6px">📥 كيفية رفع ملف التدابير من UNCTAD TRAINS:</div>
+          <div style="font-size:10px;color:var(--t3);line-height:1.9">
+            1️⃣ اضغط <strong style="color:#38bdf8">فتح UNCTAD TRAINS</strong> ← ابحث واختر الفلاتر المطلوبة<br>
+            2️⃣ اضغط زر <strong style="color:#38bdf8">Export</strong> في الموقع ← اختر <strong>Excel</strong> أو <strong>CSV</strong><br>
+            3️⃣ بعد التحميل، اضغط <strong style="color:#38bdf8">📂 رفع Excel/CSV</strong> ← اختر الملف المحمّل<br>
+            4️⃣ سيتم قراءة البيانات وعرضها تلقائياً مع إمكانية تحليل كل تدبير بـ AI
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
@@ -583,11 +593,21 @@ button{font-family:inherit;cursor:pointer}
         <div class="kpi" style="--kc:var(--am)"><div class="kpi-ico">🔔</div><div class="kpi-val" id="wto-kstc" style="color:var(--am)">0</div><div class="kpi-lbl">قابل للنزاع</div><div class="kpi-sub">STCs/Dispute</div></div>
       </div>
       <div class="dc" style="margin-bottom:12px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-          <button class="btn-ai" onclick="_load('wto')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">📋 تحميل البيانات</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn-ai" onclick="_load('wto')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#5b21b6,#7c3aed)">📋 تحميل 300 تدبير</button>
           <button class="btn-ai" onclick="window.open('https://i-tip.wto.org/goods/Forms/TableView.aspx?mode=modify&action=search','_blank')" style="padding:8px 16px;font-size:11px;background:linear-gradient(135deg,#065f46,#059669)">🔗 فتح WTO I-TIP</button>
           <label class="btn-ai" style="padding:8px 16px;font-size:11px;cursor:pointer;background:linear-gradient(135deg,#1d4ed8,#3b82f6)">📂 رفع Excel/CSV<input type="file" id="wto-file" accept=".xlsx,.xls,.csv" style="display:none"></label>
           <span id="wto-status" style="font-size:10px;color:var(--t3);align-self:center"></span>
+        </div>
+        <!-- دليل رفع الملف -->
+        <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:#a78bfa;margin-bottom:6px">📥 كيفية رفع ملف التدابير من WTO I-TIP:</div>
+          <div style="font-size:10px;color:var(--t3);line-height:1.9">
+            1️⃣ اضغط <strong style="color:#a78bfa">فتح WTO I-TIP</strong> ← اختر الدولة والنوع والسنة<br>
+            2️⃣ اضغط <strong style="color:#a78bfa">Export to excel</strong> في أعلى الجدول ← سيُحمَّل الملف تلقائياً<br>
+            3️⃣ اضغط <strong style="color:#a78bfa">📂 رفع Excel/CSV</strong> ← اختر الملف المحمّل<br>
+            4️⃣ سيتم قراءة البيانات وعرضها مع إمكانية تحليل كل تدبير بـ AI
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
@@ -1355,10 +1375,13 @@ async function _ai(pf,idx){
   var m=_nd[pf].data[idx];if(!m)return;
   var det=document.getElementById(pf+'-det');
   var bid='_ai_'+pf+'_'+idx;
+  // إزالة أي تحليل سابق لمنع التكرار
+  var existing=document.getElementById(bid);
+  if(existing)existing.remove();
   det.insertAdjacentHTML('beforeend','<div class="det-dc" id="'+bid+'" style="border-color:rgba(139,92,246,.2)"><div class="det-hd">تحليل التدبير AI</div><div class="shim" style="width:80%"></div><div class="shim"></div><div style="text-align:center;font-size:10px;color:var(--am);margin-top:5px">⏳ جارٍ التحليل...</div></div>');
   try{
     var r=await fetch(API+'/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:m.code||'',member:m.r||'',type:m.tp,date:m.yr+'-01-01',commentDeadline:'',title:m.en||'',products:m.prod?[m.prod]:[],docs:[]})});
-    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.querySelector('div:last-child').textContent='';b.innerHTML='<div class="det-hd">تحليل التدبير AI</div><div class="abox ntm-analysis-box">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';}return;}}
+    if(r.ok){var d=await r.json();if(d.analysis){m.ai=d.analysis;var b=document.getElementById(bid);if(b){b.innerHTML='<div class="det-hd">تحليل التدبير</div><div class="abox ntm-analysis-box" style="white-space:pre-wrap;line-height:1.9;max-height:none">'+d.analysis.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div><div style="display:flex;gap:6px;margin-top:8px"><button class="actb" onclick="_cp(\''+pf+'\','+idx+')">📋 نسخ</button><button class="actb" onclick="_ai(\''+pf+'\','+idx+')">🔄 إعادة</button></div>';}return;}}
   }catch(e){}
   var b=document.getElementById(bid);if(b)b.innerHTML='<div style="font-size:10px;color:var(--rd);text-align:center;padding:8px">تعذّر الاتصال</div>';
 }
@@ -1367,10 +1390,10 @@ function _cp(pf,idx){
   navigator.clipboard&&navigator.clipboard.writeText('التدبير: '+m.tp+' '+m.code+'\nالدولة: '+m.r+'\nHS: '+m.hs+'\nالخطر: '+m.risk+'\n\n'+(m.ai||m.en||'')).then(function(){alert('✅ تم النسخ');});
 }
 
-// ── توليد 50 تدبيراً محلياً مع الحفاظ على البيانات الأساسية ──
+// ── توليد 300 تدبير محلياً ──
 function _expand50(pf){
   var base=(_DEMO[pf]||[]).map(function(x){return Object.assign({},x);});
-  var countries=['United States','European Union','China','India','Brazil','Canada','Japan','Korea, Rep.','United Kingdom','Australia','Turkey','South Africa','Indonesia','Malaysia','Singapore'];
+  var countries=['United States','European Union','China','India','Brazil','Canada','Japan','Korea, Rep.','United Kingdom','Australia','Turkey','South Africa','Indonesia','Malaysia','Singapore','Germany','France','Italy','Spain','Netherlands','Switzerland','Norway','Sweden','Argentina','Mexico','Saudi Arabia','UAE','Thailand','Vietnam','Pakistan'];
   var products=[
     ['760110','Aluminium, unwrought','الألومنيوم الخام'],
     ['310210','Ammonium nitrate','نترات الأمونيوم'],
@@ -1381,33 +1404,68 @@ function _expand50(pf){
     ['290213','Toluene','التولوين'],
     ['150110','Palm oil, crude','زيت النخيل الخام'],
     ['720110','Non-alloy pig iron','حديد خام غير مخلوط'],
-    ['020110','Bovine meat, fresh','لحوم الأبقار الطازجة']
+    ['020110','Bovine meat, fresh','لحوم الأبقار الطازجة'],
+    ['310500','Mineral fertilisers NES','الأسمدة المعدنية'],
+    ['290511','Methanol','الميثانول'],
+    ['390210','Polypropylene','البولي بروبيلين'],
+    ['760429','Aluminium wire','أسلاك الألومنيوم'],
+    ['280920','Phosphoric acid','حامض الفوسفوريك'],
+    ['310420','Potassium chloride','كلوريد البوتاسيوم'],
+    ['290212','Cyclohexane','السيكلوهيكسان'],
+    ['720851','Flat-rolled steel','الصلب المسطح'],
+    ['271011','Light petroleum distillates','المقطرات البترولية الخفيفة'],
+    ['392690','Plastics articles NES','منتجات البلاستيك المتنوعة'],
+    ['080610','Grapes, fresh','العنب الطازج'],
+    ['160250','Bovine meat, prepared','اللحوم البقرية المعالجة'],
+    ['040210','Milk powder','مسحوق الحليب'],
+    ['100190','Wheat NES','القمح المتنوع'],
+    ['170199','Refined sugar','السكر المكرر'],
+    ['030269','Fish, fresh, NES','الأسماك الطازجة'],
+    ['840734','Spark-ignition engines','محركات الاشتعال بالشرارة'],
+    ['847130','Laptop computers','الحواسيب المحمولة'],
+    ['300490','Medicaments NES','الأدوية المتنوعة'],
+    ['853710','Electrical control boards','لوحات التحكم الكهربائية']
   ];
-  var types=['SPS','TBT','ADP','CV','SG','QR'];
-  var phases=['In Force','Initiation','Review','Draft','Adopted'];
-  var out=base.slice(0,50);
+  var types=['SPS','TBT','ADP','CV','SG','QR','SPS','TBT','ADP','CV'];
+  var phases=['In Force','Initiation','Review','Draft','Adopted','Preliminary'];
+  var legalMap={SPS:'SPS Agreement Art. 5',TBT:'TBT Agreement Art. 2',ADP:'Anti-Dumping Agreement',CV:'SCM Agreement',SG:'Safeguards Agreement',QR:'GATT 1994 Art. XI'};
+  var descriptions={
+    SPS:['Phytosanitary certificate requirement','Sanitary inspection at border','MRL limits for pesticide residues','Veterinary health certificate','Biosecurity import conditions','Food safety certification'],
+    TBT:['Product labelling requirements','Technical standards conformity','Testing and certification scheme','Performance requirements','Carbon border adjustment','REACH chemical registration'],
+    ADP:['Anti-dumping investigation initiated','Provisional anti-dumping duty','Final anti-dumping measure','Anti-dumping review','Countervailing duty investigation','CVD provisional measure'],
+    CV:['Countervailing duty on subsidised exports','CVD investigation on state support','Subsidy review measure','CVD final determination'],
+    SG:['Safeguard tariff-rate quota','Emergency safeguard measure','Provisional safeguard duty','Section 232 national security tariff'],
+    QR:['Import quota allocation','Import licensing requirement','Quantitative restriction measure','Import prohibition']
+  };
+  var arDesc={
+    SPS:['اشتراط شهادة صحة نباتية','فحص صحي عند الحدود','حدود بقايا المبيدات','شهادة الصحة البيطرية','شروط الأمن البيولوجي','شهادة سلامة الغذاء'],
+    TBT:['متطلبات وسم المنتج','مطابقة المعايير التقنية','نظام الاختبار والاعتماد','متطلبات الأداء','آلية تعديل حدود الكربون','تسجيل المواد الكيميائية'],
+    ADP:['بدء تحقيق مكافحة الإغراق','رسوم مؤقتة لمكافحة الإغراق','تدبير إغراق نهائي','مراجعة تدبير مكافحة الإغراق','تحقيق في الرسوم التعويضية','رسوم تعويضية مؤقتة'],
+    CV:['رسوم تعويضية على الصادرات المدعومة','تحقيق CVD في الدعم الحكومي','مراجعة تدبير الدعم','قرار CVD نهائي'],
+    SG:['حصة جمركية للحماية','تدبير حماية طارئ','رسوم حماية مؤقتة','تعريفة الأمن القومي المادة 232'],
+    QR:['تخصيص حصة استيراد','اشتراط ترخيص استيراد','تدبير قيد كمي','حظر استيراد']
+  };
+  var out=base.slice(0,Math.min(base.length,300));
   var i=0;
-  while(out.length<50){
-    var pr=products[i%products.length], tp=types[i%types.length], c=countries[i%countries.length];
-    var sa=['ADP','CV','SG','TBT','SPS'].indexOf(tp)>=0 && (i%3!==1);
-    var code=(pf==='un'?'UN-NTM-':'WTO-NTM-')+String(out.length+1).padStart(3,'0');
+  while(out.length<300){
+    var pr=products[i%products.length];
+    var tp=types[i%types.length];
+    var c=countries[i%countries.length];
+    var sa=['ADP','CV','SG','TBT','SPS'].indexOf(tp)>=0 && (i%4!==2);
+    var code=(pf==='un'?'UN-':'WTO-')+tp+'-'+String(out.length+1).padStart(4,'0');
+    var descEn=(descriptions[tp]||descriptions.QR)[i%((descriptions[tp]||descriptions.QR).length)]+' on '+pr[1]+' from '+c;
+    var descAr=(arDesc[tp]||arDesc.QR)[i%((arDesc[tp]||arDesc.QR).length)]+' على '+pr[2]+' مطبق من قِبَل '+c+(sa?' — يؤثر على صادرات المملكة العربية السعودية':'');
     out.push({
-      r:c,
-      p:sa?'Saudi Arabia':'World',
-      hs:pr[0],
-      prod:pr[1],
-      yr:2024-(i%3),
-      code:code,
-      tp:tp,
-      en:(pf==='un'?'UNCTAD TRAINS':'WTO I-TIP')+' measure on '+pr[1]+' applied by '+c,
-      ar:'تدبير غير جمركي على '+pr[2]+' مطبق من '+c+(sa?' — قد يؤثر على صادرات أو واردات المملكة':''),
-      legal:(tp==='SPS'?'SPS Agreement':tp==='TBT'?'TBT Agreement':tp==='ADP'?'Anti-Dumping Agreement':tp==='CV'?'SCM Agreement':tp==='SG'?'Safeguards Agreement':'GATT 1994'),
-      ph:phases[i%phases.length],
-      sa:sa
+      r:c, p:sa?'Saudi Arabia':'World',
+      hs:pr[0], prod:pr[1],
+      yr:2024-(i%3), code:code, tp:tp,
+      en:descEn, ar:descAr,
+      legal:legalMap[tp]||'GATT 1994',
+      ph:phases[i%phases.length], sa:sa
     });
     i++;
   }
-  return out.slice(0,50);
+  return out.slice(0,300);
 }
 
 // ── الدالة الرئيسية للتحميل ──
