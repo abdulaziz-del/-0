@@ -276,8 +276,8 @@ def analyze():
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
             headers={"x-api-key": CLAUDE_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-opus-4-7", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
-            timeout=30
+            json={"model": "claude-opus-4-7", "max_tokens": 3000, "messages": [{"role": "user", "content": prompt}]},
+            timeout=60
         )
         log.info("Claude analyze status: " + str(r.status_code) + " resp: " + r.text[:300])
         if r.status_code == 200:
